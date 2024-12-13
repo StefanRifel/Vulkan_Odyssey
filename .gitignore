@@ -1,2 +1,4 @@
 Vulkan_Odyssey
 build/**/*.*
+shaders/shader.frag.spv
+shaders/shader.vert.spv
