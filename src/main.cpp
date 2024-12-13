@@ -1,9 +1,9 @@
 #include <iostream>
 
-#include "Application.hpp"
+#include "Application.h"
 
 int main() {
-	Application app;
+	Application app{};
 
     try {
         app.run();

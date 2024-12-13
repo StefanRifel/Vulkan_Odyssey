@@ -20,7 +20,7 @@ void Camera::look() {
     this->view = glm::lookAt(position, pf, up);
 
     // set projection matrix in shader
-    this->perspective = glm::perspective(glm::radians(FOV), SwapChain::getSwapChainExtent().width / (float) SwapChain::getSwapChainExtent().height, NEAR_PLANE, FAR_PLANE);
+    this->perspective = glm::perspective(glm::radians(fieldOfView), SwapChain::getSwapChainExtent().width / (float) SwapChain::getSwapChainExtent().height, NEAR_PLANE, FAR_PLANE);
     // Ändert culling richtung
     this->perspective[1][1] *= -1;
 }
@@ -93,12 +93,4 @@ const glm::vec3 &Camera::getPosition() const {
 
 const glm::vec3 &Camera::getFront() const {
     return front;
-}
-
-bool Camera::isFlashlight() {
-    return flashlight;
-}
-
-void Camera::setFlashlight(bool nFlashlight) {
-    Camera::flashlight = nFlashlight;
 }

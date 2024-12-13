@@ -28,7 +28,7 @@ VkExtent2D& SwapChain::getSwapChainExtent() {
     return swapChainExtent;
 }
 
-void SwapChain::createSwapChain(Window& window) {
+void SwapChain::createSwapChain(Window* window) {
     SwapChainSupportDetails swapChainSupport = PhysicalDeviceWrapper::querySwapChainSupport(PhysicalDeviceWrapper::getPhysicalDevice());
 
     VkSurfaceFormatKHR surfaceFormat = chooseSwapSurfaceFormat(swapChainSupport.formats);
@@ -79,11 +79,11 @@ void SwapChain::createSwapChain(Window& window) {
     swapChainExtent = extent;
 }
 
-void SwapChain::recreateSwapChain(Window& window) {
+void SwapChain::recreateSwapChain(Window* window) {
     int width = 0, height = 0;
-    glfwGetFramebufferSize(window.getGLFWwindow(), &width, &height);
+    glfwGetFramebufferSize(window->getGLFWwindow(), &width, &height);
     while (width == 0 || height == 0) {
-        glfwGetFramebufferSize(window.getGLFWwindow(), &width, &height);
+        glfwGetFramebufferSize(window->getGLFWwindow(), &width, &height);
         glfwWaitEvents();
     }
 
@@ -133,12 +133,12 @@ VkPresentModeKHR SwapChain::chooseSwapPresentMode(const std::vector<VkPresentMod
     return VK_PRESENT_MODE_FIFO_KHR;
 }
 
-VkExtent2D SwapChain::chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities, Window& window) {
+VkExtent2D SwapChain::chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities, Window* window) {
     if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max()) {
         return capabilities.currentExtent;
     } else {
         int width, height;
-        glfwGetFramebufferSize(window.getGLFWwindow(), &width, &height);
+        glfwGetFramebufferSize(window->getGLFWwindow(), &width, &height);
 
         VkExtent2D actualExtent = {
             static_cast<uint32_t>(width),

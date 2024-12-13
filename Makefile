@@ -13,7 +13,7 @@ BASE_SRC = $(SRC_DIR)/base/CommandPool.cpp $(SRC_DIR)/base/Descriptor.cpp $(SRC_
 BUFFER_SRC = $(SRC_DIR)/buffer/VertexBuffer.cpp $(SRC_DIR)/buffer/IndexBuffer.cpp $(SRC_DIR)/buffer/UniformBuffer.cpp
 LOADER_SRC = $(SRC_DIR)/loader/ModelLoader.cpp $(SRC_DIR)/loader/TextureLoader.cpp
 WRAPPER_SRC = $(SRC_DIR)/wrapper/LogicalDeviceWrapper.cpp $(SRC_DIR)/wrapper/PhysicalDeviceWrapper.cpp $(SRC_DIR)/wrapper/InstanceWrapper.cpp
-OBJ_SRC = $(SRC_DIR)/main.cpp $(SRC_DIR)/Scene.cpp $(SRC_DIR)/Window.cpp $(SRC_DIR)/Application.cpp $(SRC_DIR)/Shader.cpp $(SRC_DIR)/Camera.cpp
+OBJ_SRC = $(SRC_DIR)/main.cpp $(SRC_DIR)/Scene.cpp $(SRC_DIR)/Window.cpp $(SRC_DIR)/Application.cpp $(SRC_DIR)/Shader.cpp $(SRC_DIR)/Camera.cpp $(SRC_DIR)/InputManager.cpp
 
 # Shader-Dateien
 SHADER_SRC = $(SHADER_DIR)/shader.vert $(SHADER_DIR)/shader.frag

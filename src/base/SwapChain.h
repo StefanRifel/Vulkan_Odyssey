@@ -34,12 +34,12 @@ public:
 
     static VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
     static VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
-    static VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities, Window& window);
+    static VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities, Window* window);
 
     static void createFramebuffers();
 
-    static void createSwapChain(Window& window);
-    static void recreateSwapChain(Window& window);
+    static void createSwapChain(Window* window);
+    static void recreateSwapChain(Window* window);
     static void cleanupSwapChain();
 
     static void createImageViews();

@@ -14,7 +14,7 @@
 class Scene {
 
 private:
-    Window window;
+    Window* window;
 
     Camera camera;
 
@@ -38,12 +38,16 @@ private:
 
     ModelLoader modelLoader;
 
-    void initVulkan();
+    
 
 public:
-    void init();
-    void mainLoop();
+    Scene(Window* window);
+
+    void initVulkan();
+    void waitOutstandingQueues();
     void cleanup();
+
+    Camera& getCamera();
 
     void createDescriptorSetLayout() {
         VkDescriptorSetLayoutBinding uboLayoutBinding{};
@@ -231,8 +235,8 @@ public:
 
         result = vkQueuePresentKHR(LogicalDeviceWrapper::getPresentQueue(), &presentInfo);
 
-        if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || window.getFramebufferResized()) {
-            window.setFramebufferResized(false);
+        if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || window->getFramebufferResized()) {
+            window->setFramebufferResized(false);
             SwapChain::recreateSwapChain(window);
         } else if (result != VK_SUCCESS) {
             throw std::runtime_error("failed to present swap chain image!");
@@ -240,11 +244,6 @@ public:
 
         currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
     }
-
-    // Eingabeverwantlung für Input von Keyboard und Maus
-    void processKeyboardInput();
-    void processMouseInput(double xPos, double yPos);
-    void processMouseScrollInput(double xOffset, double yOffset);
 };
 
 #endif

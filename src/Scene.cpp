@@ -1,14 +1,12 @@
-#include "Scene.hpp"
+#include "Scene.h"
 
-void Scene::init() {
-    window.initWindow();
-    initVulkan();
+Scene::Scene(Window* window) : window(window) {
 }
 
 void Scene::initVulkan() {
     InstanceWrapper::createInstance();
     InstanceWrapper::setupDebugMessenger();
-    InstanceWrapper::createSurface(window.getGLFWwindow());
+    InstanceWrapper::createSurface(window->getGLFWwindow());
 
     PhysicalDeviceWrapper::pickPhysicalDevice();
     LogicalDeviceWrapper::createLogicalDevice();
@@ -38,13 +36,8 @@ void Scene::initVulkan() {
     createSyncObjects();
 }
 
-void Scene::mainLoop() {
-    while (!glfwWindowShouldClose(window.getGLFWwindow())) {
-        processKeyboardInput();
-        glfwPollEvents();
-        drawFrame();
-    }
-
+void Scene::waitOutstandingQueues() {
+    // To wait on the host for the completion of outstanding queue operations for all queues on a given logical device
     vkDeviceWaitIdle(LogicalDeviceWrapper::getVkDevice());
 }
 
@@ -91,40 +84,8 @@ void Scene::cleanup() {
 
     vkDestroySurfaceKHR(InstanceWrapper::getInstance(), InstanceWrapper::getVkSurfaceKHR(), nullptr);
     vkDestroyInstance(InstanceWrapper::getInstance(), nullptr);
-
-    window.cleanup();
 }
 
-void Scene::processKeyboardInput() {
-    auto currentFrame = static_cast<float>(glfwGetTime());
-    camera.deltaTime = currentFrame - camera.lastFrame;
-    camera.lastFrame = currentFrame;
-    if(glfwGetKey(window.getGLFWwindow(), GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-        //window->onClose();
-    }
-    if(glfwGetKey(window.getGLFWwindow(), GLFW_KEY_W)) {
-        camera.processKeyboard(FORWARD, camera.deltaTime);
-    }
-    if(glfwGetKey(window.getGLFWwindow(), GLFW_KEY_A)) {
-        camera.processKeyboard(LEFT, camera.deltaTime);
-    }
-    if(glfwGetKey(window.getGLFWwindow(), GLFW_KEY_S)) {
-        camera.processKeyboard(BACKWARD, camera.deltaTime);
-    }
-    if(glfwGetKey(window.getGLFWwindow(), GLFW_KEY_D)) {
-        camera.processKeyboard(RIGHT, camera.deltaTime);
-    }
-    bool uKeyIsPressed = (glfwGetKey(window.getGLFWwindow(), GLFW_KEY_U) == GLFW_PRESS);
-    if (uKeyIsPressed && !uKeyWasPressed) {
-        camera.setFlashlight(!camera.isFlashlight());
-    }
-    uKeyWasPressed = uKeyIsPressed;
-}
-
-void Scene::processMouseInput(double xPos, double yPos) {
-    camera.processMouseMovement(xPos, yPos, true);
-}
-
-void Scene::processMouseScrollInput([[maybe_unused]] double xOffset, double yOffset) {
-    camera.zoomWithMouseScroll(yOffset);
+Camera& Scene::getCamera() {
+    return camera;
 }
