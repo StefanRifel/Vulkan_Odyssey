@@ -6,7 +6,7 @@ Mindestanforderungen:
 - [x] Einrichtung der Präsentationsschicht (Surface, Swapchain, Image Views, Framebuffer)
 - [x] Import von Geometriedaten aus separaten Dateien
 - [ ] Darstellung mehrerer Objekte in einer 3D-Szene
-- [ ] Einfache Benutzerinteraktion mit Kamera und/oder Objekten (z. B. über Tastatur)
+- [x] Einfache Benutzerinteraktion mit Kamera und/oder Objekten (z. B. über Tastatur)
 - [ ] Texturierung von mindestens einem Objekt unter Verwendung einer Mipmap
 - [x] Verwendung des Depth-Buffers
 - [ ] gleichzeitige Verwendung von mindestens zwei verschiedenen Shader-Programmen in einer Szene
