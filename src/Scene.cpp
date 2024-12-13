@@ -1,11 +1,11 @@
-#include "VulkanContext.hpp"
+#include "Scene.hpp"
 
-void VulkanContext::init() {
+void Scene::init() {
     window.initWindow();
     initVulkan();
 }
 
-void VulkanContext::initVulkan() {
+void Scene::initVulkan() {
     InstanceWrapper::createInstance();
     InstanceWrapper::setupDebugMessenger();
     InstanceWrapper::createSurface(window.getGLFWwindow());
@@ -38,8 +38,9 @@ void VulkanContext::initVulkan() {
     createSyncObjects();
 }
 
-void VulkanContext::mainLoop() {
+void Scene::mainLoop() {
     while (!glfwWindowShouldClose(window.getGLFWwindow())) {
+        processKeyboardInput();
         glfwPollEvents();
         drawFrame();
     }
@@ -47,7 +48,7 @@ void VulkanContext::mainLoop() {
     vkDeviceWaitIdle(LogicalDeviceWrapper::getVkDevice());
 }
 
-void VulkanContext::cleanup() {
+void Scene::cleanup() {
     SwapChain::cleanupSwapChain();
 
     vkDestroyPipeline(LogicalDeviceWrapper::getVkDevice(), RenderPass::getGraphicsPipeline(), nullptr);
@@ -94,3 +95,36 @@ void VulkanContext::cleanup() {
     window.cleanup();
 }
 
+void Scene::processKeyboardInput() {
+    auto currentFrame = static_cast<float>(glfwGetTime());
+    camera.deltaTime = currentFrame - camera.lastFrame;
+    camera.lastFrame = currentFrame;
+    if(glfwGetKey(window.getGLFWwindow(), GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+        //window->onClose();
+    }
+    if(glfwGetKey(window.getGLFWwindow(), GLFW_KEY_W)) {
+        camera.processKeyboard(FORWARD, camera.deltaTime);
+    }
+    if(glfwGetKey(window.getGLFWwindow(), GLFW_KEY_A)) {
+        camera.processKeyboard(LEFT, camera.deltaTime);
+    }
+    if(glfwGetKey(window.getGLFWwindow(), GLFW_KEY_S)) {
+        camera.processKeyboard(BACKWARD, camera.deltaTime);
+    }
+    if(glfwGetKey(window.getGLFWwindow(), GLFW_KEY_D)) {
+        camera.processKeyboard(RIGHT, camera.deltaTime);
+    }
+    bool uKeyIsPressed = (glfwGetKey(window.getGLFWwindow(), GLFW_KEY_U) == GLFW_PRESS);
+    if (uKeyIsPressed && !uKeyWasPressed) {
+        camera.setFlashlight(!camera.isFlashlight());
+    }
+    uKeyWasPressed = uKeyIsPressed;
+}
+
+void Scene::processMouseInput(double xPos, double yPos) {
+    camera.processMouseMovement(xPos, yPos, true);
+}
+
+void Scene::processMouseScrollInput([[maybe_unused]] double xOffset, double yOffset) {
+    camera.zoomWithMouseScroll(yOffset);
+}

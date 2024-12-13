@@ -1,5 +1,5 @@
-#ifndef VULKANCONTEXT_H
-#define VULKANCONTEXT_H
+#ifndef SCENE_H
+#define SCENE_H
 
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
@@ -9,11 +9,22 @@
 #include "wrapper/InstanceWrapper.h"
 #include "buffer/IndexBuffer.h"
 #include "base/SwapChain.h"
+#include "Camera.h"
 
-class VulkanContext {
+class Scene {
 
 private:
     Window window;
+
+    Camera camera;
+
+    // Steuerung
+    bool uKeyWasPressed = false;
+    
+    // fps
+    std::chrono::high_resolution_clock::time_point lastFrameTime;
+    double frameDuration; // in milliseconds
+    double fps;
 
     // Vulkan
     std::vector<uint32_t> indices;
@@ -143,16 +154,25 @@ public:
     }
 
     void updateUniformBuffer(uint32_t currentImage) {
-        static auto startTime = std::chrono::high_resolution_clock::now();
+        //static auto startTime = std::chrono::high_resolution_clock::now();
 
-        auto currentTime = std::chrono::high_resolution_clock::now();
-        float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
+        //auto currentTime = std::chrono::high_resolution_clock::now();
+        //float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
 
+        /*
         UniformBufferObject ubo{};
         ubo.model = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
         ubo.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
         ubo.proj = glm::perspective(glm::radians(45.0f), SwapChain::getSwapChainExtent().width / (float) SwapChain::getSwapChainExtent().height, 0.1f, 10.0f);
         ubo.proj[1][1] *= -1;
+        */
+        camera.look();
+
+        UniformBufferObject ubo{};
+        glm::mat4 model = glm::mat4(1);
+        ubo.model = model; //glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+        ubo.view = camera.getView();
+        ubo.proj = camera.getPerspective();
 
         memcpy(UniformBuffer::getUniformBuffersMapped()[currentImage], &ubo, sizeof(ubo));
     }
@@ -220,6 +240,11 @@ public:
 
         currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
     }
+
+    // Eingabeverwantlung für Input von Keyboard und Maus
+    void processKeyboardInput();
+    void processMouseInput(double xPos, double yPos);
+    void processMouseScrollInput(double xOffset, double yOffset);
 };
 
 #endif

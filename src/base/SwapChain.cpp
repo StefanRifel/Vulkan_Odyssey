@@ -5,6 +5,7 @@ VkDeviceMemory SwapChain::depthImageMemory;
 VkImageView SwapChain::depthImageView;
 
 VkSwapchainKHR SwapChain::swapChain;
+// Swapbild höhe und breite
 VkExtent2D SwapChain::swapChainExtent;
 VkFormat SwapChain::swapChainImageFormat;
 std::vector<VkImage> SwapChain::swapChainImages;

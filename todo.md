@@ -8,7 +8,7 @@ Mindestanforderungen:
 - [ ] Darstellung mehrerer Objekte in einer 3D-Szene
 - [ ] Einfache Benutzerinteraktion mit Kamera und/oder Objekten (z. B. über Tastatur)
 - [ ] Texturierung von mindestens einem Objekt unter Verwendung einer Mipmap
-- [ ] Verwendung des Depth-Buffers
+- [x] Verwendung des Depth-Buffers
 - [ ] gleichzeitige Verwendung von mindestens zwei verschiedenen Shader-Programmen in einer Szene
 
 Weitere Anforderungen:

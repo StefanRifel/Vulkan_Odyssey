@@ -1,12 +1,12 @@
 #ifndef APPLICATION_H
 #define APPLICATION_H
 
-#include "VulkanContext.hpp"
+#include "Scene.hpp"
 
 class Application {
 
 private:
-    VulkanContext vulkanContext;
+    Scene scene;
 public:
     void run();
 };
