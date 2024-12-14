@@ -11,6 +11,8 @@
 #include "base/SwapChain.h"
 #include "Camera.h"
 
+#include "renderable/Mesh.h"
+
 class Scene {
 
 private:
@@ -26,9 +28,12 @@ private:
     double frameDuration; // in milliseconds
     double fps;
 
+    // Objecte
+    Mesh room {"assets/models/viking_room.obj"};
+
+
     // Vulkan
-    std::vector<uint32_t> indices;
-    std::vector<Vertex> vertices;
+    
 
     std::vector<VkSemaphore> imageAvailableSemaphores;
     std::vector<VkSemaphore> renderFinishedSemaphores;
@@ -127,7 +132,7 @@ public:
 
             vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, RenderPass::getPipelineLayout(), 0, 1, &Descriptor::getDescriptorSets()[currentFrame], 0, nullptr);
 
-            vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
+            vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(room.getIndices().size()), 1, 0, 0, 0);
 
         vkCmdEndRenderPass(commandBuffer);
 

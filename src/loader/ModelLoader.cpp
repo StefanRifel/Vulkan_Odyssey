@@ -1,8 +1,8 @@
 #define TINYOBJLOADER_IMPLEMENTATION
 #include "ModelLoader.h"
 
-void ModelLoader::loadModel(std::vector<Vertex>& vertices, std::vector<uint32_t>& indices) {
-    if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, MODEL_PATH.c_str())) {
+void ModelLoader::loadModel(std::vector<Vertex>& vertices, std::vector<uint32_t>& indices, std::string& modelPath) {
+    if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, modelPath.c_str())) {
         throw std::runtime_error(warn + err);
     }
 

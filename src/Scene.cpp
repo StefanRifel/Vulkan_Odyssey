@@ -25,10 +25,8 @@ void Scene::initVulkan() {
 
     // Hier werden alle unsere Objekte geladen die wir in der Szene brauchen
     // Pfade zu der obj sind gerade noch hard coded
-    modelLoader.loadModel(vertices, indices);
-
-    VertexBuffer::createVertexBuffer(vertices);
-    IndexBuffer::createIndexBuffer(indices);
+    room.init();
+    
     UniformBuffer::createUniformBuffers();
     Descriptor::createDescriptorPool();
     Descriptor::createDescriptorSets();

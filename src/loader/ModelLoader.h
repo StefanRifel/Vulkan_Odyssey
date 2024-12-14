@@ -13,14 +13,13 @@
 class ModelLoader {
 
 private:
-  tinyobj::attrib_t attrib;
-  std::vector<tinyobj::shape_t> shapes;
-  std::vector<tinyobj::material_t> materials;
+  tinyobj::attrib_t attrib;                         // container holds all of the positions, normals and texture coordinates in its attrib.vertices, attrib.normals and attrib.texcoords
+  std::vector<tinyobj::shape_t> shapes;             // container contains all of the separate objects and their faces
+  std::vector<tinyobj::material_t> materials;       // materials used in the OBJ file will be stored. Each material contains properties like color, texture, and other material attributes
   std::string warn, err;
-  const std::string MODEL_PATH = "assets/models/viking_room.obj";
 
 public:
-  void loadModel(std::vector<Vertex>& vertices, std::vector<uint32_t>& indices);
+  void loadModel(std::vector<Vertex>& vertices, std::vector<uint32_t>& indices, std::string& modelPath);
 };
 
 #endif

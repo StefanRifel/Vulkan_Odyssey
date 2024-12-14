@@ -5,6 +5,7 @@ LDFLAGS = -lglfw -lvulkan -ldl -lpthread -lX11 -lXxf86vm -lXrandr -lXi
 # Verzeichnisse
 SRC_DIR = src
 SHADER_DIR = shaders
+RENDERABLE_DIR = renderable
 LIB_DIR = library
 BUILD_DIR = build
 
@@ -12,6 +13,7 @@ BUILD_DIR = build
 BASE_SRC = $(SRC_DIR)/base/CommandPool.cpp $(SRC_DIR)/base/Descriptor.cpp $(SRC_DIR)/base/RenderPass.cpp $(SRC_DIR)/base/SwapChain.cpp
 BUFFER_SRC = $(SRC_DIR)/buffer/VertexBuffer.cpp $(SRC_DIR)/buffer/IndexBuffer.cpp $(SRC_DIR)/buffer/UniformBuffer.cpp
 LOADER_SRC = $(SRC_DIR)/loader/ModelLoader.cpp $(SRC_DIR)/loader/TextureLoader.cpp
+RENDER_SRC = $(SRC_DIR)/$(RENDERABLE_DIR)/Mesh.cpp
 WRAPPER_SRC = $(SRC_DIR)/wrapper/LogicalDeviceWrapper.cpp $(SRC_DIR)/wrapper/PhysicalDeviceWrapper.cpp $(SRC_DIR)/wrapper/InstanceWrapper.cpp
 OBJ_SRC = $(SRC_DIR)/main.cpp $(SRC_DIR)/Scene.cpp $(SRC_DIR)/Window.cpp $(SRC_DIR)/Application.cpp $(SRC_DIR)/Shader.cpp $(SRC_DIR)/Camera.cpp $(SRC_DIR)/InputManager.cpp
 
@@ -20,7 +22,7 @@ SHADER_SRC = $(SHADER_DIR)/shader.vert $(SHADER_DIR)/shader.frag
 SHADER_SPV = $(SHADER_SRC:.vert=.vert.spv) $(SHADER_SRC:.frag=.frag.spv)
 
 # Alle Quell- und Objektdateien
-SRC_FILES = $(BASE_SRC) $(BUFFER_SRC) $(LOADER_SRC) $(WRAPPER_SRC) $(OBJ_SRC)
+SRC_FILES = $(BASE_SRC) $(BUFFER_SRC) $(LOADER_SRC) $(WRAPPER_SRC) $(OBJ_SRC) $(RENDER_SRC)
 OBJ_FILES = $(patsubst $(SRC_DIR)/%.cpp,$(BUILD_DIR)/%.o,$(SRC_FILES))
 
 # Ziel
