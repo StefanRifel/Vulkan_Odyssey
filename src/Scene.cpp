@@ -27,7 +27,7 @@ void Scene::initVulkan() {
     Descriptor::createDescriptorPool();
     // Hier werden alle unsere Objekte geladen die wir in der Szene brauchen
     // Pfade zu der obj sind gerade noch hard coded
-    mesh->init();
+    mesh->initBuffers();
     
     CommandPool::createCommandBuffers();
     createSyncObjects();

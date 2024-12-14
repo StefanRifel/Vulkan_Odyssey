@@ -41,7 +41,7 @@ std::vector<VkDescriptorSet>& Mesh::getDescriptorSets() {
     return descriptorSets;
 }
 
-void Mesh::init() {
+void Mesh::initBuffers() {
     VertexBuffer::createVertexBuffer(vertices, vertexBuffer, vertexBufferMemory);
 
     IndexBuffer::createIndexBuffer(indices, indexBuffer, indexBufferMemory);
@@ -49,4 +49,8 @@ void Mesh::init() {
     UniformBuffer::createUniformBuffers(sizeof(UniformBufferObject), uniformBuffers, uniformBuffersMemory);
 
     Descriptor::createDescriptorSets(descriptorSets, uniformBuffers);
+}
+
+void Mesh::draw(VkCommandBuffer& commandBuffer) {
+
 }

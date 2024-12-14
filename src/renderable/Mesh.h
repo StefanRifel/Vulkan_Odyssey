@@ -40,7 +40,7 @@ public:
     std::vector<VkDeviceMemory>& getUniformBuffersMemory();
     std::vector<VkDescriptorSet>& getDescriptorSets();
 
-    void init();
-
+    void initBuffers();
+    void draw(VkCommandBuffer& commandBuffer);
 };
 #endif
