@@ -9,17 +9,8 @@
 #include "../wrapper/LogicalDeviceWrapper.h"
 
 class IndexBuffer {
-    
-private:
-    static VkBuffer indexBuffer;
-    static VkDeviceMemory indexBufferMemory;
-
 public:
-    static VkBuffer& getIndexBuffer();
-    static VkDeviceMemory& getIndexBufferMemory();
-
-    static void createIndexBuffer(std::vector<uint32_t>& indices);
-
+    static void createIndexBuffer(std::vector<uint32_t>& indices, VkBuffer& indexBuffer, VkDeviceMemory& indexBufferMemory);
 };
 
 #endif

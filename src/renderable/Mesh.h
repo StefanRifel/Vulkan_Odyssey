@@ -12,7 +12,12 @@
 class Mesh {
 private:
     std::vector<Vertex> vertices;
+    VkBuffer vertexBuffer;
+    VkDeviceMemory vertexBufferMemory;
+
     std::vector<uint32_t> indices;
+    VkBuffer indexBuffer;
+    VkDeviceMemory indexBufferMemory;
 
     ModelLoader modelLoader;
     std::string modelPath;
@@ -21,6 +26,8 @@ public:
     ~Mesh();
 
     std::vector<uint32_t>& getIndices();
+    VkBuffer& getVertexBuffer();
+    VkBuffer& getIndexBuffer();
 
     void init();
 

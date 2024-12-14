@@ -25,7 +25,7 @@ void Scene::initVulkan() {
 
     // Hier werden alle unsere Objekte geladen die wir in der Szene brauchen
     // Pfade zu der obj sind gerade noch hard coded
-    room.init();
+    mesh->init();
     
     UniformBuffer::createUniformBuffers();
     Descriptor::createDescriptorPool();
@@ -61,10 +61,7 @@ void Scene::cleanup() {
 
     vkDestroyDescriptorSetLayout(LogicalDeviceWrapper::getVkDevice(), Descriptor::getDescriptorSetLayout(), nullptr);
 
-    vkDestroyBuffer(LogicalDeviceWrapper::getVkDevice(), IndexBuffer::getIndexBuffer(), nullptr);
-    vkFreeMemory(LogicalDeviceWrapper::getVkDevice(), IndexBuffer::getIndexBufferMemory(), nullptr);
-
-    VertexBuffer::cleanup();
+    delete mesh;
 
     for (ssize_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
         vkDestroySemaphore(LogicalDeviceWrapper::getVkDevice(), renderFinishedSemaphores[i], nullptr);

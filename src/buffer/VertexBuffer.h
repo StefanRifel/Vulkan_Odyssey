@@ -9,17 +9,8 @@
 #include "BufferWrapper.h"
 
 class VertexBuffer {
-    
-private:
-    static VkBuffer vertexBuffer;
-    static VkDeviceMemory vertexBufferMemory;
-
 public:
-    static VkBuffer& getVertexBuffer();
-
-    static void createVertexBuffer(std::vector<Vertex>& vertices);
-    
-    static void cleanup();
+    static void createVertexBuffer(std::vector<Vertex>& vertices, VkBuffer& vertexBuffer, VkDeviceMemory& vertexBufferMemory);
 };
 
 #endif

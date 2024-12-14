@@ -29,7 +29,7 @@ private:
     double fps;
 
     // Objecte
-    Mesh room {"assets/models/viking_room.obj"};
+    Mesh* mesh = new Mesh{"assets/models/viking_room.obj"};
 
 
     // Vulkan
@@ -124,15 +124,16 @@ public:
             scissor.extent = SwapChain::getSwapChainExtent();
             vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
-            VkBuffer vertexBuffers[] = {VertexBuffer::getVertexBuffer()};
+            // WAHRSCHEINLICH DER SPEICHER FÜR MEHRERE OBJEKTE
+            VkBuffer vertexBuffers[] = {mesh->getVertexBuffer()};
             VkDeviceSize offsets[] = {0};
             vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
 
-            vkCmdBindIndexBuffer(commandBuffer, IndexBuffer::getIndexBuffer(), 0, VK_INDEX_TYPE_UINT32);
+            vkCmdBindIndexBuffer(commandBuffer, mesh->getIndexBuffer(), 0, VK_INDEX_TYPE_UINT32);
 
             vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, RenderPass::getPipelineLayout(), 0, 1, &Descriptor::getDescriptorSets()[currentFrame], 0, nullptr);
 
-            vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(room.getIndices().size()), 1, 0, 0, 0);
+            vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(mesh->getIndices().size()), 1, 0, 0, 0);
 
         vkCmdEndRenderPass(commandBuffer);
 
