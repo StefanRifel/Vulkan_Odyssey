@@ -21,6 +21,10 @@ private:
 
     static const std::string TEXTURE_PATH;
 
+    bool hasStencilComponent(VkFormat format) {
+        return format == VK_FORMAT_D32_SFLOAT_S8_UINT || format == VK_FORMAT_D24_UNORM_S8_UINT;
+    }
+
 public:
     static VkImage& getTextureImage();
     static VkDeviceMemory& getTextureImageMemory();
@@ -37,6 +41,8 @@ public:
     static VkImageView createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags);
 
     static void createTextureSampler();
+
+    
 };
 
 #endif

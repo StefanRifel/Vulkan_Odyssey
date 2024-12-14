@@ -22,6 +22,7 @@ public:
     static VkDescriptorPool& getDescriptorPool();
 
     static void createDescriptorPool();
+    static void createDescriptorSetLayout();
     static void createDescriptorSets(std::vector<VkDescriptorSet>& descriptorSets, std::vector<VkBuffer>& uniformBuffers);
 };
 

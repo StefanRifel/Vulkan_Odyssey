@@ -14,7 +14,7 @@ void Scene::initVulkan() {
     SwapChain::createSwapChain(window);
     SwapChain::createImageViews();
     RenderPass::createRenderPass();
-    createDescriptorSetLayout();
+    Descriptor::createDescriptorSetLayout();
     RenderPass::createGraphicsPipeline();
     CommandPool::createCommandPool();
     SwapChain::createDepthResources();
