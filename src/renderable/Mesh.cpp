@@ -5,6 +5,11 @@ Mesh::Mesh(std::string modelPath) : modelPath(modelPath) {
 }
 
 Mesh::~Mesh() {
+    for (int i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+        vkDestroyBuffer(LogicalDeviceWrapper::getVkDevice(), uniformBuffers[i], nullptr);
+        vkFreeMemory(LogicalDeviceWrapper::getVkDevice(), uniformBuffersMemory[i], nullptr);
+    }
+
     vkDestroyBuffer(LogicalDeviceWrapper::getVkDevice(), indexBuffer, nullptr);
     vkFreeMemory(LogicalDeviceWrapper::getVkDevice(), indexBufferMemory, nullptr);
 
@@ -24,7 +29,24 @@ VkBuffer& Mesh::getIndexBuffer() {
     return indexBuffer;
 }
 
+std::vector<VkDeviceMemory>& Mesh::getUniformBuffersMemory() {
+    return uniformBuffersMemory;
+}
+
+std::vector<VkBuffer>& Mesh::getUniformBuffers() {
+    return uniformBuffers;
+}
+
+std::vector<VkDescriptorSet>& Mesh::getDescriptorSets() {
+    return descriptorSets;
+}
+
 void Mesh::init() {
     VertexBuffer::createVertexBuffer(vertices, vertexBuffer, vertexBufferMemory);
+
     IndexBuffer::createIndexBuffer(indices, indexBuffer, indexBufferMemory);
+
+    UniformBuffer::createUniformBuffers(sizeof(UniformBufferObject), uniformBuffers, uniformBuffersMemory);
+
+    Descriptor::createDescriptorSets(descriptorSets, uniformBuffers);
 }

@@ -16,15 +16,13 @@ class Descriptor {
 private:
     static VkDescriptorSetLayout descriptorSetLayout;
     static VkDescriptorPool descriptorPool;
-    static std::vector<VkDescriptorSet> descriptorSets;
 
 public:
     static VkDescriptorSetLayout& getDescriptorSetLayout();
-    static std::vector<VkDescriptorSet>& getDescriptorSets();
     static VkDescriptorPool& getDescriptorPool();
 
     static void createDescriptorPool();
-    static void createDescriptorSets();
+    static void createDescriptorSets(std::vector<VkDescriptorSet>& descriptorSets, std::vector<VkBuffer>& uniformBuffers);
 };
 
 #endif

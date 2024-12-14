@@ -1,24 +1,13 @@
 #include "UniformBuffer.h"
 
-std::vector<VkBuffer> UniformBuffer::uniformBuffers;
-std::vector<VkDeviceMemory> UniformBuffer::uniformBuffersMemory;
 std::vector<void*> UniformBuffer::uniformBuffersMapped;
-
-std::vector<VkBuffer>& UniformBuffer::getUniformBuffers() {
-    return uniformBuffers;
-}
-
-std::vector<VkDeviceMemory>& UniformBuffer::getUniformBuffersMemory() {
-    return uniformBuffersMemory;
-}
 
 std::vector<void*>& UniformBuffer::getUniformBuffersMapped() {
     return uniformBuffersMapped;
 }
 
-void UniformBuffer::createUniformBuffers() {
-    VkDeviceSize bufferSize = sizeof(UniformBufferObject);
-
+void UniformBuffer::createUniformBuffers(VkDeviceSize bufferSize, std::vector<VkBuffer>& uniformBuffers, std::vector<VkDeviceMemory>& uniformBuffersMemory) {
+    
     uniformBuffers.resize(MAX_FRAMES_IN_FLIGHT);
     uniformBuffersMemory.resize(MAX_FRAMES_IN_FLIGHT);
     uniformBuffersMapped.resize(MAX_FRAMES_IN_FLIGHT);

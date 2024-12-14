@@ -2,14 +2,9 @@
 
 VkDescriptorSetLayout Descriptor::descriptorSetLayout;
 VkDescriptorPool Descriptor::descriptorPool;
-std::vector<VkDescriptorSet> Descriptor::descriptorSets;
 
 VkDescriptorSetLayout& Descriptor::getDescriptorSetLayout() {
     return descriptorSetLayout;
-}
-
-std::vector<VkDescriptorSet>& Descriptor::getDescriptorSets() {
-    return descriptorSets;
 }
 
 VkDescriptorPool& Descriptor::getDescriptorPool() {
@@ -34,7 +29,7 @@ void Descriptor::createDescriptorPool() {
     }
 }
 
-void Descriptor::createDescriptorSets() {
+void Descriptor::createDescriptorSets(std::vector<VkDescriptorSet>& descriptorSets, std::vector<VkBuffer>& uniformBuffers) {
     std::vector<VkDescriptorSetLayout> layouts(MAX_FRAMES_IN_FLIGHT, descriptorSetLayout);
     VkDescriptorSetAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
@@ -49,7 +44,7 @@ void Descriptor::createDescriptorSets() {
 
     for (ssize_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
         VkDescriptorBufferInfo bufferInfo{};
-        bufferInfo.buffer = UniformBuffer::getUniformBuffers()[i];
+        bufferInfo.buffer = uniformBuffers[i];
         bufferInfo.offset = 0;
         bufferInfo.range = sizeof(UniformBufferObject);
 

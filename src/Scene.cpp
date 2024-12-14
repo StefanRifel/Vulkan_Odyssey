@@ -23,13 +23,12 @@ void Scene::initVulkan() {
     TextureLoader::createTextureImageView();
     TextureLoader::createTextureSampler();
 
+
+    Descriptor::createDescriptorPool();
     // Hier werden alle unsere Objekte geladen die wir in der Szene brauchen
     // Pfade zu der obj sind gerade noch hard coded
     mesh->init();
     
-    UniformBuffer::createUniformBuffers();
-    Descriptor::createDescriptorPool();
-    Descriptor::createDescriptorSets();
     CommandPool::createCommandBuffers();
     createSyncObjects();
 }
@@ -46,10 +45,7 @@ void Scene::cleanup() {
     vkDestroyPipelineLayout(LogicalDeviceWrapper::getVkDevice(), RenderPass::getPipelineLayout(), nullptr);
     vkDestroyRenderPass(LogicalDeviceWrapper::getVkDevice(), RenderPass::getRenderPass(), nullptr);
 
-    for (int i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
-        vkDestroyBuffer(LogicalDeviceWrapper::getVkDevice(), UniformBuffer::getUniformBuffers()[i], nullptr);
-        vkFreeMemory(LogicalDeviceWrapper::getVkDevice(), UniformBuffer::getUniformBuffersMemory()[i], nullptr);
-    }
+    
 
     vkDestroyDescriptorPool(LogicalDeviceWrapper::getVkDevice(), Descriptor::getDescriptorPool(), nullptr);
 
@@ -60,7 +56,7 @@ void Scene::cleanup() {
     vkFreeMemory(LogicalDeviceWrapper::getVkDevice(), TextureLoader::getTextureImageMemory(), nullptr);
 
     vkDestroyDescriptorSetLayout(LogicalDeviceWrapper::getVkDevice(), Descriptor::getDescriptorSetLayout(), nullptr);
-
+    
     delete mesh;
 
     for (ssize_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
