@@ -23,7 +23,7 @@ public:
 
     static void createDescriptorPool();
     static void createDescriptorSetLayout();
-    static void createDescriptorSets(std::vector<VkDescriptorSet>& descriptorSets, std::vector<VkBuffer>& uniformBuffers);
+    static void createDescriptorSets(std::vector<VkDescriptorSet>& descriptorSets, std::vector<VkBuffer>& uniformBuffers, VkImageView& textureImageView, VkSampler& textureSampler);
 };
 
 #endif

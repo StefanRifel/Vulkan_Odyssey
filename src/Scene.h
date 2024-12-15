@@ -20,7 +20,7 @@ private:
 
     Camera camera;
 
-    Mesh* mesh = new Mesh{"assets/models/viking_room.obj"};
+    Mesh* mesh = new Mesh{"assets/models/viking_room.obj", "assets/textures/viking_room.png"};
 
 
     std::vector<VkSemaphore> imageAvailableSemaphores;

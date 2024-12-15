@@ -19,10 +19,8 @@ void Scene::initVulkan() {
     CommandPool::createCommandPool();
     SwapChain::createDepthResources();
     SwapChain::createFramebuffers();
-    TextureLoader::createTextureImage();
-    TextureLoader::createTextureImageView();
-    TextureLoader::createTextureSampler();
-
+    // TEXTURE
+    mesh->createTextures();
 
     Descriptor::createDescriptorPool();
     // Hier werden alle unsere Objekte geladen die wir in der Szene brauchen
@@ -49,11 +47,7 @@ void Scene::cleanup() {
 
     vkDestroyDescriptorPool(LogicalDeviceWrapper::getVkDevice(), Descriptor::getDescriptorPool(), nullptr);
 
-    vkDestroySampler(LogicalDeviceWrapper::getVkDevice(), TextureLoader::getTextureSampler(), nullptr);
-    vkDestroyImageView(LogicalDeviceWrapper::getVkDevice(), TextureLoader::getTextureImageView(), nullptr);
-
-    vkDestroyImage(LogicalDeviceWrapper::getVkDevice(), TextureLoader::getTextureImage(), nullptr);
-    vkFreeMemory(LogicalDeviceWrapper::getVkDevice(), TextureLoader::getTextureImageMemory(), nullptr);
+    mesh->cleanupTextures();
 
     vkDestroyDescriptorSetLayout(LogicalDeviceWrapper::getVkDevice(), Descriptor::getDescriptorSetLayout(), nullptr);
     

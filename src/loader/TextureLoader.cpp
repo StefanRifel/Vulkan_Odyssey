@@ -1,32 +1,9 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "TextureLoader.h"
 
-const std::string TextureLoader::TEXTURE_PATH = "assets/textures/viking_room.png";
-
-VkImage TextureLoader::textureImage;
-VkDeviceMemory TextureLoader::textureImageMemory;
-VkImageView TextureLoader::textureImageView;
-VkSampler TextureLoader::textureSampler;
-
-VkImage& TextureLoader::getTextureImage() {
-    return textureImage;
-}
-
-VkDeviceMemory& TextureLoader::getTextureImageMemory() {
-    return textureImageMemory;
-}   
-
-VkImageView& TextureLoader::getTextureImageView() {
-    return textureImageView;
-}
-
-VkSampler& TextureLoader::getTextureSampler() {
-    return textureSampler;
-}
-
-void TextureLoader::createTextureImage() {
+void TextureLoader::createTextureImage(std::string texturePath, VkImage& textureImage, VkDeviceMemory& textureImageMemory) {
     int texWidth, texHeight, texChannels;
-    stbi_uc* pixels = stbi_load(TEXTURE_PATH.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
+    stbi_uc* pixels = stbi_load(texturePath.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
     VkDeviceSize imageSize = texWidth * texHeight * 4;
 
     if (!pixels) {
@@ -89,8 +66,8 @@ void TextureLoader::createImage(uint32_t width, uint32_t height, VkFormat format
     vkBindImageMemory(LogicalDeviceWrapper::getVkDevice(), image, imageMemory, 0);
 }
 
-void TextureLoader::createTextureImageView() {
-    textureImageView = createImageView(textureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT);
+VkImageView TextureLoader::createTextureImageView(VkImage& textureImage) {
+    return createImageView(textureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT);
 }
 
 void TextureLoader::transitionImageLayout(VkImage image, [[maybe_unused]] VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout) {
@@ -183,7 +160,7 @@ VkImageView TextureLoader::createImageView(VkImage image, VkFormat format, VkIma
     return imageView;
 }
 
-void TextureLoader::createTextureSampler() {
+void TextureLoader::createTextureSampler(VkSampler& textureSampler) {
     VkPhysicalDeviceProperties properties{};
     vkGetPhysicalDeviceProperties(PhysicalDeviceWrapper::getPhysicalDevice(), &properties);
 

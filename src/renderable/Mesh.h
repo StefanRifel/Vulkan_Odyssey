@@ -26,13 +26,20 @@ private:
     std::vector<VkBuffer> uniformBuffers;
     std::vector<VkDeviceMemory> uniformBuffersMemory;
     
-
     std::vector<VkDescriptorSet> descriptorSets;
+
+    VkImage textureImage;
+    VkDeviceMemory textureImageMemory;
+
+    VkImageView textureImageView;
+    VkSampler textureSampler;
 
     ModelLoader modelLoader;
     std::string modelPath;
+    std::string texturePath;
+
 public:
-    Mesh(std::string modelPath);
+    Mesh(std::string modelPath, std::string texturePath);
     ~Mesh();
 
     std::vector<uint32_t>& getIndices();
@@ -43,7 +50,10 @@ public:
     std::vector<VkDescriptorSet>& getDescriptorSets();
 
     void initBuffers();
+    void createTextures();
     void draw(VkCommandBuffer& commandBuffer, uint32_t currentFrame);
     void updateUniformBuffer(Camera& camera, uint32_t currentImage);
+    void cleanupTextures();
 };
+
 #endif

@@ -13,36 +13,21 @@
 class TextureLoader {
 
 private:
-    static VkImage textureImage;
-    static VkDeviceMemory textureImageMemory;
-
-    static VkImageView textureImageView;
-    static VkSampler textureSampler;
-
-    static const std::string TEXTURE_PATH;
-
     bool hasStencilComponent(VkFormat format) {
         return format == VK_FORMAT_D32_SFLOAT_S8_UINT || format == VK_FORMAT_D24_UNORM_S8_UINT;
     }
 
 public:
-    static VkImage& getTextureImage();
-    static VkDeviceMemory& getTextureImageMemory();
-    static VkImageView& getTextureImageView();
-    static VkSampler& getTextureSampler();
-
-    static void createTextureImage();
+    static void createTextureImage(std::string texturePath, VkImage& textureImage, VkDeviceMemory& textureImageMemory);
     static void createImage(uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory);
     
     static void transitionImageLayout(VkImage image, [[maybe_unused]] VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout);
     static void copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
 
-    static void createTextureImageView();
+    static VkImageView createTextureImageView(VkImage& textureImage);
     static VkImageView createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags);
 
-    static void createTextureSampler();
-
-    
+    static void createTextureSampler(VkSampler& textureSampler);
 };
 
 #endif

@@ -1,6 +1,6 @@
 #include "Mesh.h"
 
-Mesh::Mesh(std::string modelPath) : modelPath(modelPath) {
+Mesh::Mesh(std::string modelPath, std::string texturePath) : modelPath(modelPath), texturePath(texturePath) {
     modelLoader.loadModel(vertices, indices, modelPath);
 }
 
@@ -48,7 +48,13 @@ void Mesh::initBuffers() {
 
     UniformBuffer::createUniformBuffers(sizeof(UniformBufferObject), uniformBuffers, uniformBuffersMemory);
 
-    Descriptor::createDescriptorSets(descriptorSets, uniformBuffers);
+    Descriptor::createDescriptorSets(descriptorSets, uniformBuffers, textureImageView, textureSampler);
+}
+
+void Mesh::createTextures() {
+    TextureLoader::createTextureImage(texturePath, textureImage, textureImageMemory);
+    textureImageView = TextureLoader::createTextureImageView(textureImage);
+    TextureLoader::createTextureSampler(textureSampler);
 }
 
 void Mesh::draw(VkCommandBuffer& commandBuffer, uint32_t currentFrame) {
@@ -75,4 +81,12 @@ void Mesh::updateUniformBuffer(Camera& camera, uint32_t currentImage) {
     ubo.proj = camera.getPerspective();
 
     memcpy(UniformBuffer::getUniformBuffersMapped()[currentImage], &ubo, sizeof(ubo));
+}
+
+void Mesh::cleanupTextures() {
+    vkDestroySampler(LogicalDeviceWrapper::getVkDevice(), textureSampler, nullptr);
+    vkDestroyImageView(LogicalDeviceWrapper::getVkDevice(), textureImageView, nullptr);
+
+    vkDestroyImage(LogicalDeviceWrapper::getVkDevice(), textureImage, nullptr);
+    vkFreeMemory(LogicalDeviceWrapper::getVkDevice(), textureImageMemory, nullptr);
 }
