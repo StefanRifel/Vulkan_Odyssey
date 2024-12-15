@@ -10,6 +10,8 @@
 #include "../buffer/IndexBuffer.h"
 #include "../buffer/UniformBuffer.h"
 #include "../base/Descriptor.h"
+#include "../base/RenderPass.h"
+#include "../Camera.h"
 
 class Mesh {
 private:
@@ -41,6 +43,7 @@ public:
     std::vector<VkDescriptorSet>& getDescriptorSets();
 
     void initBuffers();
-    void draw(VkCommandBuffer& commandBuffer);
+    void draw(VkCommandBuffer& commandBuffer, uint32_t currentFrame);
+    void updateUniformBuffer(Camera& camera, uint32_t currentImage);
 };
 #endif

@@ -77,16 +77,7 @@ public:
             scissor.extent = SwapChain::getSwapChainExtent();
             vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
-            // WAHRSCHEINLICH DER SPEICHER FÜR MEHRERE OBJEKTE
-            VkBuffer vertexBuffers[] = {mesh->getVertexBuffer()};
-            VkDeviceSize offsets[] = {0};
-            vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
-
-            vkCmdBindIndexBuffer(commandBuffer, mesh->getIndexBuffer(), 0, VK_INDEX_TYPE_UINT32);
-
-            vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, RenderPass::getPipelineLayout(), 0, 1, &mesh->getDescriptorSets()[currentFrame], 0, nullptr);
-
-            vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(mesh->getIndices().size()), 1, 0, 0, 0);
+            mesh->draw(commandBuffer, currentFrame);
 
         vkCmdEndRenderPass(commandBuffer);
 
@@ -116,24 +107,6 @@ public:
         }
     }
 
-    void updateUniformBuffer(uint32_t currentImage) {
-
-        camera.look();
-
-        static auto startTime = std::chrono::high_resolution_clock::now();
-
-        auto currentTime = std::chrono::high_resolution_clock::now();
-        float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
-
-
-        UniformBufferObject ubo{};
-        ubo.model = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-        ubo.view = camera.getView();
-        ubo.proj = camera.getPerspective();
-
-        memcpy(UniformBuffer::getUniformBuffersMapped()[currentImage], &ubo, sizeof(ubo));
-    }
-
     void drawFrame() {
         vkWaitForFences(LogicalDeviceWrapper::getVkDevice(), 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
 
@@ -147,7 +120,7 @@ public:
             throw std::runtime_error("failed to acquire swap chain image!");
         }
 
-        updateUniformBuffer(currentFrame);
+        mesh->updateUniformBuffer(camera, currentFrame);
 
         vkResetFences(LogicalDeviceWrapper::getVkDevice(), 1, &inFlightFences[currentFrame]);
 
