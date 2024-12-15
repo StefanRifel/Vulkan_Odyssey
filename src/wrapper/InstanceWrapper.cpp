@@ -140,3 +140,12 @@ void InstanceWrapper::DestroyDebugUtilsMessengerEXT(const VkAllocationCallbacks*
         func(instance, debugMessenger, pAllocator);
     }
 }
+
+void InstanceWrapper::cleanup() {
+    if (enableValidationLayers) {
+        InstanceWrapper::DestroyDebugUtilsMessengerEXT(nullptr);
+    }
+
+    vkDestroySurfaceKHR(instance, surface, nullptr);
+    vkDestroyInstance(instance, nullptr);
+}

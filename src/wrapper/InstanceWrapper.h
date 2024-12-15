@@ -44,6 +44,8 @@ public:
     static void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);
     static VkResult CreateDebugUtilsMessengerEXT(const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger);
     static void DestroyDebugUtilsMessengerEXT(const VkAllocationCallbacks* pAllocator);
+
+    static void cleanup();
 };
 
 #endif

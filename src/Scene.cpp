@@ -67,14 +67,10 @@ void Scene::cleanup() {
 
     vkDestroyCommandPool(LogicalDeviceWrapper::getVkDevice(), CommandPool::getCommandPool(), nullptr);
 
-    vkDestroyDevice(LogicalDeviceWrapper::getVkDevice(), nullptr);
+    
+    LogicalDeviceWrapper::cleanup();
 
-    if (enableValidationLayers) {
-        InstanceWrapper::DestroyDebugUtilsMessengerEXT(nullptr);
-    }
-
-    vkDestroySurfaceKHR(InstanceWrapper::getInstance(), InstanceWrapper::getVkSurfaceKHR(), nullptr);
-    vkDestroyInstance(InstanceWrapper::getInstance(), nullptr);
+    InstanceWrapper::cleanup();
 }
 
 Camera& Scene::getCamera() {

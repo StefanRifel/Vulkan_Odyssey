@@ -60,3 +60,7 @@ void LogicalDeviceWrapper::createLogicalDevice() {
     vkGetDeviceQueue(device, indices.graphicsFamily.value(), 0, &graphicsQueue);
     vkGetDeviceQueue(device, indices.presentFamily.value(), 0, &presentQueue);
 }
+
+void LogicalDeviceWrapper::cleanup() {
+    vkDestroyDevice(device, nullptr);
+}

@@ -26,6 +26,8 @@ public:
     static VkQueue& getPresentQueue();
 
     static void createLogicalDevice();
+
+    static void cleanup();
 };
 
 #endif
