@@ -8,6 +8,7 @@
 #include "../wrapper/LogicalDeviceWrapper.h"
 #include "../loader/TextureLoader.h"
 #include "../buffer/UniformBuffer.h"
+#include "../types/Texture.h"
 
 #include <vector>
 
@@ -23,7 +24,7 @@ public:
 
     static void createDescriptorPool();
     static void createDescriptorSetLayout();
-    static void createDescriptorSets(std::vector<VkDescriptorSet>& descriptorSets, std::vector<Buffer>& uniformBuffers, VkImageView& textureImageView, VkSampler& textureSampler);
+    static void createDescriptorSets(std::vector<VkDescriptorSet>& descriptorSets, std::vector<Buffer>& uniformBuffers, Texture& texture);
 };
 
 #endif

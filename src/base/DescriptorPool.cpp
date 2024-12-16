@@ -55,7 +55,7 @@ void DescriptorPool::createDescriptorSetLayout() {
     }
 }
 
-void DescriptorPool::createDescriptorSets(std::vector<VkDescriptorSet>& descriptorSets, std::vector<Buffer>& uniformBuffers, VkImageView& textureImageView, VkSampler& textureSampler) {
+void DescriptorPool::createDescriptorSets(std::vector<VkDescriptorSet>& descriptorSets, std::vector<Buffer>& uniformBuffers, Texture& texture) {
     std::vector<VkDescriptorSetLayout> layouts(MAX_FRAMES_IN_FLIGHT, descriptorSetLayout);
     VkDescriptorSetAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
@@ -76,8 +76,8 @@ void DescriptorPool::createDescriptorSets(std::vector<VkDescriptorSet>& descript
 
         VkDescriptorImageInfo imageInfo{};
         imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-        imageInfo.imageView = textureImageView;
-        imageInfo.sampler = textureSampler;
+        imageInfo.imageView = texture.view;
+        imageInfo.sampler = texture.sampler;
 
         std::array<VkWriteDescriptorSet, 2> descriptorWrites{};
 

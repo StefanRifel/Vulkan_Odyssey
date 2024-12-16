@@ -12,6 +12,7 @@
 #include "../Camera.h"
 
 #include "../buffer/Buffer.h"
+#include "../types/Texture.h"
 
 class Mesh {
 private:
@@ -22,11 +23,7 @@ private:
     std::vector<Buffer> uniformBuffers;
     std::vector<VkDescriptorSet> descriptorSets;
 
-    VkImage textureImage;
-    VkDeviceMemory textureImageMemory;
-
-    VkImageView textureImageView;
-    VkSampler textureSampler;
+    Texture texture;
 
     std::string modelPath;
     std::string texturePath;
@@ -39,7 +36,7 @@ public:
 
     void initBuffers();
     void createTextures();
-    void draw(VkCommandBuffer& commandBuffer, uint32_t currentFrame);
+    void draw(VkCommandBuffer& commandBuffer, uint32_t currentFrame, uint32_t imageIndex);
     void updateUniformBuffer(Camera& camera, uint32_t currentImage);
     void cleanupTextures();
 };

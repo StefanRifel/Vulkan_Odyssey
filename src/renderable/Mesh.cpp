@@ -23,24 +23,58 @@ void Mesh::initBuffers() {
 
     UniformBuffer::createUniformBuffers(sizeof(UniformBufferObject), uniformBuffers);
 
-    DescriptorPool::createDescriptorSets(descriptorSets, uniformBuffers, textureImageView, textureSampler);
+    DescriptorPool::createDescriptorSets(descriptorSets, uniformBuffers, texture);
 }
 
 void Mesh::createTextures() {
-    TextureLoader::createTextureImage(texturePath, textureImage, textureImageMemory);
-    textureImageView = TextureLoader::createTextureImageView(textureImage);
-    TextureLoader::createTextureSampler(textureSampler);
+    TextureLoader::createTextureImage(texturePath, texture.image, texture.memory);
+    texture.view = TextureLoader::createTextureImageView(texture.image);
+    TextureLoader::createTextureSampler(texture.sampler);
 }
 
-void Mesh::draw(VkCommandBuffer& commandBuffer, uint32_t currentFrame) {
-    VkDeviceSize offsets[] = {0};
-    vkCmdBindVertexBuffers(commandBuffer, 0, 1, &vertexBuffer.bufferData.buffer, offsets);
+void Mesh::draw(VkCommandBuffer& commandBuffer, uint32_t currentFrame, uint32_t imageIndex) {
+    VkRenderPassBeginInfo renderPassInfo{};
+    renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+    renderPassInfo.renderPass = RenderPass::getRenderPass();
+    renderPassInfo.framebuffer = SwapChain::getSwapChainFramebuffers()[imageIndex];
+    renderPassInfo.renderArea.offset = {0, 0};
+    renderPassInfo.renderArea.extent = SwapChain::getSwapChainExtent();
 
-    vkCmdBindIndexBuffer(commandBuffer, indexBuffer.bufferData.buffer, 0, VK_INDEX_TYPE_UINT32);
+    std::array<VkClearValue, 2> clearValues{};
+    clearValues[0].color = {{0.0f, 0.0f, 0.0f, 1.0f}};
+    clearValues[1].depthStencil = {1.0f, 0};
 
-    vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, RenderPass::getPipelineLayout(), 0, 1, &descriptorSets[currentFrame], 0, nullptr);
+    renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
+    renderPassInfo.pClearValues = clearValues.data();
 
-    vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(indexBuffer.indices.size()), 1, 0, 0, 0);
+    vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+        vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, RenderPass::getGraphicsPipeline());
+
+        VkViewport viewport{};
+        viewport.x = 0.0f;
+        viewport.y = 0.0f;
+        viewport.width = (float) SwapChain::getSwapChainExtent().width;
+        viewport.height = (float) SwapChain::getSwapChainExtent().height;
+        viewport.minDepth = 0.0f;
+        viewport.maxDepth = 1.0f;
+        vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
+
+        VkRect2D scissor{};
+        scissor.offset = {0, 0};
+        scissor.extent = SwapChain::getSwapChainExtent();
+        vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
+
+        VkDeviceSize offsets[] = {0};
+        vkCmdBindVertexBuffers(commandBuffer, 0, 1, &vertexBuffer.bufferData.buffer, offsets);
+
+        vkCmdBindIndexBuffer(commandBuffer, indexBuffer.bufferData.buffer, 0, VK_INDEX_TYPE_UINT32);
+
+        vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, RenderPass::getPipelineLayout(), 0, 1, &descriptorSets[currentFrame], 0, nullptr);
+
+        vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(indexBuffer.indices.size()), 1, 0, 0, 0);
+
+    vkCmdEndRenderPass(commandBuffer);
 }
 
 void Mesh::updateUniformBuffer(Camera& camera, uint32_t currentImage) {
@@ -59,9 +93,9 @@ void Mesh::updateUniformBuffer(Camera& camera, uint32_t currentImage) {
 }
 
 void Mesh::cleanupTextures() {
-    vkDestroySampler(LogicalDeviceWrapper::getVkDevice(), textureSampler, nullptr);
-    vkDestroyImageView(LogicalDeviceWrapper::getVkDevice(), textureImageView, nullptr);
+    vkDestroySampler(LogicalDeviceWrapper::getVkDevice(), texture.sampler, nullptr);
+    vkDestroyImageView(LogicalDeviceWrapper::getVkDevice(), texture.view, nullptr);
 
-    vkDestroyImage(LogicalDeviceWrapper::getVkDevice(), textureImage, nullptr);
-    vkFreeMemory(LogicalDeviceWrapper::getVkDevice(), textureImageMemory, nullptr);
+    vkDestroyImage(LogicalDeviceWrapper::getVkDevice(), texture.image, nullptr);
+    vkFreeMemory(LogicalDeviceWrapper::getVkDevice(), texture.memory, nullptr);
 }
