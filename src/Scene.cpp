@@ -15,7 +15,12 @@ void Scene::initVulkan() {
     SwapChain::createImageViews();
     RenderPass::createRenderPass();
     DescriptorPool::createDescriptorSetLayout();
-    RenderPass::createGraphicsPipeline();
+
+    // GRAPHICS PIPELINE
+    mesh->createGraphicsPipeline();
+    mesh2->createGraphicsPipeline();
+
+
     CommandPool::createCommandPool();
     SwapChain::createDepthResources();
     SwapChain::createFramebuffers();
@@ -26,8 +31,9 @@ void Scene::initVulkan() {
     DescriptorPool::createDescriptorPool();
     // Hier werden alle unsere Objekte geladen die wir in der Szene brauchen
     // Pfade zu der obj sind gerade noch hard coded
-    mesh->initBuffers();
     mesh2->initBuffers();
+    mesh->initBuffers();
+    
     
     CommandPool::createCommandBuffers();
     createSyncObjects();
@@ -41,8 +47,9 @@ void Scene::waitOutstandingQueues() {
 void Scene::cleanup() {
     SwapChain::cleanupSwapChain();
 
-    vkDestroyPipeline(LogicalDeviceWrapper::getVkDevice(), RenderPass::getGraphicsPipeline(), nullptr);
-    vkDestroyPipelineLayout(LogicalDeviceWrapper::getVkDevice(), RenderPass::getPipelineLayout(), nullptr);
+    mesh->cleanupGraphicsPipeline();
+    mesh2->cleanupGraphicsPipeline();
+
     vkDestroyRenderPass(LogicalDeviceWrapper::getVkDevice(), RenderPass::getRenderPass(), nullptr);
 
     vkDestroyDescriptorPool(LogicalDeviceWrapper::getVkDevice(), DescriptorPool::getDescriptorPool(), nullptr);

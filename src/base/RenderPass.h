@@ -17,21 +17,21 @@
 
 #include <array>
 
+struct GraphicsPipeline {
+    VkPipelineLayout pipelineLayout;
+    VkPipeline graphicsPipeline;
+};
+
 class RenderPass {
 
 private:
     static VkRenderPass renderPass;
-    
-    static VkPipelineLayout pipelineLayout;
-    static VkPipeline graphicsPipeline;
 
 public:
     static VkRenderPass& getRenderPass();
-    static VkPipelineLayout& getPipelineLayout();
-    static VkPipeline& getGraphicsPipeline();
 
     static void createRenderPass();
-    static void createGraphicsPipeline();
+    static void createGraphicsPipeline(GraphicsPipeline& graphicsPipeline);
 };
 
 #endif

@@ -25,7 +25,7 @@ void Mesh::initBuffers() {
     createVertexBuffer(vertexBuffer);
     createIndexBuffer(indexBuffer);
 
-    UniformBuffer::createUniformBuffers(sizeof(UniformBufferObject), uniformBuffers);
+    UniformBuffer::createUniformBuffers(sizeof(UniformBufferObject), uniformBuffers, uniformBuffersMapped);
 
     DescriptorPool::createDescriptorSets(descriptorSets, uniformBuffers, texture);
     std::cout << "Buffers initialized for model: " << modelPath << std::endl;
@@ -39,8 +39,12 @@ void Mesh::createTextures() {
     std::cout << "Textures created for model: " << modelPath << std::endl;
 }
 
+void Mesh::createGraphicsPipeline() {
+    RenderPass::createGraphicsPipeline(graphicsPipeline);
+}
+
 void Mesh::draw(VkCommandBuffer& commandBuffer, uint32_t currentFrame) {
-    vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, RenderPass::getGraphicsPipeline());
+    vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline.graphicsPipeline);
 
     VkViewport viewport{};
     viewport.x = 0.0f;
@@ -61,7 +65,7 @@ void Mesh::draw(VkCommandBuffer& commandBuffer, uint32_t currentFrame) {
 
     vkCmdBindIndexBuffer(commandBuffer, indexBuffer.bufferData.buffer, 0, VK_INDEX_TYPE_UINT32);
 
-    vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, RenderPass::getPipelineLayout(), 0, 1, &descriptorSets[currentFrame], 0, nullptr);
+    vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline.pipelineLayout, 0, 1, &descriptorSets[currentFrame], 0, nullptr);
 
     vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(indexBuffer.indices.size()), 1, 0, 0, 0);
 }
@@ -78,7 +82,7 @@ void Mesh::updateUniformBuffer(Camera& camera, uint32_t currentImage) {
     ubo.view = camera.getView();
     ubo.proj = camera.getPerspective();
 
-    memcpy(UniformBuffer::getUniformBuffersMapped()[currentImage], &ubo, sizeof(ubo));
+    memcpy(uniformBuffersMapped[currentImage], &ubo, sizeof(ubo));
 }
 
 void Mesh::cleanupTextures() {
@@ -87,4 +91,9 @@ void Mesh::cleanupTextures() {
 
     vkDestroyImage(LogicalDeviceWrapper::getVkDevice(), texture.image, nullptr);
     vkFreeMemory(LogicalDeviceWrapper::getVkDevice(), texture.memory, nullptr);
+}
+
+void Mesh::cleanupGraphicsPipeline() {
+    vkDestroyPipeline(LogicalDeviceWrapper::getVkDevice(), graphicsPipeline.graphicsPipeline, nullptr);
+    vkDestroyPipelineLayout(LogicalDeviceWrapper::getVkDevice(), graphicsPipeline.pipelineLayout, nullptr);
 }

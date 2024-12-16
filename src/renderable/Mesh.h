@@ -13,6 +13,7 @@
 
 #include "../buffer/Buffer.h"
 #include "../types/Texture.h"
+#include "../base/RenderPass.h"
 
 class Mesh {
 private:
@@ -22,8 +23,11 @@ private:
 
     std::vector<Buffer> uniformBuffers;
     std::vector<VkDescriptorSet> descriptorSets;
+    std::vector<void*> uniformBuffersMapped;
 
     Texture texture;
+
+    GraphicsPipeline graphicsPipeline;
 
     std::string modelPath;
     std::string texturePath;
@@ -36,9 +40,11 @@ public:
 
     void initBuffers();
     void createTextures();
+    void createGraphicsPipeline();
     void draw(VkCommandBuffer& commandBuffer, uint32_t currentFrame);
     void updateUniformBuffer(Camera& camera, uint32_t currentImage);
     void cleanupTextures();
+    void cleanupGraphicsPipeline();
 };
 
 #endif

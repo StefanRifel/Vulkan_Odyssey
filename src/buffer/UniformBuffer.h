@@ -11,13 +11,8 @@
 #include <vector>
 
 class UniformBuffer {
-private:
-    static std::vector<void*> uniformBuffersMapped;
-
 public:
-    static std::vector<void*>& getUniformBuffersMapped();
-
-    static void createUniformBuffers(VkDeviceSize bufferSize, std::vector<Buffer>& uniformBuffers);
+    static void createUniformBuffers(VkDeviceSize bufferSize, std::vector<Buffer>& uniformBuffers, std::vector<void*>& uniformBuffersMapped);
 };
 
 #endif

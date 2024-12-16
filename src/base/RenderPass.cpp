@@ -1,19 +1,9 @@
 #include "RenderPass.h"
 
 VkRenderPass RenderPass::renderPass;
-VkPipelineLayout RenderPass::pipelineLayout;
-VkPipeline RenderPass::graphicsPipeline;
 
 VkRenderPass& RenderPass::getRenderPass() {
     return renderPass;
-}
-
-VkPipelineLayout& RenderPass::getPipelineLayout() {
-    return pipelineLayout;
-}
-
-VkPipeline& RenderPass::getGraphicsPipeline() {
-    return graphicsPipeline;
 }
 
 void RenderPass::createRenderPass() {
@@ -74,7 +64,7 @@ void RenderPass::createRenderPass() {
     }
 }
 
-void RenderPass::createGraphicsPipeline() {
+void RenderPass::createGraphicsPipeline(GraphicsPipeline& graphicsPipeline) {
     auto vertShaderCode = readFile("shaders/shader.vert.spv");
     auto fragShaderCode = readFile("shaders/shader.frag.spv");
 
@@ -168,7 +158,7 @@ void RenderPass::createGraphicsPipeline() {
     pipelineLayoutInfo.setLayoutCount = 1;
     pipelineLayoutInfo.pSetLayouts = &DescriptorPool::getDescriptorSetLayout();
 
-    if (vkCreatePipelineLayout(LogicalDeviceWrapper::getVkDevice(), &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS) {
+    if (vkCreatePipelineLayout(LogicalDeviceWrapper::getVkDevice(), &pipelineLayoutInfo, nullptr, &graphicsPipeline.pipelineLayout) != VK_SUCCESS) {
         throw std::runtime_error("failed to create pipeline layout!");
     }
 
@@ -184,12 +174,12 @@ void RenderPass::createGraphicsPipeline() {
     pipelineInfo.pDepthStencilState = &depthStencil;
     pipelineInfo.pColorBlendState = &colorBlending;
     pipelineInfo.pDynamicState = &dynamicState;
-    pipelineInfo.layout = pipelineLayout;
+    pipelineInfo.layout = graphicsPipeline.pipelineLayout;
     pipelineInfo.renderPass = renderPass;
     pipelineInfo.subpass = 0;
     pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
 
-    if (vkCreateGraphicsPipelines(LogicalDeviceWrapper::getVkDevice(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline) != VK_SUCCESS) {
+    if (vkCreateGraphicsPipelines(LogicalDeviceWrapper::getVkDevice(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline.graphicsPipeline) != VK_SUCCESS) {
         throw std::runtime_error("failed to create graphics pipeline!");
     }
 

@@ -1,12 +1,6 @@
 #include "UniformBuffer.h"
 
-std::vector<void*> UniformBuffer::uniformBuffersMapped;
-
-std::vector<void*>& UniformBuffer::getUniformBuffersMapped() {
-    return uniformBuffersMapped;
-}
-
-void UniformBuffer::createUniformBuffers(VkDeviceSize bufferSize, std::vector<Buffer>& uniformBuffers) {
+void UniformBuffer::createUniformBuffers(VkDeviceSize bufferSize, std::vector<Buffer>& uniformBuffers, std::vector<void*>& uniformBuffersMapped) {
     
     uniformBuffers.resize(MAX_FRAMES_IN_FLIGHT);
     uniformBuffersMapped.resize(MAX_FRAMES_IN_FLIGHT);
