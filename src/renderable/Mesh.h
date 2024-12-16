@@ -36,7 +36,7 @@ public:
 
     void initBuffers();
     void createTextures();
-    void draw(VkCommandBuffer& commandBuffer, uint32_t currentFrame, uint32_t imageIndex);
+    void draw(VkCommandBuffer& commandBuffer, uint32_t currentFrame);
     void updateUniformBuffer(Camera& camera, uint32_t currentImage);
     void cleanupTextures();
 };

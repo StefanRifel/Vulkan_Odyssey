@@ -1,7 +1,10 @@
 #include "Mesh.h"
+#include <iostream>
 
 Mesh::Mesh(std::string modelPath, std::string texturePath) : modelPath(modelPath), texturePath(texturePath) {
+    std::cout << "Loading model: " << modelPath << std::endl;
     ModelLoader::loadModel(vertexBuffer, indexBuffer, modelPath);
+    std::cout << "Model loaded: " << modelPath << " with " << vertexBuffer.vertices.size() << " vertices and " << indexBuffer.indices.size() << " indices." << std::endl;
 }
 
 Mesh::~Mesh() {
@@ -18,63 +21,49 @@ std::vector<VkDescriptorSet>& Mesh::getDescriptorSets() {
 }
 
 void Mesh::initBuffers() {
+    std::cout << "Initializing buffers for model: " << modelPath << std::endl;
     createVertexBuffer(vertexBuffer);
     createIndexBuffer(indexBuffer);
 
     UniformBuffer::createUniformBuffers(sizeof(UniformBufferObject), uniformBuffers);
 
     DescriptorPool::createDescriptorSets(descriptorSets, uniformBuffers, texture);
+    std::cout << "Buffers initialized for model: " << modelPath << std::endl;
 }
 
 void Mesh::createTextures() {
+    std::cout << "Creating textures for model: " << modelPath << std::endl;
     TextureLoader::createTextureImage(texturePath, texture.image, texture.memory);
     texture.view = TextureLoader::createTextureImageView(texture.image);
     TextureLoader::createTextureSampler(texture.sampler);
+    std::cout << "Textures created for model: " << modelPath << std::endl;
 }
 
-void Mesh::draw(VkCommandBuffer& commandBuffer, uint32_t currentFrame, uint32_t imageIndex) {
-    VkRenderPassBeginInfo renderPassInfo{};
-    renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-    renderPassInfo.renderPass = RenderPass::getRenderPass();
-    renderPassInfo.framebuffer = SwapChain::getSwapChainFramebuffers()[imageIndex];
-    renderPassInfo.renderArea.offset = {0, 0};
-    renderPassInfo.renderArea.extent = SwapChain::getSwapChainExtent();
+void Mesh::draw(VkCommandBuffer& commandBuffer, uint32_t currentFrame) {
+    vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, RenderPass::getGraphicsPipeline());
 
-    std::array<VkClearValue, 2> clearValues{};
-    clearValues[0].color = {{0.0f, 0.0f, 0.0f, 1.0f}};
-    clearValues[1].depthStencil = {1.0f, 0};
+    VkViewport viewport{};
+    viewport.x = 0.0f;
+    viewport.y = 0.0f;
+    viewport.width = (float) SwapChain::getSwapChainExtent().width;
+    viewport.height = (float) SwapChain::getSwapChainExtent().height;
+    viewport.minDepth = 0.0f;
+    viewport.maxDepth = 1.0f;
+    vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
 
-    renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
-    renderPassInfo.pClearValues = clearValues.data();
+    VkRect2D scissor{};
+    scissor.offset = {0, 0};
+    scissor.extent = SwapChain::getSwapChainExtent();
+    vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
-    vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+    VkDeviceSize offsets[] = {0};
+    vkCmdBindVertexBuffers(commandBuffer, 0, 1, &vertexBuffer.bufferData.buffer, offsets);
 
-        vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, RenderPass::getGraphicsPipeline());
+    vkCmdBindIndexBuffer(commandBuffer, indexBuffer.bufferData.buffer, 0, VK_INDEX_TYPE_UINT32);
 
-        VkViewport viewport{};
-        viewport.x = 0.0f;
-        viewport.y = 0.0f;
-        viewport.width = (float) SwapChain::getSwapChainExtent().width;
-        viewport.height = (float) SwapChain::getSwapChainExtent().height;
-        viewport.minDepth = 0.0f;
-        viewport.maxDepth = 1.0f;
-        vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
+    vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, RenderPass::getPipelineLayout(), 0, 1, &descriptorSets[currentFrame], 0, nullptr);
 
-        VkRect2D scissor{};
-        scissor.offset = {0, 0};
-        scissor.extent = SwapChain::getSwapChainExtent();
-        vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
-
-        VkDeviceSize offsets[] = {0};
-        vkCmdBindVertexBuffers(commandBuffer, 0, 1, &vertexBuffer.bufferData.buffer, offsets);
-
-        vkCmdBindIndexBuffer(commandBuffer, indexBuffer.bufferData.buffer, 0, VK_INDEX_TYPE_UINT32);
-
-        vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, RenderPass::getPipelineLayout(), 0, 1, &descriptorSets[currentFrame], 0, nullptr);
-
-        vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(indexBuffer.indices.size()), 1, 0, 0, 0);
-
-    vkCmdEndRenderPass(commandBuffer);
+    vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(indexBuffer.indices.size()), 1, 0, 0, 0);
 }
 
 void Mesh::updateUniformBuffer(Camera& camera, uint32_t currentImage) {
