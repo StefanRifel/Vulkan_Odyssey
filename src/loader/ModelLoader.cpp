@@ -1,7 +1,12 @@
 #define TINYOBJLOADER_IMPLEMENTATION
 #include "ModelLoader.h"
 
-void ModelLoader::loadModel(std::vector<Vertex>& vertices, std::vector<uint32_t>& indices, std::string& modelPath) {
+void ModelLoader::loadModel(VertexBuffer& vertexBuffer, IndexBuffer& indexBuffer, std::string& modelPath) {
+    tinyobj::attrib_t attrib;                         // container holds all of the positions, normals and texture coordinates in its attrib.vertices, attrib.normals and attrib.texcoords
+    std::vector<tinyobj::shape_t> shapes;             // container contains all of the separate objects and their faces
+    std::vector<tinyobj::material_t> materials;       // materials used in the OBJ file will be stored. Each material contains properties like color, texture, and other material attributes
+    std::string warn, err;
+
     if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, modelPath.c_str())) {
         throw std::runtime_error(warn + err);
     }
@@ -26,11 +31,11 @@ void ModelLoader::loadModel(std::vector<Vertex>& vertices, std::vector<uint32_t>
             vertex.color = {1.0f, 1.0f, 1.0f};
 
             if (uniqueVertices.count(vertex) == 0) {
-                uniqueVertices[vertex] = static_cast<uint32_t>(vertices.size());
-                vertices.push_back(vertex);
+                uniqueVertices[vertex] = static_cast<uint32_t>(vertexBuffer.vertices.size());
+                vertexBuffer.vertices.push_back(vertex);
             }
 
-            indices.push_back(uniqueVertices[vertex]);
+            indexBuffer.indices.push_back(uniqueVertices[vertex]);
         }
     }
 }

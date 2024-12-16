@@ -15,14 +15,11 @@
 
 class Mesh {
 private:
-    std::vector<Vertex> vertices;
-    Buffer vertexBuffer;
+    VertexBuffer vertexBuffer;
 
-    std::vector<uint32_t> indices;
-    Buffer indexBuffer;
+    IndexBuffer indexBuffer;
 
     std::vector<Buffer> uniformBuffers;
-
     std::vector<VkDescriptorSet> descriptorSets;
 
     VkImage textureImage;
@@ -31,7 +28,6 @@ private:
     VkImageView textureImageView;
     VkSampler textureSampler;
 
-    ModelLoader modelLoader;
     std::string modelPath;
     std::string texturePath;
 

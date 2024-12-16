@@ -1,7 +1,7 @@
 #include "Mesh.h"
 
 Mesh::Mesh(std::string modelPath, std::string texturePath) : modelPath(modelPath), texturePath(texturePath) {
-    modelLoader.loadModel(vertices, indices, modelPath);
+    ModelLoader::loadModel(vertexBuffer, indexBuffer, modelPath);
 }
 
 Mesh::~Mesh() {
@@ -9,8 +9,8 @@ Mesh::~Mesh() {
         cleanupBuffer(uniformBuffers[i]);
     }
 
-    cleanupBuffer(indexBuffer);
-    cleanupBuffer(vertexBuffer);
+    cleanupBuffer(indexBuffer.bufferData);
+    cleanupBuffer(vertexBuffer.bufferData);
 }
 
 std::vector<VkDescriptorSet>& Mesh::getDescriptorSets() {
@@ -18,8 +18,8 @@ std::vector<VkDescriptorSet>& Mesh::getDescriptorSets() {
 }
 
 void Mesh::initBuffers() {
-    vertexBuffer = createVertexBuffer(vertices);
-    indexBuffer = createIndexBuffer(indices);
+    createVertexBuffer(vertexBuffer);
+    createIndexBuffer(indexBuffer);
 
     UniformBuffer::createUniformBuffers(sizeof(UniformBufferObject), uniformBuffers);
 
@@ -34,13 +34,13 @@ void Mesh::createTextures() {
 
 void Mesh::draw(VkCommandBuffer& commandBuffer, uint32_t currentFrame) {
     VkDeviceSize offsets[] = {0};
-    vkCmdBindVertexBuffers(commandBuffer, 0, 1, &vertexBuffer.buffer, offsets);
+    vkCmdBindVertexBuffers(commandBuffer, 0, 1, &vertexBuffer.bufferData.buffer, offsets);
 
-    vkCmdBindIndexBuffer(commandBuffer, indexBuffer.buffer, 0, VK_INDEX_TYPE_UINT32);
+    vkCmdBindIndexBuffer(commandBuffer, indexBuffer.bufferData.buffer, 0, VK_INDEX_TYPE_UINT32);
 
     vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, RenderPass::getPipelineLayout(), 0, 1, &descriptorSets[currentFrame], 0, nullptr);
 
-    vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
+    vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(indexBuffer.indices.size()), 1, 0, 0, 0);
 }
 
 void Mesh::updateUniformBuffer(Camera& camera, uint32_t currentImage) {
