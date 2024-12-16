@@ -12,7 +12,7 @@
 
 #include "../loader/FileLoader.h"
 
-#include "../base/Descriptor.h"
+#include "../base/DescriptorPool.h"
 #include "../base/SwapChain.h"
 
 #include <array>

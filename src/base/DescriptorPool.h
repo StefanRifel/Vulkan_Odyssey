@@ -11,11 +11,11 @@
 
 #include <vector>
 
-class Descriptor {
+class DescriptorPool {
     
 private:
-    static VkDescriptorSetLayout descriptorSetLayout;
     static VkDescriptorPool descriptorPool;
+    static VkDescriptorSetLayout descriptorSetLayout;
 
 public:
     static VkDescriptorSetLayout& getDescriptorSetLayout();

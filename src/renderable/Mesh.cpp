@@ -23,7 +23,7 @@ void Mesh::initBuffers() {
 
     UniformBuffer::createUniformBuffers(sizeof(UniformBufferObject), uniformBuffers);
 
-    Descriptor::createDescriptorSets(descriptorSets, uniformBuffers, textureImageView, textureSampler);
+    DescriptorPool::createDescriptorSets(descriptorSets, uniformBuffers, textureImageView, textureSampler);
 }
 
 void Mesh::createTextures() {

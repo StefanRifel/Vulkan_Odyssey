@@ -14,7 +14,7 @@ void Scene::initVulkan() {
     SwapChain::createSwapChain(window);
     SwapChain::createImageViews();
     RenderPass::createRenderPass();
-    Descriptor::createDescriptorSetLayout();
+    DescriptorPool::createDescriptorSetLayout();
     RenderPass::createGraphicsPipeline();
     CommandPool::createCommandPool();
     SwapChain::createDepthResources();
@@ -22,7 +22,7 @@ void Scene::initVulkan() {
     // TEXTURE
     mesh->createTextures();
 
-    Descriptor::createDescriptorPool();
+    DescriptorPool::createDescriptorPool();
     // Hier werden alle unsere Objekte geladen die wir in der Szene brauchen
     // Pfade zu der obj sind gerade noch hard coded
     mesh->initBuffers();
@@ -45,11 +45,11 @@ void Scene::cleanup() {
 
     
 
-    vkDestroyDescriptorPool(LogicalDeviceWrapper::getVkDevice(), Descriptor::getDescriptorPool(), nullptr);
+    vkDestroyDescriptorPool(LogicalDeviceWrapper::getVkDevice(), DescriptorPool::getDescriptorPool(), nullptr);
 
     mesh->cleanupTextures();
 
-    vkDestroyDescriptorSetLayout(LogicalDeviceWrapper::getVkDevice(), Descriptor::getDescriptorSetLayout(), nullptr);
+    vkDestroyDescriptorSetLayout(LogicalDeviceWrapper::getVkDevice(), DescriptorPool::getDescriptorSetLayout(), nullptr);
     
     delete mesh;
 

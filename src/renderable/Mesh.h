@@ -7,7 +7,7 @@
 #include "../loader/ModelLoader.h"
 #include "../types/Vertex.h"
 #include "../buffer/UniformBuffer.h"
-#include "../base/Descriptor.h"
+#include "../base/DescriptorPool.h"
 #include "../base/RenderPass.h"
 #include "../Camera.h"
 

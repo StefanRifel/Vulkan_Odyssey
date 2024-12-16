@@ -1,17 +1,17 @@
-#include "Descriptor.h"
+#include "DescriptorPool.h"
 
-VkDescriptorSetLayout Descriptor::descriptorSetLayout;
-VkDescriptorPool Descriptor::descriptorPool;
+VkDescriptorSetLayout DescriptorPool::descriptorSetLayout;
+VkDescriptorPool DescriptorPool::descriptorPool;
 
-VkDescriptorSetLayout& Descriptor::getDescriptorSetLayout() {
+VkDescriptorSetLayout& DescriptorPool::getDescriptorSetLayout() {
     return descriptorSetLayout;
 }
 
-VkDescriptorPool& Descriptor::getDescriptorPool() {
+VkDescriptorPool& DescriptorPool::getDescriptorPool() {
     return descriptorPool;
 }
 
-void Descriptor::createDescriptorPool() {
+void DescriptorPool::createDescriptorPool() {
     std::array<VkDescriptorPoolSize, 2> poolSizes{};
     poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
     poolSizes[0].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
@@ -29,7 +29,7 @@ void Descriptor::createDescriptorPool() {
     }
 }
 
-void Descriptor::createDescriptorSetLayout() {
+void DescriptorPool::createDescriptorSetLayout() {
     VkDescriptorSetLayoutBinding uboLayoutBinding{};
     uboLayoutBinding.binding = 0;
     uboLayoutBinding.descriptorCount = 1;
@@ -50,12 +50,12 @@ void Descriptor::createDescriptorSetLayout() {
     layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
     layoutInfo.pBindings = bindings.data();
 
-    if (vkCreateDescriptorSetLayout(LogicalDeviceWrapper::getVkDevice(), &layoutInfo, nullptr, &Descriptor::getDescriptorSetLayout()) != VK_SUCCESS) {
+    if (vkCreateDescriptorSetLayout(LogicalDeviceWrapper::getVkDevice(), &layoutInfo, nullptr, &DescriptorPool::getDescriptorSetLayout()) != VK_SUCCESS) {
         throw std::runtime_error("failed to create descriptor set layout!");
     }
 }
 
-void Descriptor::createDescriptorSets(std::vector<VkDescriptorSet>& descriptorSets, std::vector<Buffer>& uniformBuffers, VkImageView& textureImageView, VkSampler& textureSampler) {
+void DescriptorPool::createDescriptorSets(std::vector<VkDescriptorSet>& descriptorSets, std::vector<Buffer>& uniformBuffers, VkImageView& textureImageView, VkSampler& textureSampler) {
     std::vector<VkDescriptorSetLayout> layouts(MAX_FRAMES_IN_FLIGHT, descriptorSetLayout);
     VkDescriptorSetAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
