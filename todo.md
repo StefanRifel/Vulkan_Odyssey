@@ -5,7 +5,7 @@ Mindestanforderungen:
 - [x] Auswahl eines geeigneten Geräts und passender Queue-Familien
 - [x] Einrichtung der Präsentationsschicht (Surface, Swapchain, Image Views, Framebuffer)
 - [x] Import von Geometriedaten aus separaten Dateien
-- [ ] Darstellung mehrerer Objekte in einer 3D-Szene
+- [x] Darstellung mehrerer Objekte in einer 3D-Szene
 - [x] Einfache Benutzerinteraktion mit Kamera und/oder Objekten (z. B. über Tastatur)
 - [ ] Texturierung von mindestens einem Objekt unter Verwendung einer Mipmap
 - [x] Verwendung des Depth-Buffers
