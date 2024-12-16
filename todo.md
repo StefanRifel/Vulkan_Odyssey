@@ -9,7 +9,7 @@ Mindestanforderungen:
 - [x] Einfache Benutzerinteraktion mit Kamera und/oder Objekten (z. B. über Tastatur)
 - [ ] Texturierung von mindestens einem Objekt unter Verwendung einer Mipmap
 - [x] Verwendung des Depth-Buffers
-- [ ] gleichzeitige Verwendung von mindestens zwei verschiedenen Shader-Programmen in einer Szene
+- [x] gleichzeitige Verwendung von mindestens zwei verschiedenen Shader-Programmen in einer Szene
 
 Weitere Anforderungen:
 - [x] Sinnvolle Aufteilung des Codes auf mehrere Dateien
