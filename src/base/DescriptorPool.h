@@ -7,10 +7,11 @@
 #include "../types/DefaultValues.h"
 #include "../wrapper/LogicalDeviceWrapper.h"
 #include "../loader/TextureLoader.h"
-#include "../buffer/UniformBuffer.h"
 #include "../types/Texture.h"
 
 #include <vector>
+
+#include "../types/UniformBufferObject.h"   
 
 class DescriptorPool {
     
@@ -24,7 +25,7 @@ public:
 
     static void createDescriptorPool();
     static void createDescriptorSetLayout();
-    static void createDescriptorSets(std::vector<VkDescriptorSet>& descriptorSets, std::vector<Buffer>& uniformBuffers, Texture& texture);
+    static void createDescriptorSets(UniformBuffer& uniformBuffer);
 };
 
 #endif

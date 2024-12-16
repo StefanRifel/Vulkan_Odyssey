@@ -64,9 +64,9 @@ void RenderPass::createRenderPass() {
     }
 }
 
-void RenderPass::createGraphicsPipeline(GraphicsPipeline& graphicsPipeline) {
-    auto vertShaderCode = readFile("shaders/shader.vert.spv");
-    auto fragShaderCode = readFile("shaders/shader.frag.spv");
+GraphicsPipeline RenderPass::createGraphicsPipeline(std::string vertShaderPath, std::string fragShaderPath) {
+    auto vertShaderCode = readFile(vertShaderPath);
+    auto fragShaderCode = readFile(fragShaderPath);
 
     VkShaderModule vertShaderModule = Shader::createShaderModule(vertShaderCode, LogicalDeviceWrapper::getVkDevice());
     VkShaderModule fragShaderModule = Shader::createShaderModule(fragShaderCode, LogicalDeviceWrapper::getVkDevice());
@@ -158,6 +158,8 @@ void RenderPass::createGraphicsPipeline(GraphicsPipeline& graphicsPipeline) {
     pipelineLayoutInfo.setLayoutCount = 1;
     pipelineLayoutInfo.pSetLayouts = &DescriptorPool::getDescriptorSetLayout();
 
+    GraphicsPipeline graphicsPipeline;
+
     if (vkCreatePipelineLayout(LogicalDeviceWrapper::getVkDevice(), &pipelineLayoutInfo, nullptr, &graphicsPipeline.pipelineLayout) != VK_SUCCESS) {
         throw std::runtime_error("failed to create pipeline layout!");
     }
@@ -185,4 +187,6 @@ void RenderPass::createGraphicsPipeline(GraphicsPipeline& graphicsPipeline) {
 
     vkDestroyShaderModule(LogicalDeviceWrapper::getVkDevice(), fragShaderModule, nullptr);
     vkDestroyShaderModule(LogicalDeviceWrapper::getVkDevice(), vertShaderModule, nullptr);
+
+    return graphicsPipeline;
 }

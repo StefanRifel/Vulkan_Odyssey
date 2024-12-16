@@ -9,41 +9,28 @@ Mesh::Mesh(std::string modelPath, std::string texturePath) : modelPath(modelPath
 
 Mesh::~Mesh() {
     for (int i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
-        cleanupBuffer(uniformBuffers[i]);
+        cleanupBuffer(uniformBuffer.bufferData[i]);
     }
 
     cleanupBuffer(indexBuffer.bufferData);
     cleanupBuffer(vertexBuffer.bufferData);
 }
 
-std::vector<VkDescriptorSet>& Mesh::getDescriptorSets() {
-    return descriptorSets;
-}
-
 void Mesh::initBuffers() {
-    std::cout << "Initializing buffers for model: " << modelPath << std::endl;
     createVertexBuffer(vertexBuffer);
     createIndexBuffer(indexBuffer);
 
-    UniformBuffer::createUniformBuffers(sizeof(UniformBufferObject), uniformBuffers, uniformBuffersMapped);
-
-    DescriptorPool::createDescriptorSets(descriptorSets, uniformBuffers, texture);
-    std::cout << "Buffers initialized for model: " << modelPath << std::endl;
+    createUniformBuffers(sizeof(UniformBufferObject), uniformBuffer);
+    DescriptorPool::createDescriptorSets(uniformBuffer);
 }
 
 void Mesh::createTextures() {
-    std::cout << "Creating textures for model: " << modelPath << std::endl;
-    TextureLoader::createTextureImage(texturePath, texture.image, texture.memory);
-    texture.view = TextureLoader::createTextureImageView(texture.image);
-    TextureLoader::createTextureSampler(texture.sampler);
-    std::cout << "Textures created for model: " << modelPath << std::endl;
+    TextureLoader::createTextureImage(texturePath, uniformBuffer.texture.image, uniformBuffer.texture.memory);
+    uniformBuffer.texture.view = TextureLoader::createTextureImageView(uniformBuffer.texture.image);
+    TextureLoader::createTextureSampler(uniformBuffer.texture.sampler);
 }
 
-void Mesh::createGraphicsPipeline() {
-    RenderPass::createGraphicsPipeline(graphicsPipeline);
-}
-
-void Mesh::draw(VkCommandBuffer& commandBuffer, uint32_t currentFrame) {
+void Mesh::draw(VkCommandBuffer& commandBuffer, GraphicsPipeline& graphicsPipeline, uint32_t currentFrame) {
     vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline.graphicsPipeline);
 
     VkViewport viewport{};
@@ -65,7 +52,7 @@ void Mesh::draw(VkCommandBuffer& commandBuffer, uint32_t currentFrame) {
 
     vkCmdBindIndexBuffer(commandBuffer, indexBuffer.bufferData.buffer, 0, VK_INDEX_TYPE_UINT32);
 
-    vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline.pipelineLayout, 0, 1, &descriptorSets[currentFrame], 0, nullptr);
+    vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline.pipelineLayout, 0, 1, &uniformBuffer.descriptorSets[currentFrame], 0, nullptr);
 
     vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(indexBuffer.indices.size()), 1, 0, 0, 0);
 }
@@ -82,18 +69,13 @@ void Mesh::updateUniformBuffer(Camera& camera, uint32_t currentImage) {
     ubo.view = camera.getView();
     ubo.proj = camera.getPerspective();
 
-    memcpy(uniformBuffersMapped[currentImage], &ubo, sizeof(ubo));
+    memcpy(uniformBuffer.uniformBuffersMapped[currentImage], &ubo, sizeof(ubo));
 }
 
 void Mesh::cleanupTextures() {
-    vkDestroySampler(LogicalDeviceWrapper::getVkDevice(), texture.sampler, nullptr);
-    vkDestroyImageView(LogicalDeviceWrapper::getVkDevice(), texture.view, nullptr);
+    vkDestroySampler(LogicalDeviceWrapper::getVkDevice(), uniformBuffer.texture.sampler, nullptr);
+    vkDestroyImageView(LogicalDeviceWrapper::getVkDevice(), uniformBuffer.texture.view, nullptr);
 
-    vkDestroyImage(LogicalDeviceWrapper::getVkDevice(), texture.image, nullptr);
-    vkFreeMemory(LogicalDeviceWrapper::getVkDevice(), texture.memory, nullptr);
-}
-
-void Mesh::cleanupGraphicsPipeline() {
-    vkDestroyPipeline(LogicalDeviceWrapper::getVkDevice(), graphicsPipeline.graphicsPipeline, nullptr);
-    vkDestroyPipelineLayout(LogicalDeviceWrapper::getVkDevice(), graphicsPipeline.pipelineLayout, nullptr);
+    vkDestroyImage(LogicalDeviceWrapper::getVkDevice(), uniformBuffer.texture.image, nullptr);
+    vkFreeMemory(LogicalDeviceWrapper::getVkDevice(), uniformBuffer.texture.memory, nullptr);
 }

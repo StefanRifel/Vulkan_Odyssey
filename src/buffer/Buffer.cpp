@@ -72,6 +72,18 @@ void createIndexBuffer(IndexBuffer& indexBuffer) {
     cleanupBuffer(stagingBuffer);
 }
 
+void createUniformBuffers(VkDeviceSize bufferSize, UniformBuffer& uniformBuffer) {
+    
+    uniformBuffer.bufferData.resize(MAX_FRAMES_IN_FLIGHT);
+    uniformBuffer.uniformBuffersMapped.resize(MAX_FRAMES_IN_FLIGHT);
+
+    for (ssize_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+        createBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, uniformBuffer.bufferData[i]);
+
+        vkMapMemory(LogicalDeviceWrapper::getVkDevice(), uniformBuffer.bufferData[i].bufferMemory, 0, bufferSize, 0, &uniformBuffer.uniformBuffersMapped[i]);
+    }
+}
+
 void cleanupBuffer(Buffer& buffer) {
     vkDestroyBuffer(LogicalDeviceWrapper::getVkDevice(), buffer.buffer, nullptr);
     vkFreeMemory(LogicalDeviceWrapper::getVkDevice(), buffer.bufferMemory, nullptr);

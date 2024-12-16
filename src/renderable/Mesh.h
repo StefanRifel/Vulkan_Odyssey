@@ -6,14 +6,14 @@
 
 #include "../loader/ModelLoader.h"
 #include "../types/Vertex.h"
-#include "../buffer/UniformBuffer.h"
 #include "../base/DescriptorPool.h"
 #include "../base/RenderPass.h"
 #include "../Camera.h"
 
 #include "../buffer/Buffer.h"
-#include "../types/Texture.h"
+
 #include "../base/RenderPass.h"
+#include "../types/UniformBufferObject.h"
 
 class Mesh {
 private:
@@ -21,13 +21,7 @@ private:
 
     IndexBuffer indexBuffer;
 
-    std::vector<Buffer> uniformBuffers;
-    std::vector<VkDescriptorSet> descriptorSets;
-    std::vector<void*> uniformBuffersMapped;
-
-    Texture texture;
-
-    GraphicsPipeline graphicsPipeline;
+    UniformBuffer uniformBuffer;
 
     std::string modelPath;
     std::string texturePath;
@@ -36,15 +30,11 @@ public:
     Mesh(std::string modelPath, std::string texturePath);
     ~Mesh();
 
-    std::vector<VkDescriptorSet>& getDescriptorSets();
-
     void initBuffers();
     void createTextures();
-    void createGraphicsPipeline();
-    void draw(VkCommandBuffer& commandBuffer, uint32_t currentFrame);
+    void draw(VkCommandBuffer& commandBuffer, GraphicsPipeline& graphicsPipeline, uint32_t currentFrame);
     void updateUniformBuffer(Camera& camera, uint32_t currentImage);
     void cleanupTextures();
-    void cleanupGraphicsPipeline();
 };
 
 #endif

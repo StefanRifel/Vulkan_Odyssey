@@ -21,6 +21,8 @@ private:
     Mesh* mesh = new Mesh{"assets/models/viking_room.obj", "assets/textures/viking_room.png"};
     Mesh* mesh2 = new Mesh{"assets/models/cube.obj", "assets/textures/viking_room.png"};
     
+    std::map<std::string ,GraphicsPipeline> graphicsPipelines;
+
     std::vector<VkSemaphore> imageAvailableSemaphores;
     std::vector<VkSemaphore> renderFinishedSemaphores;
     std::vector<VkFence> inFlightFences;

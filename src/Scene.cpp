@@ -17,9 +17,8 @@ void Scene::initVulkan() {
     DescriptorPool::createDescriptorSetLayout();
 
     // GRAPHICS PIPELINE
-    mesh->createGraphicsPipeline();
-    mesh2->createGraphicsPipeline();
-
+    graphicsPipelines.insert({"default", RenderPass::createGraphicsPipeline("shaders/shader.vert.spv", "shaders/shader.frag.spv")});
+    graphicsPipelines.insert({"red", RenderPass::createGraphicsPipeline("shaders/shader_red.vert.spv", "shaders/shader_red.frag.spv")});
 
     CommandPool::createCommandPool();
     SwapChain::createDepthResources();
@@ -47,8 +46,10 @@ void Scene::waitOutstandingQueues() {
 void Scene::cleanup() {
     SwapChain::cleanupSwapChain();
 
-    mesh->cleanupGraphicsPipeline();
-    mesh2->cleanupGraphicsPipeline();
+    for (auto& graphicsPipeline : graphicsPipelines) {
+        vkDestroyPipeline(LogicalDeviceWrapper::getVkDevice(), graphicsPipeline.second.graphicsPipeline, nullptr);
+        vkDestroyPipelineLayout(LogicalDeviceWrapper::getVkDevice(), graphicsPipeline.second.pipelineLayout, nullptr);
+    }
 
     vkDestroyRenderPass(LogicalDeviceWrapper::getVkDevice(), RenderPass::getRenderPass(), nullptr);
 
@@ -145,8 +146,8 @@ void Scene::drawFrame() {
     mesh2->updateUniformBuffer(camera, currentFrame);
 
     // Draw both meshes
-    mesh->draw(CommandPool::getCommandBuffers()[currentFrame], currentFrame);
-    mesh2->draw(CommandPool::getCommandBuffers()[currentFrame], currentFrame);
+    mesh->draw(CommandPool::getCommandBuffers()[currentFrame], graphicsPipelines["default"], currentFrame);
+    mesh2->draw(CommandPool::getCommandBuffers()[currentFrame], graphicsPipelines["red"], currentFrame);
 
     vkCmdEndRenderPass(CommandPool::getCommandBuffers()[currentFrame]);
 
