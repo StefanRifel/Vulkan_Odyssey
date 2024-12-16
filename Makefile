@@ -11,7 +11,7 @@ BUILD_DIR = build
 
 # Quell- und Headerdateien
 BASE_SRC = $(SRC_DIR)/base/CommandPool.cpp $(SRC_DIR)/base/Descriptor.cpp $(SRC_DIR)/base/RenderPass.cpp $(SRC_DIR)/base/SwapChain.cpp
-BUFFER_SRC = $(SRC_DIR)/buffer/VertexBuffer.cpp $(SRC_DIR)/buffer/IndexBuffer.cpp $(SRC_DIR)/buffer/UniformBuffer.cpp
+BUFFER_SRC = $(SRC_DIR)/buffer/UniformBuffer.cpp $(SRC_DIR)/buffer/Buffer.cpp
 LOADER_SRC = $(SRC_DIR)/loader/ModelLoader.cpp $(SRC_DIR)/loader/TextureLoader.cpp
 RENDER_SRC = $(SRC_DIR)/$(RENDERABLE_DIR)/Mesh.cpp
 WRAPPER_SRC = $(SRC_DIR)/wrapper/LogicalDeviceWrapper.cpp $(SRC_DIR)/wrapper/PhysicalDeviceWrapper.cpp $(SRC_DIR)/wrapper/InstanceWrapper.cpp

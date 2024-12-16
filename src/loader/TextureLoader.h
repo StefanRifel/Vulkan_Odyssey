@@ -8,7 +8,7 @@
 
 #include "../wrapper/LogicalDeviceWrapper.h"
 
-#include "../buffer/VertexBuffer.h"
+#include "../buffer/Buffer.h"
 
 class TextureLoader {
 

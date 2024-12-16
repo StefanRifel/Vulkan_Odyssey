@@ -10,25 +10,23 @@ void TextureLoader::createTextureImage(std::string texturePath, VkImage& texture
         throw std::runtime_error("failed to load texture image!");
     }
 
-    VkBuffer stagingBuffer;
-    VkDeviceMemory stagingBufferMemory;
-    createBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
+    Buffer stagingBuffer;
+    createBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer);
 
     void* data;
-    vkMapMemory(LogicalDeviceWrapper::getVkDevice(), stagingBufferMemory, 0, imageSize, 0, &data);
+    vkMapMemory(LogicalDeviceWrapper::getVkDevice(), stagingBuffer.bufferMemory, 0, imageSize, 0, &data);
         memcpy(data, pixels, static_cast<ssize_t>(imageSize));
-    vkUnmapMemory(LogicalDeviceWrapper::getVkDevice(), stagingBufferMemory);
+    vkUnmapMemory(LogicalDeviceWrapper::getVkDevice(), stagingBuffer.bufferMemory);
 
     stbi_image_free(pixels);
 
     createImage(texWidth, texHeight, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, textureImage, textureImageMemory);
 
     transitionImageLayout(textureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-        copyBufferToImage(stagingBuffer, textureImage, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
+        copyBufferToImage(stagingBuffer.buffer, textureImage, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
     transitionImageLayout(textureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
-    vkDestroyBuffer(LogicalDeviceWrapper::getVkDevice(), stagingBuffer, nullptr);
-    vkFreeMemory(LogicalDeviceWrapper::getVkDevice(), stagingBufferMemory, nullptr);
+    cleanupBuffer(stagingBuffer);
 }
 
 void TextureLoader::createImage(uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory) {

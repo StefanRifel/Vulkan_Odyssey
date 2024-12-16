@@ -55,7 +55,7 @@ void Descriptor::createDescriptorSetLayout() {
     }
 }
 
-void Descriptor::createDescriptorSets(std::vector<VkDescriptorSet>& descriptorSets, std::vector<VkBuffer>& uniformBuffers, VkImageView& textureImageView, VkSampler& textureSampler) {
+void Descriptor::createDescriptorSets(std::vector<VkDescriptorSet>& descriptorSets, std::vector<Buffer>& uniformBuffers, VkImageView& textureImageView, VkSampler& textureSampler) {
     std::vector<VkDescriptorSetLayout> layouts(MAX_FRAMES_IN_FLIGHT, descriptorSetLayout);
     VkDescriptorSetAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
@@ -70,7 +70,7 @@ void Descriptor::createDescriptorSets(std::vector<VkDescriptorSet>& descriptorSe
 
     for (ssize_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
         VkDescriptorBufferInfo bufferInfo{};
-        bufferInfo.buffer = uniformBuffers[i];
+        bufferInfo.buffer = uniformBuffers[i].buffer;
         bufferInfo.offset = 0;
         bufferInfo.range = sizeof(UniformBufferObject);
 

@@ -6,7 +6,7 @@
 
 #include "../types/UniformBufferObject.h"
 #include "../types/DefaultValues.h"
-#include "BufferWrapper.h"
+#include "Buffer.h"
 
 #include <vector>
 
@@ -17,7 +17,7 @@ private:
 public:
     static std::vector<void*>& getUniformBuffersMapped();
 
-    static void createUniformBuffers(VkDeviceSize bufferSize, std::vector<VkBuffer>& uniformBuffers, std::vector<VkDeviceMemory>& uniformBuffersMemory);
+    static void createUniformBuffers(VkDeviceSize bufferSize, std::vector<Buffer>& uniformBuffers);
 };
 
 #endif

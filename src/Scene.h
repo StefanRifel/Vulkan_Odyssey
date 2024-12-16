@@ -7,7 +7,6 @@
 #include "Window.h"
 #include "loader/ModelLoader.h"
 #include "wrapper/InstanceWrapper.h"
-#include "buffer/IndexBuffer.h"
 #include "base/SwapChain.h"
 #include "Camera.h"
 
