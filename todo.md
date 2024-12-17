@@ -7,7 +7,7 @@ Mindestanforderungen:
 - [x] Import von Geometriedaten aus separaten Dateien
 - [x] Darstellung mehrerer Objekte in einer 3D-Szene
 - [x] Einfache Benutzerinteraktion mit Kamera und/oder Objekten (z. B. über Tastatur)
-- [ ] Texturierung von mindestens einem Objekt unter Verwendung einer Mipmap
+- [x] Texturierung von mindestens einem Objekt unter Verwendung einer Mipmap
 - [x] Verwendung des Depth-Buffers
 - [x] gleichzeitige Verwendung von mindestens zwei verschiedenen Shader-Programmen in einer Szene
 
