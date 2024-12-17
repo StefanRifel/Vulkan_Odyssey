@@ -1,0 +1,17 @@
+# Blender 4.1.1 MTL File: 'covered_car_1k.blend'
+# www.blender.org
+
+newmtl covered_car
+Ns 360.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.300000 0.300000 0.300000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_bump -bm 1.000000 covered_car_nor_gl_1k.jpg
+map_Ka covered_car_ao_1k.jpg
+map_Kd covered_car_diff_1k.jpg
+map_Pm covered_car_arm_1k.jpg
+map_Pr covered_car_rough_1k.jpg

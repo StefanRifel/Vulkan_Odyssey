@@ -1,0 +1,17 @@
+# Blender 4.1.1 MTL File: 'fern_02_1k.blend'
+# www.blender.org
+
+newmtl fern_02
+Ns 360.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_bump -bm 1.000000 fern_02_nor_gl_1k.jpg
+map_Ka fern_02_ao_1k.jpg
+map_Kd fern_02_diff_1k.jpg
+map_Pm fern_02_arm_1k.jpg
+map_Pr fern_02_rough_1k.jpg

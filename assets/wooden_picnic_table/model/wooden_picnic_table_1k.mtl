@@ -1,0 +1,33 @@
+# Blender 4.1.1 MTL File: 'wooden_picnic_table_1k.blend'
+# www.blender.org
+
+newmtl wooden_picnic_table_bottom
+Ns 360.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_bump -bm 1.000000 wooden_picnic_table_bottom_nor_gl_1k.jpg
+map_Ka wooden_picnic_table_bottom_ao_1k.jpg
+map_Kd wooden_picnic_table_bottom_diff_1k.jpg
+map_Pm wooden_picnic_table_bottom_arm_1k.jpg
+map_Pr wooden_picnic_table_bottom_rough_1k.jpg
+
+
+newmtl wooden_picnic_table_table
+Ns 360.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_bump -bm 1.000000 wooden_picnic_table_top_nor_gl_1k.jpg
+map_Ka wooden_picnic_table_top_ao_1k.jpg
+map_Kd wooden_picnic_table_top_diff_1k.jpg
+map_Pm wooden_picnic_table_top_arm_1k.jpg
+map_Pr wooden_picnic_table_top_rough_1k.jpg

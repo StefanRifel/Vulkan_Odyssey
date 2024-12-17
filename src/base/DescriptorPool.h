@@ -23,7 +23,7 @@ public:
     static VkDescriptorSetLayout& getDescriptorSetLayout();
     static VkDescriptorPool& getDescriptorPool();
 
-    static void createDescriptorPool();
+    static void createDescriptorPool(int sceneNodeCount);
     static void createDescriptorSetLayout();
     static void createDescriptorSets(UniformBuffer& uniformBuffer);
 };

@@ -20,8 +20,7 @@ private:
     Window* window;
     Camera camera;
 
-    Mesh* mesh = new Mesh{"assets/models/viking_room.obj", "assets/textures/viking_room.png"};
-    Mesh* mesh2 = new Mesh{"assets/models/cube.obj", "assets/textures/viking_room.png"};
+    std::map<std::string, Mesh*> meshes;
     
     SceneNode* rootNode;
     std::map<std::string ,GraphicsPipeline> graphicsPipelines;

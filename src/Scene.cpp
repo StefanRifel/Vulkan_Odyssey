@@ -23,17 +23,24 @@ void Scene::initVulkan() {
     CommandPool::createCommandPool();
     SwapChain::createDepthResources();
     SwapChain::createFramebuffers();
-    // TEXTURE
-    mesh->createTextures();
-    mesh2->createTextures();
 
-    DescriptorPool::createDescriptorPool();
+    meshes.insert({"viking_room", new Mesh{"assets/models/viking_room.obj", "assets/textures/viking_room.png"}});
+    meshes.insert({"cube", new Mesh{"assets/models/cube.obj", "assets/textures/viking_room.png"}});
+    meshes.insert({"covered_car", new Mesh{"assets/car/model/covered_car_1k.obj", "assets/car/textures/covered_car_diff_1k.jpg"}});
+
+    // TEXTURE
+    for (auto& mesh : meshes) {
+        mesh.second->createTextures();
+    }
+
+    DescriptorPool::createDescriptorPool(meshes.size());
     // Hier werden alle unsere Objekte geladen die wir in der Szene brauchen
     // Pfade zu der obj sind gerade noch hard coded
-
-    mesh2->initBuffers();
-    mesh->initBuffers();
     
+    for (auto& mesh : meshes) {
+        mesh.second->initBuffers();
+    }
+
     CommandPool::createCommandBuffers();
     createSyncObjects();
 
@@ -43,17 +50,20 @@ void Scene::initVulkan() {
 void Scene::initSceneGraph() {
     rootNode = new SceneNode(nullptr, "default");
 
-    auto meshNode1 = new SceneNode(mesh, "default");
-    auto meshNode2 = new SceneNode(mesh2, "red");
+    auto meshNode1 = new SceneNode(meshes["viking_room"], "default");
+    auto meshNode2 = new SceneNode(meshes["cube"], "red");
+    auto meshNode3 = new SceneNode(meshes["covered_car"], "default");
 
     rootNode->addChild(meshNode1);
     rootNode->addChild(meshNode2);
+    meshNode2->addChild(meshNode3);
 
     glm::mat4 transform1 = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
-    glm::mat4 transform2 = glm::translate(glm::mat4(1.0f), glm::vec3(2.0f, 0.0f, 0.0f));
+    glm::mat4 transform2 = glm::translate(glm::mat4(1.0f), glm::vec3(6.0f, 0.0f, 0.0f));
     
     meshNode1->setLocalTransform(transform1);
     meshNode2->setLocalTransform(transform2);
+    meshNode3->setLocalTransform(transform1);
 }
 
 void Scene::waitOutstandingQueues() {
@@ -73,13 +83,15 @@ void Scene::cleanup() {
 
     vkDestroyDescriptorPool(LogicalDeviceWrapper::getVkDevice(), DescriptorPool::getDescriptorPool(), nullptr);
 
-    mesh->cleanupTextures();
-    mesh2->cleanupTextures();
+    for (auto& mesh : meshes) {
+        mesh.second->cleanupTextures();
+    }    
 
     vkDestroyDescriptorSetLayout(LogicalDeviceWrapper::getVkDevice(), DescriptorPool::getDescriptorSetLayout(), nullptr);
     
-    delete mesh;
-    delete mesh2;
+    for (auto& mesh : meshes) {
+        delete mesh.second;
+    }  
 
     for (ssize_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
         vkDestroySemaphore(LogicalDeviceWrapper::getVkDevice(), renderFinishedSemaphores[i], nullptr);

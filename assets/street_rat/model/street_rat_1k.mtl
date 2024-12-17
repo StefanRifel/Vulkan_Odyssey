@@ -1,0 +1,17 @@
+# Blender 4.1.1 MTL File: 'street_rat_1k.blend'
+# www.blender.org
+
+newmtl street_rat
+Ns 360.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_bump -bm 1.000000 street_rat_nor_gl_1k.png
+map_Ka street_rat_ao_1k.png
+map_Kd street_rat_diff_1k.png
+map_Pm street_rat_arm_1k.png
+map_Pr street_rat_rough_1k.png

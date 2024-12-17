@@ -1,0 +1,47 @@
+# Blender 4.1.1 MTL File: 'chess_set_1k.blend'
+# www.blender.org
+
+newmtl chess_set_board
+Ns 360.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_bump -bm 1.000000 chess_set_board_nor_gl_1k.jpg
+map_Ka chess_set_board_ao_1k.jpg
+map_Kd chess_set_board_diff_1k.jpg
+map_Pm chess_set_board_arm_1k.jpg
+map_Pr chess_set_board_rough_1k.jpg
+
+newmtl chess_set_pieces_black
+Ns 360.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_bump -bm 1.000000 chess_set_pieces_black_nor_gl_1k.jpg
+map_Ka chess_set_pieces_black_ao_1k.jpg
+map_Kd chess_set_pieces_black_diff_1k.jpg
+map_Pm chess_set_pieces_black_arm_1k.jpg
+map_Pr chess_set_pieces_black_rough_1k.jpg
+
+newmtl chess_set_pieces_white
+Ns 360.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_bump -bm 1.000000 chess_set_pieces_white_nor_gl_1k.jpg
+map_Ka chess_set_pieces_white_ao_1k.jpg
+map_Kd chess_set_pieces_white_diff_1k.jpg
+map_Pm chess_set_pieces_white_arm_1k.jpg
+map_Pr chess_set_pieces_white_rough_1k.jpg
