@@ -9,6 +9,7 @@ struct Texture {
     VkDeviceMemory memory = VK_NULL_HANDLE;
     VkImageView view = VK_NULL_HANDLE;
     VkSampler sampler = VK_NULL_HANDLE;
+    uint32_t mipLevels;
 };
 
 #endif

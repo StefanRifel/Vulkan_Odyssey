@@ -26,7 +26,10 @@ private:
     static VkExtent2D swapChainExtent;
     static std::vector<VkImageView> swapChainImageViews;
 
+    static uint32_t mipLevels;
+
 public:
+
     static std::vector<VkFramebuffer>& getSwapChainFramebuffers();
     static VkSwapchainKHR& getSwapChain();
     static VkFormat& getSwapChainImageFormat();

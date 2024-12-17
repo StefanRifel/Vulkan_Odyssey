@@ -14,6 +14,7 @@
 
 #include "../base/RenderPass.h"
 #include "../types/UniformBufferObject.h"
+#include "../base/SwapChain.h"
 
 class Mesh {
 private:

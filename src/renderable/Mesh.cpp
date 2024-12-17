@@ -25,9 +25,9 @@ void Mesh::initBuffers() {
 }
 
 void Mesh::createTextures() {
-    TextureLoader::createTextureImage(texturePath, uniformBuffer.texture.image, uniformBuffer.texture.memory);
-    uniformBuffer.texture.view = TextureLoader::createTextureImageView(uniformBuffer.texture.image);
-    TextureLoader::createTextureSampler(uniformBuffer.texture.sampler);
+    TextureLoader::createTextureImage(texturePath, uniformBuffer.texture.image, uniformBuffer.texture.memory, uniformBuffer.texture.mipLevels);
+    uniformBuffer.texture.view = TextureLoader::createTextureImageView(uniformBuffer.texture.image, uniformBuffer.texture.mipLevels);
+    TextureLoader::createTextureSampler(uniformBuffer.texture.sampler, uniformBuffer.texture.mipLevels);
 }
 
 void Mesh::draw(VkCommandBuffer& commandBuffer, GraphicsPipeline& graphicsPipeline, uint32_t currentFrame) {

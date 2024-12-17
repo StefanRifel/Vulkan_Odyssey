@@ -12,6 +12,8 @@ std::vector<VkImage> SwapChain::swapChainImages;
 std::vector<VkImageView> SwapChain::swapChainImageViews;
 std::vector<VkFramebuffer> SwapChain::swapChainFramebuffers;
 
+uint32_t SwapChain::mipLevels = 1;
+
 std::vector<VkFramebuffer>& SwapChain::getSwapChainFramebuffers() {
     return swapChainFramebuffers;
 }
@@ -156,7 +158,7 @@ void SwapChain::createImageViews() {
     swapChainImageViews.resize(swapChainImages.size());
 
     for (uint32_t i = 0; i < swapChainImages.size(); i++) {
-        swapChainImageViews[i] = TextureLoader::createImageView(swapChainImages[i], swapChainImageFormat, VK_IMAGE_ASPECT_COLOR_BIT);
+        swapChainImageViews[i] = TextureLoader::createImageView(swapChainImages[i], swapChainImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, mipLevels);
     }
 }
 
@@ -186,9 +188,9 @@ void SwapChain::createFramebuffers() {
 
 void SwapChain::createDepthResources() {
     VkFormat depthFormat = findDepthFormat();
-
-    TextureLoader::createImage(swapChainExtent.width, swapChainExtent.height, depthFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, depthImage, depthImageMemory);
-    depthImageView = TextureLoader::createImageView(depthImage, depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT);
+    
+    TextureLoader::createImage(swapChainExtent.width, swapChainExtent.height, mipLevels, depthFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, depthImage, depthImageMemory);
+    depthImageView = TextureLoader::createImageView(depthImage, depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT, mipLevels);
 }
 
 VkFormat SwapChain::findDepthFormat() {
