@@ -13,7 +13,7 @@ Mindestanforderungen:
 
 Weitere Anforderungen:
 - [x] Sinnvolle Aufteilung des Codes auf mehrere Dateien
-- [ ] Strukturierung der Szene durch einen einfachen Szenengraph
+- [x] Strukturierung der Szene durch einen einfachen Szenengraph
 - [ ] Zerstörung aller Vulkan-Objekte beim Beenden des Programms
 - [x] effiziente Verwendung des Gerätespeichers (Staging, Memory Pools)
 - [x] feingranulare Synchronisation der Vulkan-Befehle

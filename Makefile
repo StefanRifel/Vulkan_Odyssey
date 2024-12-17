@@ -15,7 +15,7 @@ BUFFER_SRC = $(SRC_DIR)/buffer/Buffer.cpp
 LOADER_SRC = $(SRC_DIR)/loader/ModelLoader.cpp $(SRC_DIR)/loader/TextureLoader.cpp
 RENDER_SRC = $(SRC_DIR)/$(RENDERABLE_DIR)/Mesh.cpp
 WRAPPER_SRC = $(SRC_DIR)/wrapper/LogicalDeviceWrapper.cpp $(SRC_DIR)/wrapper/PhysicalDeviceWrapper.cpp $(SRC_DIR)/wrapper/InstanceWrapper.cpp
-OBJ_SRC = $(SRC_DIR)/main.cpp $(SRC_DIR)/Scene.cpp $(SRC_DIR)/Window.cpp $(SRC_DIR)/Application.cpp $(SRC_DIR)/Shader.cpp $(SRC_DIR)/Camera.cpp $(SRC_DIR)/InputManager.cpp
+OBJ_SRC = $(SRC_DIR)/main.cpp $(SRC_DIR)/Scene.cpp $(SRC_DIR)/Window.cpp $(SRC_DIR)/Application.cpp $(SRC_DIR)/Shader.cpp $(SRC_DIR)/Camera.cpp $(SRC_DIR)/InputManager.cpp $(SRC_DIR)/SceneNode.cpp
 
 # Shader-Dateien
 SHADER_SRC = $(SHADER_DIR)/shader.vert $(SHADER_DIR)/shader.frag $(SHADER_DIR)/shader_red.vert $(SHADER_DIR)/shader_red.frag

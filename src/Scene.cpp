@@ -30,12 +30,20 @@ void Scene::initVulkan() {
     DescriptorPool::createDescriptorPool();
     // Hier werden alle unsere Objekte geladen die wir in der Szene brauchen
     // Pfade zu der obj sind gerade noch hard coded
+
     mesh2->initBuffers();
     mesh->initBuffers();
     
-    
     CommandPool::createCommandBuffers();
     createSyncObjects();
+
+    rootNode = new SceneNode(nullptr, "default");
+
+    auto meshNode1 = new SceneNode(mesh, "default");
+    auto meshNode2 = new SceneNode(mesh2, "red");
+
+    rootNode->addChild(meshNode1);
+    rootNode->addChild(meshNode2);
 }
 
 void Scene::waitOutstandingQueues() {
@@ -142,12 +150,15 @@ void Scene::drawFrame() {
     vkCmdBeginRenderPass(CommandPool::getCommandBuffers()[currentFrame], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
     // Ensure uniform buffers are updated before drawing
-    mesh->updateUniformBuffer(camera, currentFrame);
-    mesh2->updateUniformBuffer(camera, currentFrame);
+    //mesh->updateUniformBuffer(camera, currentFrame);
+    //mesh2->updateUniformBuffer(camera, currentFrame);
 
     // Draw both meshes
-    mesh->draw(CommandPool::getCommandBuffers()[currentFrame], graphicsPipelines["default"], currentFrame);
-    mesh2->draw(CommandPool::getCommandBuffers()[currentFrame], graphicsPipelines["red"], currentFrame);
+    //mesh->draw(CommandPool::getCommandBuffers()[currentFrame], graphicsPipelines["default"], currentFrame);
+    //mesh2->draw(CommandPool::getCommandBuffers()[currentFrame], graphicsPipelines["red"], currentFrame);
+
+    //rootNode->updateWorldTransform(); // Update transforms
+    rootNode->draw(CommandPool::getCommandBuffers()[currentFrame], graphicsPipelines, currentFrame, camera);
 
     vkCmdEndRenderPass(CommandPool::getCommandBuffers()[currentFrame]);
 

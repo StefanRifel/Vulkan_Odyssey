@@ -11,6 +11,8 @@
 #include "Camera.h"
 
 #include "renderable/Mesh.h"
+#include <memory>
+#include "SceneNode.h"
 
 class Scene {
 
@@ -21,6 +23,7 @@ private:
     Mesh* mesh = new Mesh{"assets/models/viking_room.obj", "assets/textures/viking_room.png"};
     Mesh* mesh2 = new Mesh{"assets/models/cube.obj", "assets/textures/viking_room.png"};
     
+    SceneNode* rootNode;
     std::map<std::string ,GraphicsPipeline> graphicsPipelines;
 
     std::vector<VkSemaphore> imageAvailableSemaphores;
