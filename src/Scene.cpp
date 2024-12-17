@@ -37,6 +37,10 @@ void Scene::initVulkan() {
     CommandPool::createCommandBuffers();
     createSyncObjects();
 
+    initSceneGraph();
+}
+
+void Scene::initSceneGraph() {
     rootNode = new SceneNode(nullptr, "default");
 
     auto meshNode1 = new SceneNode(mesh, "default");
@@ -44,6 +48,12 @@ void Scene::initVulkan() {
 
     rootNode->addChild(meshNode1);
     rootNode->addChild(meshNode2);
+
+    glm::mat4 transform1 = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+    glm::mat4 transform2 = glm::translate(glm::mat4(1.0f), glm::vec3(2.0f, 0.0f, 0.0f));
+    
+    meshNode1->setLocalTransform(transform1);
+    meshNode2->setLocalTransform(transform2);
 }
 
 void Scene::waitOutstandingQueues() {
@@ -157,7 +167,7 @@ void Scene::drawFrame() {
     //mesh->draw(CommandPool::getCommandBuffers()[currentFrame], graphicsPipelines["default"], currentFrame);
     //mesh2->draw(CommandPool::getCommandBuffers()[currentFrame], graphicsPipelines["red"], currentFrame);
 
-    //rootNode->updateWorldTransform(); // Update transforms
+    rootNode->updateWorldTransform(); // Update transforms
     rootNode->draw(CommandPool::getCommandBuffers()[currentFrame], graphicsPipelines, currentFrame, camera);
 
     vkCmdEndRenderPass(CommandPool::getCommandBuffers()[currentFrame]);

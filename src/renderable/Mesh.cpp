@@ -57,15 +57,11 @@ void Mesh::draw(VkCommandBuffer& commandBuffer, GraphicsPipeline& graphicsPipeli
     vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(indexBuffer.indices.size()), 1, 0, 0, 0);
 }
 
-void Mesh::updateUniformBuffer(Camera& camera, uint32_t currentImage) {
+void Mesh::updateUniformBuffer(Camera& camera, uint32_t currentImage, glm::mat4& worldTransform) {
     camera.look();
 
-    static auto startTime = std::chrono::high_resolution_clock::now();
-    auto currentTime = std::chrono::high_resolution_clock::now();
-    float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
-
     UniformBufferObject ubo{};
-    ubo.model = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+    ubo.model = worldTransform;
     ubo.view = camera.getView();
     ubo.proj = camera.getPerspective();
 

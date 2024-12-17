@@ -13,10 +13,16 @@ private:
     SceneNode* parent;
     std::string pipelineName;
 
+    glm::mat4 localTransform;
+    glm::mat4 worldTransform;
+
 public:
     SceneNode(Mesh* mesh = nullptr, const std::string& pipeline = "default");
 
     void addChild(SceneNode* child);
+
+    void setLocalTransform(const glm::mat4& transform);
+    void updateWorldTransform(const glm::mat4& parentTransform = glm::mat4(1.0f));
     
     void draw(VkCommandBuffer& commandBuffer, std::map<std::string, GraphicsPipeline>& pipelines, uint32_t currentFrame, Camera& camera);
 };

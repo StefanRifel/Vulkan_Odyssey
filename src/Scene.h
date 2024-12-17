@@ -35,6 +35,7 @@ public:
     Scene(Window* window);
 
     void initVulkan();
+    void initSceneGraph();
     void waitOutstandingQueues();
     void cleanup();
 

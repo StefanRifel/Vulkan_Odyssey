@@ -34,7 +34,7 @@ public:
     void initBuffers();
     void createTextures();
     void draw(VkCommandBuffer& commandBuffer, GraphicsPipeline& graphicsPipeline, uint32_t currentFrame);
-    void updateUniformBuffer(Camera& camera, uint32_t currentImage);
+    void updateUniformBuffer(Camera& camera, uint32_t currentImage, glm::mat4& worldTransform);
     void cleanupTextures();
 };
 
