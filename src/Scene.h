@@ -22,6 +22,15 @@ private:
 
     std::map<std::string, Mesh*> meshes;
     
+    std::vector<std::string> texturePaths = {
+        "assets/skybox/textures/right.png",
+        "assets/skybox/textures/left.png",
+        "assets/skybox/textures/top.png",
+        "assets/skybox/textures/bottom.png",
+        "assets/skybox/textures/front.png",
+        "assets/skybox/textures/back.png"
+    };
+
     SceneNode* rootNode;
     std::map<std::string ,GraphicsPipeline> graphicsPipelines;
 

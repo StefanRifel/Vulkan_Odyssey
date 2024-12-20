@@ -19,6 +19,7 @@ void Scene::initVulkan() {
     // GRAPHICS PIPELINE
     graphicsPipelines.insert({"default", RenderPass::createGraphicsPipeline("shaders/shader.vert.spv", "shaders/shader.frag.spv")});
     graphicsPipelines.insert({"red", RenderPass::createGraphicsPipeline("shaders/shader_red.vert.spv", "shaders/shader_red.frag.spv")});
+    graphicsPipelines.insert({"skybox", RenderPass::createGraphicsPipeline("shaders/shader_skybox.vert.spv", "shaders/shader_skybox.frag.spv")});
 
     CommandPool::createCommandPool();
     SwapChain::createDepthResources();
@@ -27,10 +28,15 @@ void Scene::initVulkan() {
     meshes.insert({"viking_room", new Mesh{"assets/models/viking_room.obj", "assets/textures/viking_room.png"}});
     meshes.insert({"cube", new Mesh{"assets/models/cube.obj", "assets/textures/viking_room.png"}});
     meshes.insert({"covered_car", new Mesh{"assets/car/model/covered_car_1k.obj", "assets/car/textures/covered_car_diff_1k.jpg"}});
+    meshes.insert({"skybox", new Mesh{"assets/skybox/model/skybox.obj", texturePaths}});
 
     // TEXTURE
     for (auto& mesh : meshes) {
-        mesh.second->createTextures();
+        if(mesh.second->isCubeMap) {
+            mesh.second->createCubeMapTextures();
+        } else {
+            mesh.second->createTextures();
+        }
     }
 
     DescriptorPool::createDescriptorPool(meshes.size());
@@ -53,17 +59,20 @@ void Scene::initSceneGraph() {
     auto meshNode1 = new SceneNode(meshes["viking_room"], "default");
     auto meshNode2 = new SceneNode(meshes["cube"], "red");
     auto meshNode3 = new SceneNode(meshes["covered_car"], "default");
+    auto skybox = new SceneNode(meshes["skybox"], "skybox");
 
+    rootNode->addChild(skybox);
     rootNode->addChild(meshNode1);
     rootNode->addChild(meshNode2);
     meshNode2->addChild(meshNode3);
 
     glm::mat4 transform1 = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
-    glm::mat4 transform2 = glm::translate(glm::mat4(1.0f), glm::vec3(6.0f, 0.0f, 0.0f));
+    glm::mat4 transform2 = glm::translate(glm::mat4(1.0f), glm::vec3(2.0f, 0.0f, 0.0f));
     
     meshNode1->setLocalTransform(transform1);
     meshNode2->setLocalTransform(transform2);
     meshNode3->setLocalTransform(transform1);
+    skybox->setLocalTransform(glm::mat4(1.0f));
 }
 
 void Scene::waitOutstandingQueues() {
@@ -163,7 +172,7 @@ void Scene::drawFrame() {
     renderPassInfo.renderArea.extent = SwapChain::getSwapChainExtent();
 
     std::array<VkClearValue, 2> clearValues{};
-    clearValues[0].color = {{0.0f, 0.0f, 0.0f, 1.0f}};
+    clearValues[0].color = {{1.0f, 1.0f, 1.0f, 1.0f}};
     clearValues[1].depthStencil = {1.0f, 0};
 
     renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
