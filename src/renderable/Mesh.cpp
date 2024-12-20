@@ -29,15 +29,15 @@ void Mesh::initBuffers() {
 }
 
 void Mesh::createTextures() {
-    TextureLoader::createTextureImage(texturePath, uniformBuffer.texture.image, uniformBuffer.texture.memory, uniformBuffer.texture.mipLevels);
+    TextureLoader::createTextureImage(texturePath, uniformBuffer);
     uniformBuffer.texture.view = TextureLoader::createTextureImageView(uniformBuffer.texture.image, uniformBuffer.texture.mipLevels);
-    TextureLoader::createTextureSampler(uniformBuffer.texture.sampler, uniformBuffer.texture.mipLevels);
+    TextureLoader::createTextureSampler(uniformBuffer.texture.sampler, VK_SAMPLER_ADDRESS_MODE_REPEAT, uniformBuffer.texture.mipLevels);
 }
 
 void Mesh::createCubeMapTextures() {
-    TextureLoader::createTextureImage(texturePaths[0], uniformBuffer.texture.image, uniformBuffer.texture.memory, uniformBuffer.texture.mipLevels);
-    uniformBuffer.texture.view = TextureLoader::createTextureImageView(uniformBuffer.texture.image, uniformBuffer.texture.mipLevels);
-    TextureLoader::createTextureSampler(uniformBuffer.texture.sampler, uniformBuffer.texture.mipLevels);
+    TextureLoader::createCubeMapImage(texturePaths, uniformBuffer);
+    uniformBuffer.texture.view = TextureLoader::createCubeMapImageView(uniformBuffer.texture.image, uniformBuffer.texture.mipLevels);
+    TextureLoader::createTextureSampler(uniformBuffer.texture.sampler, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE, uniformBuffer.texture.mipLevels);
 }
 
 void Mesh::draw(VkCommandBuffer& commandBuffer, GraphicsPipeline& graphicsPipeline, uint32_t currentFrame) {

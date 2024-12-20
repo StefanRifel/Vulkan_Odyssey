@@ -158,7 +158,7 @@ void SwapChain::createImageViews() {
     swapChainImageViews.resize(swapChainImages.size());
 
     for (uint32_t i = 0; i < swapChainImages.size(); i++) {
-        swapChainImageViews[i] = TextureLoader::createImageView(swapChainImages[i], swapChainImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, mipLevels);
+        swapChainImageViews[i] = TextureLoader::createImageView(swapChainImages[i], swapChainImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_VIEW_TYPE_2D, 1, mipLevels);
     }
 }
 
@@ -190,7 +190,7 @@ void SwapChain::createDepthResources() {
     VkFormat depthFormat = findDepthFormat();
     
     TextureLoader::createImage(swapChainExtent.width, swapChainExtent.height, mipLevels, depthFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, depthImage, depthImageMemory);
-    depthImageView = TextureLoader::createImageView(depthImage, depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT, mipLevels);
+    depthImageView = TextureLoader::createImageView(depthImage, depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT, VK_IMAGE_VIEW_TYPE_2D, 1, mipLevels);
 }
 
 VkFormat SwapChain::findDepthFormat() {

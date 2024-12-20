@@ -11,6 +11,14 @@ void SceneNode::addChild(SceneNode* child) {
     children.push_back(child);
 }
 
+std::vector<SceneNode*> SceneNode::getChildren() {
+    return children;
+}
+
+std::string SceneNode::getShaderType() {
+    return pipelineName;
+}
+
 void SceneNode::setLocalTransform(const glm::mat4& transform) {
     localTransform = transform;
     updateWorldTransform();

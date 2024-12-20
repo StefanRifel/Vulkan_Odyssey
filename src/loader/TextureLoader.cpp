@@ -1,14 +1,14 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "TextureLoader.h"
 
-void TextureLoader::createTextureImage(std::string texturePath, VkImage& textureImage, VkDeviceMemory& textureImageMemory, uint32_t& mipLevels) {
+void TextureLoader::createTextureImage(std::string texturePath, UniformBuffer& uniformBuffer) {
     int texWidth, texHeight, texChannels;
     stbi_uc* pixels = stbi_load(texturePath.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
     if(texWidth == 0 || texHeight == 0) {
         throw std::runtime_error("failed to load texture image!");
     }
     VkDeviceSize imageSize = texWidth * texHeight * 4;
-    mipLevels = static_cast<uint32_t>(std::floor(std::log2(std::max(texWidth, texHeight)))) + 1;
+    uniformBuffer.texture.mipLevels = static_cast<uint32_t>(std::floor(std::log2(std::max(texWidth, texHeight)))) + 1;
 
     if (!pixels) {
         throw std::runtime_error("failed to load texture image!");
@@ -24,16 +24,126 @@ void TextureLoader::createTextureImage(std::string texturePath, VkImage& texture
 
     stbi_image_free(pixels);
 
-    createImage(texWidth, texHeight, mipLevels, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL,
+    createImage(texWidth, texHeight, uniformBuffer.texture.mipLevels, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL,
     VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
-    VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, textureImage, textureImageMemory);
+    VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, uniformBuffer.texture.image, uniformBuffer.texture.memory);
 
-    transitionImageLayout(textureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, mipLevels);
-    copyBufferToImage(stagingBuffer.buffer, textureImage, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
+    transitionImageLayout(uniformBuffer.texture.image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, uniformBuffer.texture.mipLevels);
+    copyBufferToImage(stagingBuffer.buffer, uniformBuffer.texture.image, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
 
     cleanupBuffer(stagingBuffer);
 
-    generateMipmaps(textureImage, VK_FORMAT_R8G8B8A8_SRGB, texWidth, texHeight, mipLevels);
+    generateMipmaps(uniformBuffer.texture.image, VK_FORMAT_R8G8B8A8_SRGB, texWidth, texHeight, uniformBuffer.texture.mipLevels);
+}
+
+void TextureLoader::createCubeMapImage(std::vector<std::string>& texturePaths, UniformBuffer& uniformBuffer) {
+    int texWidth, texHeight, texChannels;
+    stbi_uc* pixels = stbi_load(texturePaths[0].c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
+    if (!pixels) {
+        throw std::runtime_error("failed to load texture image!");
+    }
+
+    VkDeviceSize layerSize = texWidth * texHeight * 4;
+    VkDeviceSize imageSize = layerSize * 6;
+    uniformBuffer.texture.mipLevels = 1;
+
+    // Create staging buffer for all 6 faces
+    Buffer stagingBuffer;
+    createBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
+                VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+                stagingBuffer);
+
+    // Load all 6 faces into staging buffer
+    void* data;
+    vkMapMemory(LogicalDeviceWrapper::getVkDevice(), stagingBuffer.bufferMemory, 0, imageSize, 0, &data);
+    
+    // Copy first face
+    memcpy(data, pixels, layerSize);
+    stbi_image_free(pixels);
+
+    // Load and copy remaining faces
+    for (size_t i = 1; i < 6; i++) {
+        pixels = stbi_load(texturePaths[i].c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
+        if (!pixels) {
+            throw std::runtime_error("failed to load cubemap face!");
+        }
+        memcpy(static_cast<char*>(data) + (i * layerSize), pixels, layerSize);
+        stbi_image_free(pixels);
+    }
+    
+    vkUnmapMemory(LogicalDeviceWrapper::getVkDevice(), stagingBuffer.bufferMemory);
+
+    // Create image with cubemap flag
+    VkImageCreateInfo imageInfo{};
+    imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+    imageInfo.imageType = VK_IMAGE_TYPE_2D;
+    imageInfo.extent.width = texWidth;
+    imageInfo.extent.height = texHeight;
+    imageInfo.extent.depth = 1;
+    imageInfo.mipLevels = 1;
+    imageInfo.arrayLayers = 6;
+    imageInfo.format = VK_FORMAT_R8G8B8A8_SRGB;
+    imageInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
+    imageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+    imageInfo.usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+    imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
+    imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+    imageInfo.flags = VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT;
+
+    if (vkCreateImage(LogicalDeviceWrapper::getVkDevice(), &imageInfo, nullptr, &uniformBuffer.texture.image) != VK_SUCCESS) {
+        throw std::runtime_error("failed to create cubemap image!");
+    }
+
+    // Allocate and bind memory
+    VkMemoryRequirements memRequirements;
+    vkGetImageMemoryRequirements(LogicalDeviceWrapper::getVkDevice(), uniformBuffer.texture.image, &memRequirements);
+
+    VkMemoryAllocateInfo allocInfo{};
+    allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+    allocInfo.allocationSize = memRequirements.size;
+    allocInfo.memoryTypeIndex = PhysicalDeviceWrapper::findMemoryType(memRequirements.memoryTypeBits, 
+                               VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+
+    if (vkAllocateMemory(LogicalDeviceWrapper::getVkDevice(), &allocInfo, nullptr, &uniformBuffer.texture.memory) != VK_SUCCESS) {
+        throw std::runtime_error("failed to allocate cubemap image memory!");
+    }
+
+    vkBindImageMemory(LogicalDeviceWrapper::getVkDevice(), uniformBuffer.texture.image, uniformBuffer.texture.memory, 0);
+
+    // Transition image layout and copy data
+    transitionImageLayout(uniformBuffer.texture.image, VK_FORMAT_R8G8B8A8_SRGB,
+                         VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 6,
+                         uniformBuffer.texture.mipLevels);
+
+    // Copy all 6 faces
+    VkBufferImageCopy regions[6];
+    for (uint32_t face = 0; face < 6; face++) {
+        regions[face].bufferOffset = face * layerSize;
+        regions[face].bufferRowLength = 0;
+        regions[face].bufferImageHeight = 0;
+        regions[face].imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+        regions[face].imageSubresource.mipLevel = 0;
+        regions[face].imageSubresource.baseArrayLayer = face;
+        regions[face].imageSubresource.layerCount = 1;
+        regions[face].imageOffset = {0, 0, 0};
+        regions[face].imageExtent = {
+            static_cast<uint32_t>(texWidth),
+            static_cast<uint32_t>(texHeight),
+            1
+        };
+    }
+
+    VkCommandBuffer commandBuffer = BufferUtils::beginSingleTimeCommands();
+    vkCmdCopyBufferToImage(commandBuffer, stagingBuffer.buffer, uniformBuffer.texture.image,
+                          VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 6, regions);
+    BufferUtils::endSingleTimeCommands(commandBuffer);
+
+    // Transition to shader read optimal
+    transitionImageLayout(uniformBuffer.texture.image, VK_FORMAT_R8G8B8A8_SRGB,
+                         VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, 6,
+                         uniformBuffer.texture.mipLevels);
+
+    cleanupBuffer(stagingBuffer);
 }
 
 void TextureLoader::generateMipmaps(VkImage image, VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels) {
@@ -159,10 +269,14 @@ void TextureLoader::createImage(uint32_t width, uint32_t height, uint32_t& mipLe
 }
 
 VkImageView TextureLoader::createTextureImageView(VkImage& textureImage, uint32_t& mipLevels) {
-    return createImageView(textureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, mipLevels);
+    return createImageView(textureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_VIEW_TYPE_2D, 1, mipLevels);
 }
 
-void TextureLoader::transitionImageLayout(VkImage image, [[maybe_unused]] VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t& mipLevels) {
+VkImageView TextureLoader::createCubeMapImageView(VkImage& textureImage, uint32_t& mipLevels) {
+    return createImageView(textureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_VIEW_TYPE_CUBE, 6, mipLevels);
+}
+
+void TextureLoader::transitionImageLayout(VkImage image, [[maybe_unused]] VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, int layerCount, uint32_t& mipLevels) {
     VkCommandBuffer commandBuffer = BufferUtils::beginSingleTimeCommands();
 
     VkImageMemoryBarrier barrier{};
@@ -176,7 +290,7 @@ void TextureLoader::transitionImageLayout(VkImage image, [[maybe_unused]] VkForm
     barrier.subresourceRange.baseMipLevel = 0;
     barrier.subresourceRange.levelCount = mipLevels;
     barrier.subresourceRange.baseArrayLayer = 0;
-    barrier.subresourceRange.layerCount = 1;
+    barrier.subresourceRange.layerCount = layerCount;
 
     VkPipelineStageFlags sourceStage;
     VkPipelineStageFlags destinationStage;
@@ -232,17 +346,17 @@ void TextureLoader::copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t w
     BufferUtils::endSingleTimeCommands(commandBuffer);
 }
 
-VkImageView TextureLoader::createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t& mipLevels) {
+VkImageView TextureLoader::createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, VkImageViewType viewType, int layerCount, uint32_t& mipLevels) {
     VkImageViewCreateInfo viewInfo{};
     viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
     viewInfo.image = image;
-    viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+    viewInfo.viewType = viewType;
     viewInfo.format = format;
     viewInfo.subresourceRange.aspectMask = aspectFlags;
     viewInfo.subresourceRange.baseMipLevel = 0;
     viewInfo.subresourceRange.levelCount = mipLevels;
     viewInfo.subresourceRange.baseArrayLayer = 0;
-    viewInfo.subresourceRange.layerCount = 1;
+    viewInfo.subresourceRange.layerCount = layerCount;
 
     VkImageView imageView;
     if (vkCreateImageView(LogicalDeviceWrapper::getVkDevice(), &viewInfo, nullptr, &imageView) != VK_SUCCESS) {
@@ -252,7 +366,7 @@ VkImageView TextureLoader::createImageView(VkImage image, VkFormat format, VkIma
     return imageView;
 }
 
-void TextureLoader::createTextureSampler(VkSampler& textureSampler, uint32_t& mipLevels) {
+void TextureLoader::createTextureSampler(VkSampler& textureSampler, VkSamplerAddressMode addressMode, uint32_t& mipLevels) {
     VkPhysicalDeviceProperties properties{};
     vkGetPhysicalDeviceProperties(PhysicalDeviceWrapper::getPhysicalDevice(), &properties);
 
@@ -260,9 +374,9 @@ void TextureLoader::createTextureSampler(VkSampler& textureSampler, uint32_t& mi
     samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
     samplerInfo.magFilter = VK_FILTER_LINEAR;
     samplerInfo.minFilter = VK_FILTER_LINEAR;
-    samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-    samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-    samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+    samplerInfo.addressModeU = addressMode;
+    samplerInfo.addressModeV = addressMode;
+    samplerInfo.addressModeW = addressMode;
     samplerInfo.anisotropyEnable = VK_TRUE;
     samplerInfo.maxAnisotropy = properties.limits.maxSamplerAnisotropy;
     samplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;

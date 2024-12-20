@@ -20,6 +20,8 @@ public:
     SceneNode(Mesh* mesh = nullptr, const std::string& pipeline = "default");
 
     void addChild(SceneNode* child);
+    std::vector<SceneNode*> getChildren();
+    std::string getShaderType();
 
     void setLocalTransform(const glm::mat4& transform);
     void updateWorldTransform(const glm::mat4& parentTransform = glm::mat4(1.0f));

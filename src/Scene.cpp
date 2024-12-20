@@ -19,7 +19,7 @@ void Scene::initVulkan() {
     // GRAPHICS PIPELINE
     graphicsPipelines.insert({"default", RenderPass::createGraphicsPipeline("shaders/shader.vert.spv", "shaders/shader.frag.spv")});
     graphicsPipelines.insert({"red", RenderPass::createGraphicsPipeline("shaders/shader_red.vert.spv", "shaders/shader_red.frag.spv")});
-    graphicsPipelines.insert({"skybox", RenderPass::createGraphicsPipeline("shaders/shader_skybox.vert.spv", "shaders/shader_skybox.frag.spv")});
+    graphicsPipelines.insert({"skybox", RenderPass::createGraphicsPipelineSkybox("shaders/shader_skybox.vert.spv", "shaders/shader_skybox.frag.spv")});
 
     CommandPool::createCommandPool();
     SwapChain::createDepthResources();
@@ -59,7 +59,7 @@ void Scene::initSceneGraph() {
     auto meshNode1 = new SceneNode(meshes["viking_room"], "default");
     auto meshNode2 = new SceneNode(meshes["cube"], "red");
     auto meshNode3 = new SceneNode(meshes["covered_car"], "default");
-    auto skybox = new SceneNode(meshes["skybox"], "default");
+    auto skybox = new SceneNode(meshes["skybox"], "skybox");
 
     rootNode->addChild(skybox);
     rootNode->addChild(meshNode1);
@@ -172,7 +172,7 @@ void Scene::drawFrame() {
     renderPassInfo.renderArea.extent = SwapChain::getSwapChainExtent();
 
     std::array<VkClearValue, 2> clearValues{};
-    clearValues[0].color = {{1.0f, 1.0f, 1.0f, 1.0f}};
+    clearValues[0].color = {{0.0f, 0.0f, 0.0f, 1.0f}}; 
     clearValues[1].depthStencil = {1.0f, 0};
 
     renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
@@ -180,15 +180,24 @@ void Scene::drawFrame() {
 
     vkCmdBeginRenderPass(CommandPool::getCommandBuffers()[currentFrame], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
-    // Ensure uniform buffers are updated before drawing
-    //mesh->updateUniformBuffer(camera, currentFrame);
-    //mesh2->updateUniformBuffer(camera, currentFrame);
+    rootNode->updateWorldTransform();
 
-    // Draw both meshes
-    //mesh->draw(CommandPool::getCommandBuffers()[currentFrame], graphicsPipelines["default"], currentFrame);
-    //mesh2->draw(CommandPool::getCommandBuffers()[currentFrame], graphicsPipelines["red"], currentFrame);
+    // First render skybox separately
+    for (auto child : rootNode->getChildren()) {
+        if (child->getShaderType() == "skybox") {
+            child->draw(CommandPool::getCommandBuffers()[currentFrame], 
+                       graphicsPipelines, currentFrame, camera);
+        }
+    }
 
-    rootNode->updateWorldTransform(); // Update transforms
+    // Then render other objects
+    for (auto child : rootNode->getChildren()) {
+        if (child->getShaderType() != "skybox") {
+            child->draw(CommandPool::getCommandBuffers()[currentFrame], 
+                       graphicsPipelines, currentFrame, camera);
+        }
+    }
+    
     rootNode->draw(CommandPool::getCommandBuffers()[currentFrame], graphicsPipelines, currentFrame, camera);
 
     vkCmdEndRenderPass(CommandPool::getCommandBuffers()[currentFrame]);

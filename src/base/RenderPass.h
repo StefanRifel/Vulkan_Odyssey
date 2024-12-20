@@ -32,6 +32,7 @@ public:
 
     static void createRenderPass();
     static GraphicsPipeline createGraphicsPipeline(std::string vertShaderPath, std::string fragShaderPath);
+    static GraphicsPipeline createGraphicsPipelineSkybox(std::string vertShaderPath, std::string fragShaderPath);
 };
 
 #endif
