@@ -19,7 +19,7 @@ Weitere Anforderungen:
 - [x] feingranulare Synchronisation der Vulkan-Befehle
 - [ ] gleichzeitige Verwendung von mindestens zwei Texturen in einem Objekt
 - [ ] Aktivierung von Multisample Anti-Aliasing (MSAA)
-- [ ] Verwendung einer Umgebungstextur
+- [x] Verwendung einer Umgebungstextur
 - [ ] Spiegelung der Umgebungstextur auf einigen Objekten
 - [ ] Verwendung des Stencil-Buffers für die Darstellung eines Spiegels oder eines Portals
 - [ ] Nebel in einer komplexen 3D-Szene
