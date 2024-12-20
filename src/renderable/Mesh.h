@@ -33,11 +33,13 @@ public:
 
     Mesh(std::string modelPath, std::string texturePath);
     Mesh(std::string modelPath, std::vector<std::string>& texturePaths);
+    Mesh(float width, float depth, std::string texturePath);
     ~Mesh();
 
     void initBuffers();
     void createTextures();
     void createCubeMapTextures();
+    void createPlane(float width, float depth);
     void draw(VkCommandBuffer& commandBuffer, GraphicsPipeline& graphicsPipeline, uint32_t currentFrame);
     void updateUniformBuffer(Camera& camera, uint32_t currentImage, glm::mat4& worldTransform);
     void cleanupTextures();

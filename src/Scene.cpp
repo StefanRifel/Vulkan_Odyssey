@@ -17,8 +17,9 @@ void Scene::initVulkan() {
     DescriptorPool::createDescriptorSetLayout();
 
     // GRAPHICS PIPELINE
-    graphicsPipelines.insert({"default", RenderPass::createGraphicsPipeline("shaders/shader.vert.spv", "shaders/shader.frag.spv")});
-    graphicsPipelines.insert({"red", RenderPass::createGraphicsPipeline("shaders/shader_red.vert.spv", "shaders/shader_red.frag.spv")});
+    graphicsPipelines.insert({"default", RenderPass::createGraphicsPipeline("shaders/shader.vert.spv", "shaders/shader.frag.spv", VK_FRONT_FACE_COUNTER_CLOCKWISE)});
+    graphicsPipelines.insert({"plane", RenderPass::createGraphicsPipeline("shaders/shader.vert.spv", "shaders/shader.frag.spv", VK_FRONT_FACE_CLOCKWISE)});
+    graphicsPipelines.insert({"red", RenderPass::createGraphicsPipeline("shaders/shader_red.vert.spv", "shaders/shader_red.frag.spv", VK_FRONT_FACE_COUNTER_CLOCKWISE)});
     graphicsPipelines.insert({"skybox", RenderPass::createGraphicsPipelineSkybox("shaders/shader_skybox.vert.spv", "shaders/shader_skybox.frag.spv")});
 
     CommandPool::createCommandPool();
@@ -29,6 +30,7 @@ void Scene::initVulkan() {
     meshes.insert({"cube", new Mesh{"assets/models/cube.obj", "assets/textures/viking_room.png"}});
     meshes.insert({"covered_car", new Mesh{"assets/car/model/covered_car_1k.obj", "assets/car/textures/covered_car_diff_1k.jpg"}});
     meshes.insert({"skybox", new Mesh{"assets/skybox/model/skybox.obj", texturePaths}});
+    meshes.insert({"plane", new Mesh{10.0f, 10.0f, "assets/terrain/leafy_grass_diff_1k.jpg"}});
 
     // TEXTURE
     for (auto& mesh : meshes) {
@@ -60,8 +62,10 @@ void Scene::initSceneGraph() {
     auto meshNode2 = new SceneNode(meshes["cube"], "red");
     auto meshNode3 = new SceneNode(meshes["covered_car"], "default");
     auto skybox = new SceneNode(meshes["skybox"], "skybox");
+    auto plane = new SceneNode(meshes["plane"], "plane");
 
     rootNode->addChild(skybox);
+    rootNode->addChild(plane);
     rootNode->addChild(meshNode1);
     rootNode->addChild(meshNode2);
     meshNode2->addChild(meshNode3);
@@ -73,6 +77,7 @@ void Scene::initSceneGraph() {
     meshNode2->setLocalTransform(transform2);
     meshNode3->setLocalTransform(transform1);
     skybox->setLocalTransform(glm::mat4(1.0f));
+    plane->setLocalTransform(glm::mat4(1.0f));
 }
 
 void Scene::waitOutstandingQueues() {

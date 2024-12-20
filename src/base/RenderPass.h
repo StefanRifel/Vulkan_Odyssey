@@ -31,7 +31,7 @@ public:
     static VkRenderPass& getRenderPass();
 
     static void createRenderPass();
-    static GraphicsPipeline createGraphicsPipeline(std::string vertShaderPath, std::string fragShaderPath);
+    static GraphicsPipeline createGraphicsPipeline(std::string vertShaderPath, std::string fragShaderPath, VkFrontFace cullMode);
     static GraphicsPipeline createGraphicsPipelineSkybox(std::string vertShaderPath, std::string fragShaderPath);
 };
 

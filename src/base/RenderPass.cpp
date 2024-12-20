@@ -64,7 +64,7 @@ void RenderPass::createRenderPass() {
     }
 }
 
-GraphicsPipeline RenderPass::createGraphicsPipeline(std::string vertShaderPath, std::string fragShaderPath) {
+GraphicsPipeline RenderPass::createGraphicsPipeline(std::string vertShaderPath, std::string fragShaderPath, VkFrontFace cullMode) {
     auto vertShaderCode = readFile(vertShaderPath);
     auto fragShaderCode = readFile(fragShaderPath);
 
@@ -113,7 +113,7 @@ GraphicsPipeline RenderPass::createGraphicsPipeline(std::string vertShaderPath, 
     rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
     rasterizer.lineWidth = 1.0f;
     rasterizer.cullMode = VK_CULL_MODE_BACK_BIT;
-    rasterizer.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
+    rasterizer.frontFace = cullMode;
     rasterizer.depthBiasEnable = VK_FALSE;
 
     VkPipelineMultisampleStateCreateInfo multisampling{};

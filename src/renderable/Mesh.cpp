@@ -11,6 +11,10 @@ Mesh::Mesh(std::string modelPath, std::vector<std::string>& texturePaths) : text
     ModelLoader::loadModel(vertexBuffer, indexBuffer, modelPath); 
 }
 
+Mesh::Mesh(float width, float depth, std::string texturePath) : texturePath(texturePath) {
+    createPlane(width, depth);
+}
+
 Mesh::~Mesh() {
     for (int i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
         cleanupBuffer(uniformBuffer.bufferData[i]);
@@ -38,6 +42,26 @@ void Mesh::createCubeMapTextures() {
     TextureLoader::createCubeMapImage(texturePaths, uniformBuffer);
     uniformBuffer.texture.view = TextureLoader::createCubeMapImageView(uniformBuffer.texture.image, uniformBuffer.texture.mipLevels);
     TextureLoader::createTextureSampler(uniformBuffer.texture.sampler, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE, uniformBuffer.texture.mipLevels);
+}
+
+void Mesh::createPlane(float width, float depth) {
+    std::vector<Vertex> vertices;
+    std::vector<uint32_t> indices;
+
+    float hw = width * 0.5f;
+    float hd = depth * 0.5f;
+    
+    vertices = {
+        {{-hw, 0.0f, -hd}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
+        {{ hw, 0.0f, -hd}, {0.0f, 1.0f, 0.0f}, {8.0f, 0.0f}},  
+        {{ hw, 0.0f,  hd}, {0.0f, 1.0f, 0.0f}, {8.0f, 8.0f}},
+        {{-hw, 0.0f,  hd}, {0.0f, 1.0f, 0.0f}, {0.0f, 8.0f}}
+    };
+
+    indices = {0, 1, 2, 2, 3, 0};
+    
+    vertexBuffer.vertices = vertices;
+    indexBuffer.indices = indices;
 }
 
 void Mesh::draw(VkCommandBuffer& commandBuffer, GraphicsPipeline& graphicsPipeline, uint32_t currentFrame) {
