@@ -5,3 +5,5 @@ shaders/shader.vert.spv
 .vscode/settings.json
 shaders/shader_red.frag.spv
 shaders/shader_red.vert.spv
+shaders/shader_skybox.frag.spv
+shaders/shader_skybox.vert.spv

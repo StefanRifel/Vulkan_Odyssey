@@ -18,7 +18,7 @@ WRAPPER_SRC = $(SRC_DIR)/wrapper/LogicalDeviceWrapper.cpp $(SRC_DIR)/wrapper/Phy
 OBJ_SRC = $(SRC_DIR)/main.cpp $(SRC_DIR)/Scene.cpp $(SRC_DIR)/Window.cpp $(SRC_DIR)/Application.cpp $(SRC_DIR)/Shader.cpp $(SRC_DIR)/Camera.cpp $(SRC_DIR)/InputManager.cpp $(SRC_DIR)/SceneNode.cpp
 
 # Shader-Dateien
-SHADER_SRC = $(SHADER_DIR)/shader.vert $(SHADER_DIR)/shader.frag $(SHADER_DIR)/shader_red.vert $(SHADER_DIR)/shader_red.frag
+SHADER_SRC = $(SHADER_DIR)/shader.vert $(SHADER_DIR)/shader.frag $(SHADER_DIR)/shader_red.vert $(SHADER_DIR)/shader_red.frag $(SHADER_DIR)/shader_skybox.vert $(SHADER_DIR)/shader_skybox.frag
 SHADER_SPV = $(SHADER_SRC:.vert=.vert.spv) $(SHADER_SRC:.frag=.frag.spv)
 
 # Alle Quell- und Objektdateien
