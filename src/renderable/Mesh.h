@@ -26,13 +26,18 @@ private:
 
     std::string modelPath;
     std::string texturePath;
+    std::vector<std::string> texturePaths;
 
 public:
+    bool isCubeMap = false;
+
     Mesh(std::string modelPath, std::string texturePath);
+    Mesh(std::string modelPath, std::vector<std::string>& texturePaths);
     ~Mesh();
 
     void initBuffers();
     void createTextures();
+    void createCubeMapTextures();
     void draw(VkCommandBuffer& commandBuffer, GraphicsPipeline& graphicsPipeline, uint32_t currentFrame);
     void updateUniformBuffer(Camera& camera, uint32_t currentImage, glm::mat4& worldTransform);
     void cleanupTextures();

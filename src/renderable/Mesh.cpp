@@ -7,6 +7,10 @@ Mesh::Mesh(std::string modelPath, std::string texturePath) : modelPath(modelPath
     std::cout << "Model loaded: " << modelPath << " with " << vertexBuffer.vertices.size() << " vertices and " << indexBuffer.indices.size() << " indices." << std::endl;
 }
 
+Mesh::Mesh(std::string modelPath, std::vector<std::string>& texturePaths) : texturePaths(texturePaths), isCubeMap(true) {
+    ModelLoader::loadModel(vertexBuffer, indexBuffer, modelPath); 
+}
+
 Mesh::~Mesh() {
     for (int i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
         cleanupBuffer(uniformBuffer.bufferData[i]);
@@ -26,6 +30,12 @@ void Mesh::initBuffers() {
 
 void Mesh::createTextures() {
     TextureLoader::createTextureImage(texturePath, uniformBuffer.texture.image, uniformBuffer.texture.memory, uniformBuffer.texture.mipLevels);
+    uniformBuffer.texture.view = TextureLoader::createTextureImageView(uniformBuffer.texture.image, uniformBuffer.texture.mipLevels);
+    TextureLoader::createTextureSampler(uniformBuffer.texture.sampler, uniformBuffer.texture.mipLevels);
+}
+
+void Mesh::createCubeMapTextures() {
+    TextureLoader::createTextureImage(texturePaths[0], uniformBuffer.texture.image, uniformBuffer.texture.memory, uniformBuffer.texture.mipLevels);
     uniformBuffer.texture.view = TextureLoader::createTextureImageView(uniformBuffer.texture.image, uniformBuffer.texture.mipLevels);
     TextureLoader::createTextureSampler(uniformBuffer.texture.sampler, uniformBuffer.texture.mipLevels);
 }

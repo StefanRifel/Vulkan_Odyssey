@@ -59,7 +59,7 @@ void Scene::initSceneGraph() {
     auto meshNode1 = new SceneNode(meshes["viking_room"], "default");
     auto meshNode2 = new SceneNode(meshes["cube"], "red");
     auto meshNode3 = new SceneNode(meshes["covered_car"], "default");
-    auto skybox = new SceneNode(meshes["skybox"], "skybox");
+    auto skybox = new SceneNode(meshes["skybox"], "default");
 
     rootNode->addChild(skybox);
     rootNode->addChild(meshNode1);
