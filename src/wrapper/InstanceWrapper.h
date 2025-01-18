@@ -9,26 +9,37 @@
 #include <cstring>
 #include <iostream>
 
+#include "../util/Logger.h"
+
+// Aktiviert Validierungsschichten nur, wenn NDEBUG nicht definiert ist (Debug-Modus).
 #ifdef NDEBUG
 const bool enableValidationLayers = false;
 #else
 const bool enableValidationLayers = true;
 #endif
 
+
+/**
+ * @class InstanceWrapper
+ * @brief Wrapper-Klasse für die Vulkan-Instanz, den Debug-Messenger und die Fensteroberfläche.
+ * 
+ * Diese Klasse stellt Funktionen zum Erstellen und Verwalten einer Vulkan-Instanz,
+ * sowie zum Einrichten eines Debug-Messengers und der Fensteroberfläche für Vulkan zur Verfügung.
+ * Sie bietet außerdem Funktionen zum Überprüfen von Validierungsschichten.
+ */
 class InstanceWrapper {
 
 private:
-    /*
-        In Vulkan ist ein VkInstance eine grundlegende Struktur, die die 
-        Verbindung zwischen der Anwendung und der Vulkan-Implementierung herstellt. 
-        Es repräsentiert den Einstiegspunkt in die Vulkan-API und dient als übergeordneter 
-        Container für alle Vulkan-Objekte.
-    */
+    // Vulkan-Instanz, die die Verbindung zur Vulkan-API darstellt.
     static VkInstance instance;
 
+    // Vulkan-Objekt für den Debug-Messenger, der Debug-Nachrichten verwaltet.
     static VkDebugUtilsMessengerEXT debugMessenger;
+
+    // Vulkan-Oberfläche, die vom Fenster (GLFW) für die Darstellung erstellt wird.
     static VkSurfaceKHR surface;
 
+    // Liste der Validierungsschichten, die während der Entwicklung für Debugging-Zwecke genutzt werden.
     static const std::vector<const char*> validationLayers;
 
     static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback([[maybe_unused]] VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, [[maybe_unused]] VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, [[maybe_unused]] void* pUserData) {

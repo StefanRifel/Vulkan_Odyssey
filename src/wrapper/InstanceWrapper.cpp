@@ -23,6 +23,7 @@ const std::vector<const char*>& InstanceWrapper::getValidationLayers() {
 }
 
 void InstanceWrapper::createInstance() {
+    // Prüft, ob Validierungsschichten benötigt werden und ob sie verfügbar sind.
     if (enableValidationLayers && !checkValidationLayerSupport()) {
         throw std::runtime_error("validation layers requested, but not available!");
     }
@@ -39,10 +40,12 @@ void InstanceWrapper::createInstance() {
     createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
     createInfo.pApplicationInfo = &appInfo;
 
+    // Holt sich alle Erweiterungen, die für die Vulkan-Instanz erforderlich sind
     auto extensions = getRequiredExtensions();
     createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
     createInfo.ppEnabledExtensionNames = extensions.data();
 
+    // Wenn die Validierungsschicht aktiviert ist, fügen wir die Debug-Messenger-Erstellungsinformationen hinzu.
     VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo{};
     if (enableValidationLayers) {
         createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
@@ -103,16 +106,39 @@ bool InstanceWrapper::checkValidationLayerSupport() {
     return true;
 }
 
+// Gibt die Erweiterungen zurück, die für die Vulkan-Instanz erforderlich sind.
 std::vector<const char*> InstanceWrapper::getRequiredExtensions() {
+    // ----------loggt alle existierenden extentions----------
+    uint32_t extensionCount = 0;
+    vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
+
+    std::vector<VkExtensionProperties> allAvalibleextensions(extensionCount);
+    vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, allAvalibleextensions.data());
+
+    Logger::log("Verfügbaren extensions: (" + std::to_string(extensionCount) + ")");
+    for (const auto& extension : allAvalibleextensions) {
+        Logger::log("\t- " + std::string(extension.extensionName));
+    }
+    // --------------------
+
     uint32_t glfwExtensionCount = 0;
     const char** glfwExtensions;
+    // Holt alle Erweiterungen, die von GLFW für die Vulkan-Instanz benötigt werden.
     glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
 
     std::vector<const char*> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
 
+    // Wenn Validierungsschichten aktiviert sind, fügen wir die Debug-Messenger-Erweiterung hinzu.
     if (enableValidationLayers) {
         extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
     }
+
+    // ----------loggt alle benötigten extentions----------
+    Logger::log("Benötigte extensions: (" + std::to_string(glfwExtensionCount) + ")");
+    for (const char* extension : extensions) {
+        Logger::log("\t- " + std::string(extension));
+    }
+    // --------------------
 
     return extensions;
 }
