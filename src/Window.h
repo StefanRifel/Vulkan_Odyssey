@@ -6,6 +6,7 @@
 
 #include <string>
 #include <stdexcept>
+#include <iostream>
 
 /**
  * @class Window
@@ -16,7 +17,7 @@ class Window {
 private:
     GLFWwindow* glfwWindow;
 
-    std::string windowName;
+    const std::string windowName;
     const uint32_t width;
     const uint32_t height;
 

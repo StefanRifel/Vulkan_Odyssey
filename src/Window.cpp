@@ -8,6 +8,7 @@ Window::Window(const std::string& windowName, int width, int height)
 Window::~Window() {
     glfwDestroyWindow(glfwWindow);
     glfwTerminate();
+    std::cout << "Window destroyed" << std::endl;
 }
 
 void Window::initWindow() {

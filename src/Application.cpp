@@ -5,7 +5,7 @@ Application::Application() {
 }
 
 void Application::init() {
-    window = std::make_unique<Window>("Vulkan_Odyssey", 1024, 768);
+    window = std::make_unique<Window>(TITLE, WIDTH, HEIGHT);
     scene = std::make_unique<Scene>(window.get());
     inputManager = std::make_unique<InputManager>(window.get());
 
