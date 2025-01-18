@@ -15,8 +15,13 @@ void PhysicalDeviceWrapper::pickPhysicalDevice() {
     vkEnumeratePhysicalDevices(InstanceWrapper::getInstance(), &deviceCount, devices.data());
 
     for (const auto& device : devices) {
-        if (isDeviceSuitable(device)) {
+        VkPhysicalDeviceProperties deviceProperties;
+        vkGetPhysicalDeviceProperties(device, &deviceProperties);
+
+        if (isDeviceSuitable(device) && deviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU) {
             physicalDevice = device;
+            std::cout << "Using deviceType: " << deviceProperties.deviceType<< std::endl;
+            std::cout << "Using device: " << deviceProperties.deviceName<< std::endl;
             break;
         }
     }

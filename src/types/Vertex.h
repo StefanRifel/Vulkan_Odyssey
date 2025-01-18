@@ -16,10 +16,18 @@ struct Vertex {
     glm::vec3 color;
     glm::vec2 texCoord;
 
+    /*
+    Diese Funktion definiert die Binding-Beschreibung für den Vertex-Puffer. 
+    Sie beschreibt, wie die Vertex-Daten im Puffer organisiert sind und wie die GPU sie interpretieren soll.
+    */  
     static VkVertexInputBindingDescription getBindingDescription() {
         VkVertexInputBindingDescription bindingDescription{};
         bindingDescription.binding = 0;
+        // Gibt die Schrittweite an 
         bindingDescription.stride = sizeof(Vertex);
+
+        // - VK_VERTEX_INPUT_RATE_VERTEX: Ein neues Vertex wird für jede neue Vertex-Instanz verarbeitet.
+        // - VK_VERTEX_INPUT_RATE_INSTANCE: Die Daten werden einmal pro Instanz verarbeitet.
         bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
 
         return bindingDescription;

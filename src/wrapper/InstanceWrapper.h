@@ -18,7 +18,14 @@ const bool enableValidationLayers = true;
 class InstanceWrapper {
 
 private:
+    /*
+        In Vulkan ist ein VkInstance eine grundlegende Struktur, die die 
+        Verbindung zwischen der Anwendung und der Vulkan-Implementierung herstellt. 
+        Es repräsentiert den Einstiegspunkt in die Vulkan-API und dient als übergeordneter 
+        Container für alle Vulkan-Objekte.
+    */
     static VkInstance instance;
+
     static VkDebugUtilsMessengerEXT debugMessenger;
     static VkSurfaceKHR surface;
 

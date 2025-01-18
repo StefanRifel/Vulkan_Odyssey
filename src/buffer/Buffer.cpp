@@ -39,6 +39,12 @@ void copyBuffer(Buffer srcBuffer, Buffer dstBuffer, VkDeviceSize size) {
 void createVertexBuffer(VertexBuffer& vertexBuffer) {
     vertexBuffer.bufferData.bufferSize = sizeof(vertexBuffer.vertices[0]) * vertexBuffer.vertices.size();
 
+    /*
+        Ein stagingBuffer ist ein temporärer Vulkan-Puffer, 
+        der hauptsächlich für die Übertragung von Daten zwischen der CPU 
+        und der GPU verwendet wird. Er dient dazu, Daten wie 
+        Texturen, Vertex-Daten oder Uniform-Daten effizient in den GPU-Speicher zu kopieren.
+    */
     Buffer stagingBuffer;
     createBuffer(vertexBuffer.bufferData.bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer);
 

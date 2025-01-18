@@ -16,6 +16,14 @@
 class LogicalDeviceWrapper {
 
 private:
+    /*
+        Ein VkDevice in Vulkan repräsentiert ein logisches Gerät, 
+        as als abstrakte Schnittstelle zwischen der Anwendung und 
+        einem ausgewählten VkPhysicalDevice (also der physischen GPU) dient. 
+        Während das VkPhysicalDevice die Hardware beschreibt, ermöglicht das 
+        VkDevice der Anwendung, direkt mit dieser Hardware zu arbeiten, indem 
+        es Ressourcen, Warteschlangen und andere Operationen bereitstellt.
+    */
     static VkDevice device;
     static VkQueue graphicsQueue;
     static VkQueue presentQueue;

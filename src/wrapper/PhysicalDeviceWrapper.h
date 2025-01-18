@@ -14,6 +14,14 @@
 class PhysicalDeviceWrapper {
 
 private:
+    /*
+        Ein VkPhysicalDevice repräsentiert in Vulkan eine physische GPU 
+        oder ein anderes Gerät, das Vulkan unterstützt. Es ist eine abstrakte 
+        Beschreibung der Hardware und ihrer Fähigkeiten, und die Grundlage für 
+        die Interaktion mit der Grafikhardware in einer Vulkan-Anwendung.
+        Beschreibt die Geräte Eigenschaften, grundlegende Informationen über die GPU, Hardware Funktionen,
+        Speicher und über die verfügbaren Queue Families.
+    */
     static VkPhysicalDevice physicalDevice;
     const static std::vector<const char*> deviceExtensions;
     
