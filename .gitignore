@@ -1,5 +1,5 @@
 Vulkan_Odyssey
-build/**/*.*
+bin/**/*.*
 shaders/shader.frag.spv
 shaders/shader.vert.spv
 .vscode/settings.json
