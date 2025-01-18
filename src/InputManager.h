@@ -11,6 +11,13 @@
 
 #include "Window.h"
 
+/**
+ * @class InputManager
+ * @brief Klasse zur Verwaltung von Benutzereingaben.
+ *
+ * Diese Klasse erfasst und verwaltet Tastatureingaben, Maustasten, Mausbewegungen und Scroll-Offsets. 
+ * Sie stellt Methoden bereit, um den aktuellen Eingabestatus abzufragen.
+ */
 class InputManager {
 private:
     Window* window;
