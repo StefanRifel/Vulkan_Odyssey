@@ -1,7 +1,7 @@
 #include "Window.h"
 
-Window::Window(const std::string& title, int width, int height)
-    : glfwWindow(nullptr), title(title), width(width), height(height) {
+Window::Window(const std::string& windowName, int width, int height)
+    : glfwWindow(nullptr), windowName(windowName), width(width), height(height) {
     initWindow();
 }
 
@@ -14,18 +14,17 @@ void Window::initWindow() {
     glfwInit();
 
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-    glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);      //Fenstergröße anpassbar machen
+    glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);      //Aktieviert Anpassbarkeit der Fenstergröße
  
-    glfwWindow = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
+    glfwWindow = glfwCreateWindow(width, height, windowName.c_str(), nullptr, nullptr);
 
     if(!glfwWindow) {
-        throw std::runtime_error("WINDOW::INITWINDOW::35 - glfwWindow konnte nicht erstellt werden");
+        throw std::runtime_error("WINDOW::INITWINDOW::22 - glfwWindow konnte nicht erstellt werden");
     }
     
     glfwSetInputMode(glfwWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-    // Callback functionen für rezise
-    glfwSetFramebufferSizeCallback(glfwWindow, framebufferResizeCallback);
+    glfwSetFramebufferSizeCallback(glfwWindow, framebufferResizeCallback);      //Callback für Fenstergrößenänderung
 }
 
 bool Window::shouldClose() const {
