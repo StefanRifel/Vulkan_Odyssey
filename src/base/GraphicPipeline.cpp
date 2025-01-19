@@ -48,43 +48,55 @@ void GraphicPipeline::createGraphicsPipeline(const std::string& vertShaderPath, 
     vertexInputInfo.pVertexBindingDescriptions = &bindingDescription;
     vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
 
-    VkPipelineInputAssemblyStateCreateInfo inputAssembly{};
+
+    // Configure the fixed-function stages
+    // Konfiguration der Input-Assembly-Stufe: Bestimmt, wie die Vertex-Daten interpretiert werden
+    VkPipelineInputAssemblyStateCreateInfo inputAssembly{};                                 
     inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
-    inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
-    inputAssembly.primitiveRestartEnable = VK_FALSE;
+    inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;                           // Topologie legt fest, wie die Primitive (z. B. Dreiecke, Linien) aus den Vertex-Daten erzeugt werden.
+    inputAssembly.primitiveRestartEnable = VK_FALSE;                                        // Aktiviert oder deaktiviert das Neustarten von Primitiven bei einem bestimmten Indexwert.
 
-    VkPipelineViewportStateCreateInfo viewportState{};
+    // Konfiguration der Viewport-Stufe: Definiert den Viewport und das Scissor-Rechteck
+    VkPipelineViewportStateCreateInfo viewportState{};                                      
     viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
-    viewportState.viewportCount = 1;
-    viewportState.scissorCount = 1;
+    viewportState.viewportCount = 1;                                                        // Anzahl der Viewports
+    viewportState.scissorCount = 1;                                                         // Anzahl der Scissor-Rechtecke
 
+    // Konfiguration der Rasterizer-Stufe: Wandelt Geometrie in Fragmente um
     VkPipelineRasterizationStateCreateInfo rasterizer{};
-    rasterizer.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
-    rasterizer.depthClampEnable = VK_FALSE;
+    rasterizer.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;          
+    rasterizer.depthClampEnable = VK_FALSE;                                                 //Clamping der Tiefe von Fragmenten
     rasterizer.rasterizerDiscardEnable = VK_FALSE;
-    rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
-    rasterizer.lineWidth = 1.0f;
-    rasterizer.cullMode = graphicPipelineInfo.cullMode;
-    rasterizer.frontFace = graphicPipelineInfo.frontFace;
+    rasterizer.polygonMode = VK_POLYGON_MODE_FILL;                                          // Polygon gefüllt oder als Drahtgitter
+    rasterizer.lineWidth = 1.0f;                                                            // Dicke der Linien                             
+    rasterizer.cullMode = graphicPipelineInfo.cullMode;                                     // Culling-Modus (z. B. keine Rückseiten oder Vorderseiten rendern)
+    rasterizer.frontFace = graphicPipelineInfo.frontFace;                                   // Definiert die Ausrichtung der Vorderseite von Polygonen (im Uhrzeigersinn oder gegen den Uhrzeigersinn)
     rasterizer.depthBiasEnable = VK_FALSE;
 
+    // Konfiguration der Multisampling-Stufe: Konfiguriert Multisampling (Anti-Aliasing)
     VkPipelineMultisampleStateCreateInfo multisampling{};
     multisampling.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
-    multisampling.sampleShadingEnable = VK_FALSE;
-    multisampling.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
+    multisampling.sampleShadingEnable = VK_FALSE;                                           // Aktiviert oder deaktiviert Sample-Shading
+    multisampling.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;                             // Anzahl der Samples pro Fragment
 
+    // Konfiguration der Tiefen- und Stencil-Tests: Definiert Tiefentest- und Schreibregeln
     VkPipelineDepthStencilStateCreateInfo depthStencil{};
     depthStencil.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
-    depthStencil.depthTestEnable = VK_TRUE;
-    depthStencil.depthWriteEnable = VK_TRUE;
-    depthStencil.depthCompareOp = graphicPipelineInfo.depthCompare;
-    depthStencil.depthBoundsTestEnable = VK_FALSE;
-    depthStencil.stencilTestEnable = VK_FALSE;
+    depthStencil.depthTestEnable = VK_TRUE;                                                  // Aktiviert oder deaktiviert den Tiefentest
+    depthStencil.depthWriteEnable = VK_TRUE;                                                 // Aktiviert oder deaktiviert das Schreiben in den Tiefenpuffer                                
+    depthStencil.depthCompareOp = graphicPipelineInfo.depthCompare;                          // Definiert die Vergleichsfunktion, die für den Tiefentest verwendet wird
+    depthStencil.depthBoundsTestEnable = VK_FALSE;                                           // Aktiviert oder deaktiviert den Tiefenbereichstest
+    depthStencil.stencilTestEnable = VK_FALSE;                                               // Aktiviert oder deaktiviert den Stencil-Test
 
-    VkPipelineColorBlendAttachmentState colorBlendAttachment{};
-    colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
-    colorBlendAttachment.blendEnable = VK_FALSE;
+    // Konfiguration der Farb-Misch-Stufe: Steuert, wie Farben in den Framebuffer geschrieben werden
+    VkPipelineColorBlendAttachmentState colorBlendAttachment{};                                                                                 
+    colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | 
+                                            VK_COLOR_COMPONENT_G_BIT | 
+                                            VK_COLOR_COMPONENT_B_BIT | 
+                                            VK_COLOR_COMPONENT_A_BIT;                       // Maske, die festlegt, welche Farbkanäle (Rot, Grün, Blau, Alpha) in den Framebuffer geschrieben werden.
+    colorBlendAttachment.blendEnable = VK_FALSE;                                            // Aktiviert oder deaktiviert das Mischen von Farben
 
+    
     VkPipelineColorBlendStateCreateInfo colorBlending{};
     colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
     colorBlending.logicOpEnable = VK_FALSE;
