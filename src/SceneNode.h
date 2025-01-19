@@ -1,6 +1,7 @@
 #ifndef SCENE_GRAPH_H
 #define SCENE_GRAPH_H
 
+#include "base/GraphicPipeline.h"
 #include "renderable/Mesh.h"
 #include <string>
 #include <memory>
@@ -26,7 +27,7 @@ public:
     void setLocalTransform(const glm::mat4& transform);
     void updateWorldTransform(const glm::mat4& parentTransform = glm::mat4(1.0f));
     
-    void draw(VkCommandBuffer& commandBuffer, std::map<std::string, GraphicsPipeline>& pipelines, uint32_t currentFrame, Camera& camera);
+    void draw(VkCommandBuffer& commandBuffer, std::map<std::string, GraphicPipeline*>& pipelines, uint32_t currentFrame, Camera& camera);
 };
 
 #endif

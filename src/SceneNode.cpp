@@ -32,7 +32,7 @@ void SceneNode::updateWorldTransform(const glm::mat4& parentTransform) {
     }
 }
 
-void SceneNode::draw(VkCommandBuffer& commandBuffer, std::map<std::string, GraphicsPipeline>& pipelines, uint32_t currentFrame, Camera& camera) {
+void SceneNode::draw(VkCommandBuffer& commandBuffer, std::map<std::string, GraphicPipeline*>& pipelines, uint32_t currentFrame, Camera& camera) {
     if (mesh) {
         mesh->updateUniformBuffer(camera, currentFrame, worldTransform);
         mesh->draw(commandBuffer, pipelines[pipelineName], currentFrame);

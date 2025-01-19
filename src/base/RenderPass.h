@@ -6,8 +6,6 @@
 
 #include "../wrapper/LogicalDeviceWrapper.h"
 
-#include "../Shader.h"
-
 #include "../types/Vertex.h"
 
 #include "../loader/FileLoader.h"
@@ -16,11 +14,6 @@
 #include "../base/SwapChain.h"
 
 #include <array>
-
-struct GraphicsPipeline {
-    VkPipelineLayout pipelineLayout;
-    VkPipeline graphicsPipeline;
-};
 
 class RenderPass {
 
@@ -31,8 +24,6 @@ public:
     static VkRenderPass& getRenderPass();
 
     static void createRenderPass();
-    static GraphicsPipeline createGraphicsPipeline(std::string vertShaderPath, std::string fragShaderPath, VkFrontFace cullMode);
-    static GraphicsPipeline createGraphicsPipelineSkybox(std::string vertShaderPath, std::string fragShaderPath);
 };
 
 #endif

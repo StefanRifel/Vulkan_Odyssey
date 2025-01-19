@@ -13,6 +13,7 @@
 #include "../buffer/Buffer.h"
 
 #include "../base/RenderPass.h"
+#include "../base/GraphicPipeline.h"
 #include "../types/UniformBufferObject.h"
 #include "../base/SwapChain.h"
 
@@ -40,7 +41,7 @@ public:
     void createTextures();
     void createCubeMapTextures();
     void createPlane(float width, float depth);
-    void draw(VkCommandBuffer& commandBuffer, GraphicsPipeline& graphicsPipeline, uint32_t currentFrame);
+    void draw(VkCommandBuffer& commandBuffer, GraphicPipeline* graphicsPipeline, uint32_t currentFrame);
     void updateUniformBuffer(Camera& camera, uint32_t currentImage, glm::mat4& worldTransform);
     void cleanupTextures();
 };

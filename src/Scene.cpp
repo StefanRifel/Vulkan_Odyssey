@@ -17,10 +17,20 @@ void Scene::initVulkan() {
     DescriptorPool::createDescriptorSetLayout();
 
     // GRAPHICS PIPELINE
-    graphicsPipelines.insert({"default", RenderPass::createGraphicsPipeline("shaders/shader.vert.spv", "shaders/shader.frag.spv", VK_FRONT_FACE_COUNTER_CLOCKWISE)});
-    graphicsPipelines.insert({"plane", RenderPass::createGraphicsPipeline("shaders/shader.vert.spv", "shaders/shader.frag.spv", VK_FRONT_FACE_CLOCKWISE)});
-    graphicsPipelines.insert({"red", RenderPass::createGraphicsPipeline("shaders/shader_red.vert.spv", "shaders/shader_red.frag.spv", VK_FRONT_FACE_COUNTER_CLOCKWISE)});
-    graphicsPipelines.insert({"skybox", RenderPass::createGraphicsPipelineSkybox("shaders/shader_skybox.vert.spv", "shaders/shader_skybox.frag.spv")});
+    graphicPipelines.insert({"default", new GraphicPipeline("shaders/shader.vert.spv", "shaders/shader.frag.spv", GraphicPipeline::getDefaultGraphicPipelineInfo())});
+    graphicPipelines.insert({"red", new GraphicPipeline("shaders/shader_red.vert.spv", "shaders/shader_red.frag.spv", GraphicPipeline::getDefaultGraphicPipelineInfo())});
+    
+    GraphicPipelineInfo graphicPipelineInfoPlane;
+    graphicPipelineInfoPlane.cullMode = VK_CULL_MODE_BACK_BIT;
+    graphicPipelineInfoPlane.frontFace = VK_FRONT_FACE_CLOCKWISE;
+    graphicPipelineInfoPlane.depthCompare = VK_COMPARE_OP_LESS;
+    graphicPipelines.insert({"plane", new GraphicPipeline("shaders/shader.vert.spv", "shaders/shader.frag.spv", graphicPipelineInfoPlane)});
+    
+    GraphicPipelineInfo graphicPipelineInfoSkybox;
+    graphicPipelineInfoSkybox.cullMode = VK_CULL_MODE_FRONT_BIT;
+    graphicPipelineInfoSkybox.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
+    graphicPipelineInfoSkybox.depthCompare = VK_COMPARE_OP_LESS_OR_EQUAL;
+    graphicPipelines.insert({"skybox", new GraphicPipeline("shaders/shader_skybox.vert.spv", "shaders/shader_skybox.frag.spv", graphicPipelineInfoSkybox)});
 
     CommandPool::createCommandPool();
     SwapChain::createDepthResources();
@@ -88,9 +98,8 @@ void Scene::waitOutstandingQueues() {
 void Scene::cleanup() {
     SwapChain::cleanupSwapChain();
 
-    for (auto& graphicsPipeline : graphicsPipelines) {
-        vkDestroyPipeline(LogicalDeviceWrapper::getVkDevice(), graphicsPipeline.second.graphicsPipeline, nullptr);
-        vkDestroyPipelineLayout(LogicalDeviceWrapper::getVkDevice(), graphicsPipeline.second.pipelineLayout, nullptr);
+    for (auto& graphicPipeline : graphicPipelines) {
+        delete graphicPipeline.second;
     }
 
     vkDestroyRenderPass(LogicalDeviceWrapper::getVkDevice(), RenderPass::getRenderPass(), nullptr);
@@ -191,7 +200,7 @@ void Scene::drawFrame() {
     for (auto child : rootNode->getChildren()) {
         if (child->getShaderType() == "skybox") {
             child->draw(CommandPool::getCommandBuffers()[currentFrame], 
-                       graphicsPipelines, currentFrame, camera);
+                       graphicPipelines, currentFrame, camera);
         }
     }
 
@@ -199,11 +208,11 @@ void Scene::drawFrame() {
     for (auto child : rootNode->getChildren()) {
         if (child->getShaderType() != "skybox") {
             child->draw(CommandPool::getCommandBuffers()[currentFrame], 
-                       graphicsPipelines, currentFrame, camera);
+                       graphicPipelines, currentFrame, camera);
         }
     }
     
-    rootNode->draw(CommandPool::getCommandBuffers()[currentFrame], graphicsPipelines, currentFrame, camera);
+    rootNode->draw(CommandPool::getCommandBuffers()[currentFrame], graphicPipelines, currentFrame, camera);
 
     vkCmdEndRenderPass(CommandPool::getCommandBuffers()[currentFrame]);
 

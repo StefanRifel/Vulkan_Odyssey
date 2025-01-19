@@ -9,6 +9,7 @@
 #include "wrapper/InstanceWrapper.h"
 #include "base/SwapChain.h"
 #include "Camera.h"
+#include "base/GraphicPipeline.h"
 
 #include "renderable/Mesh.h"
 #include <memory>
@@ -32,7 +33,7 @@ private:
     };
 
     SceneNode* rootNode;
-    std::map<std::string ,GraphicsPipeline> graphicsPipelines;
+    std::map<std::string ,GraphicPipeline*> graphicPipelines;
 
     std::vector<VkSemaphore> imageAvailableSemaphores;
     std::vector<VkSemaphore> renderFinishedSemaphores;
