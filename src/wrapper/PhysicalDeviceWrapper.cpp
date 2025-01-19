@@ -1,10 +1,29 @@
 #include "PhysicalDeviceWrapper.h"
 
+// Statische Member-Initialisierungen
 SwapChainSupportDetails PhysicalDeviceWrapper::physicalDeviceSwapChainSupportDetails;
 QueueFamilyIndices PhysicalDeviceWrapper::physicalDevicequeueFamilyIndices;
 VkPhysicalDevice PhysicalDeviceWrapper::physicalDevice = VK_NULL_HANDLE;
 const std::vector<const char*> PhysicalDeviceWrapper::deviceExtensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
 
+// Getter-Methoden
+VkPhysicalDevice& PhysicalDeviceWrapper::getPhysicalDevice() {
+    return physicalDevice;
+}
+
+const std::vector<const char*>& PhysicalDeviceWrapper::getDeviceExtensions() {
+    return deviceExtensions;
+}
+
+SwapChainSupportDetails& PhysicalDeviceWrapper::getSwapChainSupportDetails() {
+    return physicalDeviceSwapChainSupportDetails;
+}
+
+QueueFamilyIndices& PhysicalDeviceWrapper::getQueueFamilyIndices() {
+    return physicalDevicequeueFamilyIndices;
+}
+
+// Public Methoden
 void PhysicalDeviceWrapper::pickPhysicalDevice() {
     uint32_t deviceCount = 0;
     vkEnumeratePhysicalDevices(InstanceWrapper::getInstance(), &deviceCount, nullptr);
@@ -136,6 +155,20 @@ void PhysicalDeviceWrapper::pickPhysicalDevice() {
     }
 }
 
+uint32_t PhysicalDeviceWrapper::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) {
+    VkPhysicalDeviceMemoryProperties memProperties;
+    vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memProperties);
+
+    for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++) {
+        if ((typeFilter & (1 << i)) && (memProperties.memoryTypes[i].propertyFlags & properties) == properties) {
+            return i;
+        }
+    }
+
+    throw std::runtime_error("failed to find suitable memory type!");
+}
+
+// Private Methoden
 bool PhysicalDeviceWrapper::isDeviceSuitable(VkPhysicalDevice device) {
 
     QueueFamilyIndices indices = PhysicalDeviceWrapper::findQueueFamilies(device);
@@ -226,43 +259,3 @@ QueueFamilyIndices PhysicalDeviceWrapper::findQueueFamilies(VkPhysicalDevice dev
     return indices;
 }
 
-/**
- * @brief Findet einen geeigneten Speichertyp basierend auf den angegebenen Anforderungen.
- * 
- * Überprüft die Speichertypen des Physical Devices und gibt den Index eines Typs zurück,
- * der sowohl durch die `typeFilter`-Maske als auch durch die gewünschten `properties` unterstützt wird.
- * 
- * @param typeFilter Bitmaske, die die zulässigen Speichertypen angibt.
- * @param properties Flags, die die benötigten Speicher-Eigenschaften definieren.
- * @return uint32_t Index des geeigneten Speichertyps.
- * @throws std::runtime_error Wenn kein passender Speichertyp gefunden wird.
- */
-
-uint32_t PhysicalDeviceWrapper::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) {
-    VkPhysicalDeviceMemoryProperties memProperties;
-    vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memProperties);
-
-    for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++) {
-        if ((typeFilter & (1 << i)) && (memProperties.memoryTypes[i].propertyFlags & properties) == properties) {
-            return i;
-        }
-    }
-
-    throw std::runtime_error("failed to find suitable memory type!");
-}
-
-VkPhysicalDevice& PhysicalDeviceWrapper::getPhysicalDevice() {
-    return physicalDevice;
-}
-
-const std::vector<const char*>& PhysicalDeviceWrapper::getDeviceExtensions() {
-    return deviceExtensions;
-}
-
-SwapChainSupportDetails& PhysicalDeviceWrapper::getSwapChainSupportDetails() {
-    return physicalDeviceSwapChainSupportDetails;
-}
-
-QueueFamilyIndices& PhysicalDeviceWrapper::getQueueFamilyIndices() {
-    return physicalDevicequeueFamilyIndices;
-}

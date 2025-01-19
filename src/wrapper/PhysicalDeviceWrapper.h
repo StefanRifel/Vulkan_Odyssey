@@ -38,7 +38,6 @@ private:
     const static std::vector<const char*> deviceExtensions;
 
     static SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device);
-
     static QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
 
     static bool isDeviceSuitable(VkPhysicalDevice device);
