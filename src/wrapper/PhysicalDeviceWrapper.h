@@ -27,19 +27,6 @@ private:
      * das Vulkan-kompatibel ist. Dieses Handle verweist auf die ausgewählte GPU.
      */
     static VkPhysicalDevice physicalDevice; 
-    
-    /*
-     * Speichert die Informationen zur Unterstützung von Swap Chains für das physische Gerät.
-     * Diese Details beinhalten unterstützte Formate, Präsentationsmodi und die Swap Chain-Größe,
-     * die für die korrekte Handhabung von Frame-Puffern erforderlich sind.
-     */
-    static SwapChainSupportDetails physicalDeviceSwapChainSupportDetails;
-
-    /*
-     * Enthält die Indizes der Queue-Familien, die von einem physischen Gerät unterstützt werden.
-     * Dies wird verwendet, um die richtige Queue-Familie für Grafik- und Präsentationsaufgaben zu finden.
-     */
-    static QueueFamilyIndices physicalDevicequeueFamilyIndices;
 
     /*
      * Eine Liste von Vulkan Device-Extensions, die für die Anwendung erforderlich sind,
@@ -47,17 +34,12 @@ private:
      */
     const static std::vector<const char*> deviceExtensions;
 
-    static SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device);
-    static QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
-
     static bool isDeviceSuitable(VkPhysicalDevice device);
     static bool checkDeviceExtensionSupport(VkPhysicalDevice device);
     
 public:
     static VkPhysicalDevice& getPhysicalDevice();
     static const std::vector<const char*>& getDeviceExtensions();
-    static SwapChainSupportDetails& getSwapChainSupportDetails();
-    static QueueFamilyIndices& getQueueFamilyIndices();
 
     static void pickPhysicalDevice();
 
@@ -69,6 +51,8 @@ public:
      */
     static uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
 
+    static SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device);
+    static QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
 };
 
 #endif

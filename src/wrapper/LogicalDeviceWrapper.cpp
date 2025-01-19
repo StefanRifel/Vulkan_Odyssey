@@ -17,7 +17,7 @@ VkQueue& LogicalDeviceWrapper::getPresentQueue() {
 }
 
 void LogicalDeviceWrapper::createLogicalDevice() {
-    QueueFamilyIndices indices = PhysicalDeviceWrapper::getQueueFamilyIndices();
+    QueueFamilyIndices indices = PhysicalDeviceWrapper::findQueueFamilies(PhysicalDeviceWrapper::getPhysicalDevice());
 
     std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
     std::set<uint32_t> uniqueQueueFamilies = {indices.graphicsFamily.value(), indices.presentFamily.value()};

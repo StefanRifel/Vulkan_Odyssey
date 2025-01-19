@@ -12,7 +12,7 @@ std::vector<VkCommandBuffer>& CommandPool::getCommandBuffers() {
 }
 
 void CommandPool::createCommandPool() {
-    QueueFamilyIndices queueFamilyIndices = PhysicalDeviceWrapper::getQueueFamilyIndices();
+    QueueFamilyIndices queueFamilyIndices = PhysicalDeviceWrapper::findQueueFamilies(PhysicalDeviceWrapper::getPhysicalDevice());
 
     VkCommandPoolCreateInfo poolInfo{};
     poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;

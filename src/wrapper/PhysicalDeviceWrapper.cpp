@@ -1,8 +1,6 @@
 #include "PhysicalDeviceWrapper.h"
 
 // Statische Member-Initialisierungen
-SwapChainSupportDetails PhysicalDeviceWrapper::physicalDeviceSwapChainSupportDetails;
-QueueFamilyIndices PhysicalDeviceWrapper::physicalDevicequeueFamilyIndices;
 VkPhysicalDevice PhysicalDeviceWrapper::physicalDevice = VK_NULL_HANDLE;
 const std::vector<const char*> PhysicalDeviceWrapper::deviceExtensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
 
@@ -13,14 +11,6 @@ VkPhysicalDevice& PhysicalDeviceWrapper::getPhysicalDevice() {
 
 const std::vector<const char*>& PhysicalDeviceWrapper::getDeviceExtensions() {
     return deviceExtensions;
-}
-
-SwapChainSupportDetails& PhysicalDeviceWrapper::getSwapChainSupportDetails() {
-    return physicalDeviceSwapChainSupportDetails;
-}
-
-QueueFamilyIndices& PhysicalDeviceWrapper::getQueueFamilyIndices() {
-    return physicalDevicequeueFamilyIndices;
 }
 
 // Public Methoden
@@ -41,8 +31,6 @@ void PhysicalDeviceWrapper::pickPhysicalDevice() {
 
         if (isDeviceSuitable(device) && deviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU) {
             physicalDevice = device;
-            physicalDevicequeueFamilyIndices = findQueueFamilies(device);
-            physicalDeviceSwapChainSupportDetails = querySwapChainSupport(device);
 
             VkPhysicalDeviceMemoryProperties memoryProperties;
             vkGetPhysicalDeviceMemoryProperties(device, &memoryProperties);

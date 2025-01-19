@@ -31,7 +31,7 @@ VkExtent2D& SwapChain::getSwapChainExtent() {
 }
 
 void SwapChain::createSwapChain(Window* window) {
-    SwapChainSupportDetails swapChainSupport = PhysicalDeviceWrapper::getSwapChainSupportDetails();
+    SwapChainSupportDetails swapChainSupport = PhysicalDeviceWrapper::querySwapChainSupport(PhysicalDeviceWrapper::getPhysicalDevice());
 
     VkSurfaceFormatKHR surfaceFormat = chooseSwapSurfaceFormat(swapChainSupport.formats);
     VkPresentModeKHR presentMode = chooseSwapPresentMode(swapChainSupport.presentModes);
@@ -53,7 +53,7 @@ void SwapChain::createSwapChain(Window* window) {
     createInfo.imageArrayLayers = 1;
     createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
-    QueueFamilyIndices indices = PhysicalDeviceWrapper::getQueueFamilyIndices();
+    QueueFamilyIndices indices = PhysicalDeviceWrapper::findQueueFamilies(PhysicalDeviceWrapper::getPhysicalDevice());
     uint32_t queueFamilyIndices[] = {indices.graphicsFamily.value(), indices.presentFamily.value()};
 
     if (indices.graphicsFamily != indices.presentFamily) {
