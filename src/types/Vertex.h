@@ -59,6 +59,12 @@ struct Vertex {
     }
 };
 
+/*
+ * Diese Funktion definiert eine Hash-Berechnung für den Typ Vertex. 
+ * Sie wird benötigt, um Vertex-Objekte in Containern wie std::unordered_map oder std::unordered_set zu verwenden. 
+ * Der Hash-Wert wird berechnet, indem die Hash-Werte der Position (pos), der Farbe (color) 
+ * und der Texturkoordinaten (texCoord) kombiniert werden. 
+ */
 namespace std {
     template<> struct hash<Vertex> {
         size_t operator()(Vertex const& vertex) const {

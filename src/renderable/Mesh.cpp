@@ -2,9 +2,8 @@
 #include <iostream>
 
 Mesh::Mesh(std::string modelPath, std::string texturePath) : modelPath(modelPath), texturePath(texturePath) {
-    std::cout << "Loading model: " << modelPath << std::endl;
     ModelLoader::loadModel(vertexBuffer, indexBuffer, modelPath);
-    std::cout << "Model loaded: " << modelPath << " with " << vertexBuffer.vertices.size() << " vertices and " << indexBuffer.indices.size() << " indices." << std::endl;
+    Logger::log("Model loaded: " + modelPath + " with " + std::to_string(vertexBuffer.vertices.size()) + " vertices and " + std::to_string(indexBuffer.indices.size()) + " indices.");
 }
 
 Mesh::Mesh(std::string modelPath, std::vector<std::string>& texturePaths) : texturePaths(texturePaths), isCubeMap(true) {
