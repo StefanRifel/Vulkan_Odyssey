@@ -2,10 +2,17 @@
 #define LOGGER_H
 
 #include <iostream>
+#include <string>
+#include <sstream>
 
 class Logger {
 public:
-    static void log(const std::string& message);
+    template <typename... Args>
+    static void log(Args&&... args) {
+        std::ostringstream oss;
+        (oss << ... << std::forward<Args>(args)); 
+        std::cout << oss.str() << std::endl;
+    }
 };
 
 #endif
