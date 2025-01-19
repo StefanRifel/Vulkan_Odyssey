@@ -23,12 +23,22 @@ class PhysicalDeviceWrapper {
 
 private:
     /*
-     * `VkPhysicalDevice` repräsentiert eine verfügbare GPU oder ein anderes Gerät, 
+     * Das VkPhysicalDevice repräsentiert eine verfügbare GPU oder ein anderes Gerät, 
      * das Vulkan-kompatibel ist. Dieses Handle verweist auf die ausgewählte GPU.
      */
     static VkPhysicalDevice physicalDevice; 
     
+    /*
+     * Speichert die Informationen zur Unterstützung von Swap Chains für das physische Gerät.
+     * Diese Details beinhalten unterstützte Formate, Präsentationsmodi und die Swap Chain-Größe,
+     * die für die korrekte Handhabung von Frame-Puffern erforderlich sind.
+     */
     static SwapChainSupportDetails physicalDeviceSwapChainSupportDetails;
+
+    /*
+     * Enthält die Indizes der Queue-Familien, die von einem physischen Gerät unterstützt werden.
+     * Dies wird verwendet, um die richtige Queue-Familie für Grafik- und Präsentationsaufgaben zu finden.
+     */
     static QueueFamilyIndices physicalDevicequeueFamilyIndices;
 
     /*
