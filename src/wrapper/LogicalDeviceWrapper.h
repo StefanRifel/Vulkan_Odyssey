@@ -13,17 +13,16 @@
 #include <set>
 #include <stdexcept>
 
+/**
+ * @brief Wrapper-Klasse für die Verwaltung eines Vulkan Logical Devices.
+ * 
+ * Diese Klasse abstrahiert die Erstellung, Nutzung und Bereinigung eines Logical Devices sowie
+ * der zugehörigen Queues (Graphics und Present Queues) in Vulkan.
+ */
 class LogicalDeviceWrapper {
 
 private:
-    /*
-        Ein VkDevice in Vulkan repräsentiert ein logisches Gerät, 
-        as als abstrakte Schnittstelle zwischen der Anwendung und 
-        einem ausgewählten VkPhysicalDevice (also der physischen GPU) dient. 
-        Während das VkPhysicalDevice die Hardware beschreibt, ermöglicht das 
-        VkDevice der Anwendung, direkt mit dieser Hardware zu arbeiten, indem 
-        es Ressourcen, Warteschlangen und andere Operationen bereitstellt.
-    */
+
     static VkDevice device;
     static VkQueue graphicsQueue;
     static VkQueue presentQueue;
