@@ -19,10 +19,11 @@ GraphicPipelineInfo GraphicPipeline::getDefaultGraphicPipelineInfo() {
 }
 
 void GraphicPipeline::createGraphicsPipeline(const std::string& vertShaderPath, const std::string& fragShaderPath, const GraphicPipelineInfo& graphicPipelineInfo) {
-
+    // Lade die Shader-Module
     VkShaderModule vertShaderModule = createShaderModule(readFile(vertShaderPath));
     VkShaderModule fragShaderModule = createShaderModule(readFile(fragShaderPath));
-
+    
+    // Konfiguration der Shader-Stufen: Definiert die Shader-Module, die in der Grafikpipeline verwendet werden
     VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
     vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
     vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
@@ -37,6 +38,8 @@ void GraphicPipeline::createGraphicsPipeline(const std::string& vertShaderPath, 
 
     VkPipelineShaderStageCreateInfo shaderStages[] = {vertShaderStageInfo, fragShaderStageInfo};
 
+
+    // Konfiguration der Vertex-Input-Stufe: Definiert die Formate der Vertex-Daten
     VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
     vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
 
