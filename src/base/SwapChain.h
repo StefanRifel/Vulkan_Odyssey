@@ -16,15 +16,22 @@ class SwapChain {
 private:
     static std::vector<VkFramebuffer> swapChainFramebuffers;
 
+    static VkFormat swapChainImageFormat;
+    // eigener renderpass??
+
     static VkImage depthImage;
     static VkDeviceMemory depthImageMemory;
     static VkImageView depthImageView;
+    static std::vector<VkImage> swapChainImages;
+    static std::vector<VkImageView> swapChainImageViews;
+
+    static VkExtent2D swapChainExtent;
 
     static VkSwapchainKHR swapChain;
-    static std::vector<VkImage> swapChainImages;
-    static VkFormat swapChainImageFormat;
-    static VkExtent2D swapChainExtent;
-    static std::vector<VkImageView> swapChainImageViews;
+    
+    
+    
+    
 
     static uint32_t mipLevels;
 
@@ -35,8 +42,13 @@ public:
     static VkFormat& getSwapChainImageFormat();
     static VkExtent2D& getSwapChainExtent();
 
-    static VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
+    /*
+     * Beeinflusst wie Frames aus der Swap Chain auf den Bildschirm präsentiert werden. 
+     * Dies hat Auswirkungen auf die Performance, die Latenz, und ob visuelle Fehler wie Screen Tearing auftreten.
+    */
     static VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
+
+    static VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
     static VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities, Window* window);
 
     static void createFramebuffers();

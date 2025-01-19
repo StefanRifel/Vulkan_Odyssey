@@ -88,7 +88,6 @@ void SwapChain::recreateSwapChain(Window* window) {
         glfwGetFramebufferSize(window->getGLFWwindow(), &width, &height);
         glfwWaitEvents();
     }
-
     vkDeviceWaitIdle(LogicalDeviceWrapper::getVkDevice());
 
     cleanupSwapChain();
@@ -128,10 +127,12 @@ VkSurfaceFormatKHR SwapChain::chooseSwapSurfaceFormat(const std::vector<VkSurfac
 VkPresentModeKHR SwapChain::chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes) {
     for (const auto& availablePresentMode : availablePresentModes) {
         if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR) {
+            Logger::log("Present Mode: VK_PRESENT_MODE_MAILBOX_KHR");
             return availablePresentMode;
         }
     }
 
+    Logger::log("Present Mode: v-Sync");
     return VK_PRESENT_MODE_FIFO_KHR;
 }
 
