@@ -40,6 +40,8 @@ public:
 
     ~GraphicPipeline();
     
+    void bind(VkCommandBuffer commandBuffer);
+
     static GraphicPipelineInfo getDefaultGraphicPipelineInfo();
 
     VkPipeline& getPipeline() { return pipeline; }
