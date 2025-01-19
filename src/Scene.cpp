@@ -91,7 +91,7 @@ void Scene::initSceneGraph() {
 }
 
 void Scene::waitOutstandingQueues() {
-    // To wait on the host for the completion of outstanding queue operations for all queues on a given logical device
+    // Warte bis alle Queues fertig sind
     vkDeviceWaitIdle(LogicalDeviceWrapper::getVkDevice());
 }
 
@@ -157,9 +157,12 @@ void Scene::createSyncObjects() {
 void Scene::drawFrame() {
     vkWaitForFences(LogicalDeviceWrapper::getVkDevice(), 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
 
+    // Hole das nächste Bild aus der SwapChain
     uint32_t imageIndex;
     VkResult result = vkAcquireNextImageKHR(LogicalDeviceWrapper::getVkDevice(), SwapChain::getSwapChain(), UINT64_MAX, imageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, &imageIndex);
 
+    // Wenn die SwapChain veraltet ist, dann erstelle eine neue
+    // Die SwapChain ist veraltet, wenn das Fenster vergrößert oder verkleinert wird
     if (result == VK_ERROR_OUT_OF_DATE_KHR) {
         SwapChain::recreateSwapChain(window);
         return;
@@ -167,10 +170,12 @@ void Scene::drawFrame() {
         throw std::runtime_error("failed to acquire swap chain image!");
     }
 
+    // Überprüfe ob ein Bild in der Queue ist, das noch nicht fertig ist
     vkResetFences(LogicalDeviceWrapper::getVkDevice(), 1, &inFlightFences[currentFrame]);
 
     vkResetCommandBuffer(CommandPool::getCommandBuffers()[currentFrame], /*VkCommandBufferResetFlagBits*/ 0);
 
+    // Beginne das Aufzeichnen des Command Buffers
     VkCommandBufferBeginInfo beginInfo{};
     beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
