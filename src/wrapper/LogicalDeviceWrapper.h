@@ -14,17 +14,17 @@
 #include <stdexcept>
 
 /**
- * @brief Wrapper-Klasse für die Verwaltung eines Vulkan Logical Devices.
- * 
- * Diese Klasse abstrahiert die Erstellung, Nutzung und Bereinigung eines Logical Devices sowie
- * der zugehörigen Queues (Graphics und Present Queues) in Vulkan.
+ * Wrapper-Klasse für das Vulkan Logical Device, das die Kommunikation mit dem GPU
+ * und die Verwaltung von Queues für Grafik- und Präsentationsoperationen übernimmt.
  */
 class LogicalDeviceWrapper {
 
 private:
-
+    // Komunikation mit dem GPU 
     static VkDevice device;
+    // Die Queue, die für Grafikoperationen zuständig ist (z.B. Rendering).
     static VkQueue graphicsQueue;
+    // Die Queue, die für die Präsentation von Bildern auf dem Bildschirm zuständig ist.
     static VkQueue presentQueue;
 
 public:
