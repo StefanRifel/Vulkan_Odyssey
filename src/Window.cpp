@@ -44,11 +44,13 @@ bool Window::getFramebufferResized() {
     return framebufferResized;
 }
 
-void Window::setFramebufferResized(bool b) {
-    framebufferResized = b;
+void Window::resetWindowResizedFlag() {
+    framebufferResized = false;
 }
 
-void Window::framebufferResizeCallback(GLFWwindow* window, [[maybe_unused]] int width, [[maybe_unused]] int height) {
+void Window::framebufferResizeCallback(GLFWwindow* window, int width, int height) {
     auto app = reinterpret_cast<Window*>(glfwGetWindowUserPointer(window));
-    app->setFramebufferResized(true);
+    app->width = width;
+    app->height = height;
+    app->framebufferResized = true;
 }

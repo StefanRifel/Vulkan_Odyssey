@@ -154,27 +154,7 @@ void Scene::createSyncObjects() {
     }
 }
 
-void Scene::drawFrame() {
-    vkWaitForFences(LogicalDeviceWrapper::getVkDevice(), 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
-
-    // Hole das nächste Bild aus der SwapChain
-    uint32_t imageIndex;
-    VkResult result = vkAcquireNextImageKHR(LogicalDeviceWrapper::getVkDevice(), SwapChain::getSwapChain(), UINT64_MAX, imageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, &imageIndex);
-
-    // Wenn die SwapChain veraltet ist, dann erstelle eine neue
-    // Die SwapChain ist veraltet, wenn das Fenster vergrößert oder verkleinert wird
-    if (result == VK_ERROR_OUT_OF_DATE_KHR) {
-        SwapChain::recreateSwapChain(window);
-        return;
-    } else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
-        throw std::runtime_error("failed to acquire swap chain image!");
-    }
-
-    // Überprüfe ob ein Bild in der Queue ist, das noch nicht fertig ist
-    vkResetFences(LogicalDeviceWrapper::getVkDevice(), 1, &inFlightFences[currentFrame]);
-
-    vkResetCommandBuffer(CommandPool::getCommandBuffers()[currentFrame], /*VkCommandBufferResetFlagBits*/ 0);
-
+void Scene::recordCommandBuffers(int imageIndex) {
     // Beginne das Aufzeichnen des Command Buffers
     VkCommandBufferBeginInfo beginInfo{};
     beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -224,6 +204,30 @@ void Scene::drawFrame() {
     if (vkEndCommandBuffer(CommandPool::getCommandBuffers()[currentFrame]) != VK_SUCCESS) {
         throw std::runtime_error("failed to record command buffer!");
     }
+}
+
+void Scene::drawFrame() {
+    vkWaitForFences(LogicalDeviceWrapper::getVkDevice(), 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
+
+    // Hole das nächste Bild aus der SwapChain
+    uint32_t imageIndex;
+    VkResult result = vkAcquireNextImageKHR(LogicalDeviceWrapper::getVkDevice(), SwapChain::getSwapChain(), UINT64_MAX, imageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, &imageIndex);
+
+    // Wenn die SwapChain veraltet ist, dann erstelle eine neue
+    // Die SwapChain ist veraltet, wenn das Fenster vergrößert oder verkleinert wird
+    if (result == VK_ERROR_OUT_OF_DATE_KHR) {
+        SwapChain::recreateSwapChain(window);
+        return;
+    } else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
+        throw std::runtime_error("failed to acquire swap chain image!");
+    }
+
+    // Überprüfe ob ein Bild in der Queue ist, das noch nicht fertig ist
+    vkResetFences(LogicalDeviceWrapper::getVkDevice(), 1, &inFlightFences[currentFrame]);
+
+    vkResetCommandBuffer(CommandPool::getCommandBuffers()[currentFrame], /*VkCommandBufferResetFlagBits*/ 0);
+
+    recordCommandBuffers(imageIndex);
 
     VkSubmitInfo submitInfo{};
     submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -260,7 +264,7 @@ void Scene::drawFrame() {
     result = vkQueuePresentKHR(LogicalDeviceWrapper::getPresentQueue(), &presentInfo);
 
     if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || window->getFramebufferResized()) {
-        window->setFramebufferResized(false);
+        window->resetWindowResizedFlag();
         SwapChain::recreateSwapChain(window);
     } else if (result != VK_SUCCESS) {
         throw std::runtime_error("failed to present swap chain image!");

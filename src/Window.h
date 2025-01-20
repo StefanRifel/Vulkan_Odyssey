@@ -18,8 +18,8 @@ private:
     GLFWwindow* glfwWindow;
 
     const std::string windowName;
-    const uint32_t width;
-    const uint32_t height;
+    uint32_t width;
+    uint32_t height;
 
     bool framebufferResized = false;
 
@@ -34,7 +34,7 @@ public:
     void pollEvents() const;
 
     bool getFramebufferResized();
-    void setFramebufferResized(bool b);
+    void resetWindowResizedFlag();
 
     static void framebufferResizeCallback(GLFWwindow* glfwWindow, int width, int height);
 };

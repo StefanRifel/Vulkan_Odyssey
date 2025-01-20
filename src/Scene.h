@@ -52,6 +52,7 @@ public:
 
     void createSyncObjects();
     void drawFrame();
+    void recordCommandBuffers(int imageIndex);
 };
 
 #endif
