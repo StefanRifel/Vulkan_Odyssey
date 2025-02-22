@@ -76,7 +76,7 @@ void Mesh::draw(VkCommandBuffer& commandBuffer, GraphicPipeline* graphicsPipelin
     vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(indexBuffer.indices.size()), 1, 0, 0, 0);
 }
 
-void Mesh::updatePushConstants(VkCommandBuffer& commandBuffer, GraphicPipeline* graphicsPipeline, uint32_t currentFrame) {
+void Mesh::updatePushConstants(VkCommandBuffer& commandBuffer, GraphicPipeline* graphicsPipeline) {
     TransformPushConstantData pushConstants{};
     pushConstants.offset = glm::vec2(0.0f, 0.0f);
 
