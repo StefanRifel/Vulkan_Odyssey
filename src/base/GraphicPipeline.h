@@ -8,6 +8,7 @@
 #include "../types/Vertex.h"
 #include "../loader/FileLoader.h"
 #include "../wrapper/LogicalDeviceWrapper.h"
+#include "../types/TransformPushConstantData.h"
 
 #include <string>
 #include <vector>

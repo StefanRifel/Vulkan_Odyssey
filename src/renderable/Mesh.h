@@ -11,6 +11,7 @@
 #include "../Camera.h"
 
 #include "../buffer/Buffer.h"
+#include "../types/TransformPushConstantData.h"
 
 #include "../base/RenderPass.h"
 #include "../base/GraphicPipeline.h"
@@ -43,6 +44,7 @@ public:
     void createPlane(float width, float depth);
     void draw(VkCommandBuffer& commandBuffer, GraphicPipeline* graphicsPipeline, uint32_t currentFrame);
     void updateUniformBuffer(Camera& camera, uint32_t currentImage, glm::mat4& worldTransform);
+    void updatePushConstants(VkCommandBuffer& commandBuffer, GraphicPipeline* graphicsPipeline, uint32_t currentFrame);
     void cleanupTextures();
 };
 

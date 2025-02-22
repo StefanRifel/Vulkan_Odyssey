@@ -72,8 +72,15 @@ void Mesh::draw(VkCommandBuffer& commandBuffer, GraphicPipeline* graphicsPipelin
     vkCmdBindIndexBuffer(commandBuffer, indexBuffer.bufferData.buffer, 0, VK_INDEX_TYPE_UINT32);
 
     vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline->getLayout(), 0, 1, &uniformBuffer.descriptorSets[currentFrame], 0, nullptr);
-
+    
     vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(indexBuffer.indices.size()), 1, 0, 0, 0);
+}
+
+void Mesh::updatePushConstants(VkCommandBuffer& commandBuffer, GraphicPipeline* graphicsPipeline, uint32_t currentFrame) {
+    TransformPushConstantData pushConstants{};
+    pushConstants.offset = glm::vec2(0.0f, 0.0f);
+
+    vkCmdPushConstants(commandBuffer, graphicsPipeline->getLayout(), VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(TransformPushConstantData), &pushConstants);
 }
 
 void Mesh::updateUniformBuffer(Camera& camera, uint32_t currentImage, glm::mat4& worldTransform) {

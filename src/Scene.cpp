@@ -38,7 +38,7 @@ void Scene::initVulkan() {
 
     meshes.insert({"viking_room", new Mesh{"assets/models/viking_room.obj", "assets/textures/viking_room.png"}});
     meshes.insert({"cube", new Mesh{"assets/models/cube.obj", "assets/textures/viking_room.png"}});
-    meshes.insert({"covered_car", new Mesh{"assets/car/model/covered_car_1k.obj", "assets/car/textures/covered_car_diff_1k.jpg"}});
+    meshes.insert({"moon", new Mesh{"assets/moon/model/moon.obj", "assets/moon/textures/brown_mud_diff_1k.jpg"}});
     meshes.insert({"skybox", new Mesh{"assets/skybox/model/skybox.obj", texturePaths}});
     meshes.insert({"plane", new Mesh{10.0f, 10.0f, "assets/terrain/leafy_grass_diff_1k.jpg"}});
 
@@ -70,7 +70,7 @@ void Scene::initSceneGraph() {
 
     auto meshNode1 = new SceneNode(meshes["viking_room"], "default");
     auto meshNode2 = new SceneNode(meshes["cube"], "red");
-    auto meshNode3 = new SceneNode(meshes["covered_car"], "default");
+    auto meshNode3 = new SceneNode(meshes["moon"], "default");
     auto skybox = new SceneNode(meshes["skybox"], "skybox");
     auto plane = new SceneNode(meshes["plane"], "plane");
 
