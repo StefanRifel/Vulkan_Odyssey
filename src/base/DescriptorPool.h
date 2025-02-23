@@ -4,14 +4,18 @@
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
-#include "../types/DefaultValues.h"
 #include "../wrapper/LogicalDeviceWrapper.h"
 #include "../loader/TextureLoader.h"
 #include "../types/Texture.h"
+#include "SwapChain.h"
 
 #include <vector>
 
+#include "../buffer/Buffer.h"
+
 #include "../types/UniformBufferObject.h"   
+
+struct UniformBuffer;
 
 class DescriptorPool {
     

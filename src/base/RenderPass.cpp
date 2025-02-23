@@ -2,10 +2,6 @@
 
 VkRenderPass RenderPass::renderPass;
 
-VkRenderPass& RenderPass::getRenderPass() {
-    return renderPass;
-}
-
 void RenderPass::createRenderPass() {
     VkAttachmentDescription colorAttachment{};
     colorAttachment.format = SwapChain::getSwapChainImageFormat();

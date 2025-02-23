@@ -15,7 +15,7 @@ Mesh::Mesh(float width, float depth, std::string texturePath) : texturePath(text
 }
 
 Mesh::~Mesh() {
-    for (int i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+    for (int i = 0; i < SwapChain::MAX_FRAMES_IN_FLIGHT; i++) {
         cleanupBuffer(uniformBuffer.bufferData[i]);
     }
 

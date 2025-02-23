@@ -10,6 +10,8 @@
 
 #include "../buffer/Buffer.h"
 
+struct UniformBuffer;
+
 class TextureLoader {
 
 private:

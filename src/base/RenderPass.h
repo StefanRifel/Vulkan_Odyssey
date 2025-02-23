@@ -21,7 +21,9 @@ private:
     static VkRenderPass renderPass;
 
 public:
-    static VkRenderPass& getRenderPass();
+    static VkRenderPass& getRenderPass() {
+        return renderPass;
+    };
 
     static void createRenderPass();
 };

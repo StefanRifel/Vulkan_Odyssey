@@ -10,6 +10,8 @@
 #include "base/SwapChain.h"
 #include "Camera.h"
 #include "base/GraphicPipeline.h"
+#include "system/RenderSystem.h"
+#include "base/Renderer.h"
 
 #include "renderable/Mesh.h"
 #include <memory>
@@ -20,6 +22,10 @@ class Scene {
 private:
     Window* window;
     Camera camera;
+
+    Renderer* renderer;
+    RenderSystem* renderSystem;
+
 
     std::map<std::string, Mesh*> meshes;
     
@@ -33,12 +39,6 @@ private:
     };
 
     SceneNode* rootNode;
-    std::map<std::string ,GraphicPipeline*> graphicPipelines;
-
-    std::vector<VkSemaphore> imageAvailableSemaphores;
-    std::vector<VkSemaphore> renderFinishedSemaphores;
-    std::vector<VkFence> inFlightFences;
-    uint32_t currentFrame = 0;
 
 public:
     Scene(Window* window);
@@ -50,7 +50,6 @@ public:
 
     Camera& getCamera();
 
-    void createSyncObjects();
     void drawFrame();
     void recordCommandBuffers(int imageIndex);
 };

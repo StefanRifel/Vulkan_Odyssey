@@ -12,23 +12,12 @@ std::vector<VkImage> SwapChain::swapChainImages;
 std::vector<VkImageView> SwapChain::swapChainImageViews;
 std::vector<VkFramebuffer> SwapChain::swapChainFramebuffers;
 
+std::vector<VkSemaphore> SwapChain::imageAvailableSemaphores;
+std::vector<VkSemaphore> SwapChain::renderFinishedSemaphores;
+std::vector<VkFence> SwapChain::inFlightFences;
+
 uint32_t SwapChain::mipLevels = 1;
-
-std::vector<VkFramebuffer>& SwapChain::getSwapChainFramebuffers() {
-    return swapChainFramebuffers;
-}
-
-VkSwapchainKHR& SwapChain::getSwapChain() {
-    return swapChain;
-}
-
-VkFormat& SwapChain::getSwapChainImageFormat() {
-    return swapChainImageFormat;
-}
-
-VkExtent2D& SwapChain::getSwapChainExtent() {
-    return swapChainExtent;
-}
+uint32_t SwapChain::currentFrame = 0;
 
 void SwapChain::createSwapChain(Window* window) {
     SwapChainSupportDetails swapChainSupport = PhysicalDeviceWrapper::querySwapChainSupport(PhysicalDeviceWrapper::getPhysicalDevice());
@@ -112,6 +101,14 @@ void SwapChain::cleanupSwapChain() {
     }
 
     vkDestroySwapchainKHR(LogicalDeviceWrapper::getVkDevice(), swapChain, nullptr);
+}
+
+void SwapChain::cleanupSyncObjects() {
+    for (ssize_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+        vkDestroySemaphore(LogicalDeviceWrapper::getVkDevice(), renderFinishedSemaphores[i], nullptr);
+        vkDestroySemaphore(LogicalDeviceWrapper::getVkDevice(), imageAvailableSemaphores[i], nullptr);
+        vkDestroyFence(LogicalDeviceWrapper::getVkDevice(), inFlightFences[i], nullptr);
+    }
 }
 
 VkSurfaceFormatKHR SwapChain::chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats) {
@@ -215,4 +212,25 @@ VkFormat SwapChain::findSupportedFormat(const std::vector<VkFormat>& candidates,
     }
 
     throw std::runtime_error("failed to find supported format!");
+}
+
+void SwapChain::createSyncObjects() {
+    imageAvailableSemaphores.resize(SwapChain::MAX_FRAMES_IN_FLIGHT);
+    renderFinishedSemaphores.resize(SwapChain::MAX_FRAMES_IN_FLIGHT);
+    inFlightFences.resize(SwapChain::MAX_FRAMES_IN_FLIGHT);
+
+    VkSemaphoreCreateInfo semaphoreInfo{};
+    semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+
+    VkFenceCreateInfo fenceInfo{};
+    fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+    fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
+
+    for (ssize_t i = 0; i < SwapChain::MAX_FRAMES_IN_FLIGHT; i++) {
+        if (vkCreateSemaphore(LogicalDeviceWrapper::getVkDevice(), &semaphoreInfo, nullptr, &imageAvailableSemaphores[i]) != VK_SUCCESS ||
+            vkCreateSemaphore(LogicalDeviceWrapper::getVkDevice(), &semaphoreInfo, nullptr, &renderFinishedSemaphores[i]) != VK_SUCCESS ||
+            vkCreateFence(LogicalDeviceWrapper::getVkDevice(), &fenceInfo, nullptr, &inFlightFences[i]) != VK_SUCCESS) {
+            throw std::runtime_error("failed to create synchronization objects for a frame!");
+        }
+    }
 }

@@ -27,13 +27,13 @@ void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyF
 }
 
 void copyBuffer(Buffer srcBuffer, Buffer dstBuffer, VkDeviceSize size) {
-    VkCommandBuffer commandBuffer = BufferUtils::beginSingleTimeCommands();
+    VkCommandBuffer commandBuffer = Renderer::beginSingleTimeCommands();
 
     VkBufferCopy copyRegion{};
     copyRegion.size = size;
     vkCmdCopyBuffer(commandBuffer, srcBuffer.buffer, dstBuffer.buffer, 1, &copyRegion);
 
-    BufferUtils::endSingleTimeCommands(commandBuffer);
+    Renderer::endSingleTimeCommands(commandBuffer);
 }
 
 void createVertexBuffer(VertexBuffer& vertexBuffer) {
@@ -80,10 +80,10 @@ void createIndexBuffer(IndexBuffer& indexBuffer) {
 
 void createUniformBuffers(VkDeviceSize bufferSize, UniformBuffer& uniformBuffer) {
     
-    uniformBuffer.bufferData.resize(MAX_FRAMES_IN_FLIGHT);
-    uniformBuffer.uniformBuffersMapped.resize(MAX_FRAMES_IN_FLIGHT);
+    uniformBuffer.bufferData.resize(SwapChain::MAX_FRAMES_IN_FLIGHT);
+    uniformBuffer.uniformBuffersMapped.resize(SwapChain::MAX_FRAMES_IN_FLIGHT);
 
-    for (ssize_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+    for (ssize_t i = 0; i < SwapChain::MAX_FRAMES_IN_FLIGHT; i++) {
         createBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, uniformBuffer.bufferData[i]);
 
         vkMapMemory(LogicalDeviceWrapper::getVkDevice(), uniformBuffer.bufferData[i].bufferMemory, 0, bufferSize, 0, &uniformBuffer.uniformBuffersMapped[i]);
