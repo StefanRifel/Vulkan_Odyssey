@@ -1,7 +1,5 @@
 #include "RenderPass.h"
 
-VkRenderPass RenderPass::renderPass;
-
 void RenderPass::createRenderPass() {
     VkAttachmentDescription colorAttachment{};
     colorAttachment.format = SwapChain::getSwapChainImageFormat();

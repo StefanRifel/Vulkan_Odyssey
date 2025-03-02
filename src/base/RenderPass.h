@@ -18,14 +18,18 @@
 class RenderPass {
 
 private:
-    static VkRenderPass renderPass;
+    VkRenderPass renderPass;
 
 public:
-    static VkRenderPass& getRenderPass() {
+    RenderPass() {
+        createRenderPass();
+    }
+    
+    VkRenderPass& getRenderPass() {
         return renderPass;
     };
 
-    static void createRenderPass();
+    void createRenderPass();
 };
 
 #endif

@@ -103,6 +103,10 @@ void SwapChain::cleanupSwapChain() {
     vkDestroySwapchainKHR(LogicalDeviceWrapper::getVkDevice(), swapChain, nullptr);
 }
 
+void SwapChain::cleanupRenderPass() {
+    vkDestroyRenderPass(LogicalDeviceWrapper::getVkDevice(), renderPass.getRenderPass(), nullptr);
+}
+
 void SwapChain::cleanupSyncObjects() {
     for (ssize_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
         vkDestroySemaphore(LogicalDeviceWrapper::getVkDevice(), renderFinishedSemaphores[i], nullptr);
@@ -171,7 +175,7 @@ void SwapChain::createFramebuffers() {
 
         VkFramebufferCreateInfo framebufferInfo{};
         framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-        framebufferInfo.renderPass = RenderPass::getRenderPass();
+        framebufferInfo.renderPass = renderPass.getRenderPass();
         framebufferInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
         framebufferInfo.pAttachments = attachments.data();
         framebufferInfo.width = swapChainExtent.width;

@@ -11,15 +11,13 @@ void Scene::initVulkan() {
     PhysicalDeviceWrapper::pickPhysicalDevice();
     LogicalDeviceWrapper::createLogicalDevice();
 
-    SwapChain::createSwapChain(window);
-    SwapChain::createImageViews();
-    RenderPass::createRenderPass();
+    SwapChain::init(window);
+
     DescriptorPool::createDescriptorSetLayout();
 
-    // GRAPHICS PIPELINE
-    renderSystem = new RenderSystem();
-
     renderer = new Renderer();
+    renderSystem = new RenderSystem(SwapChain::getRenderPass());
+
     SwapChain::createDepthResources();
     SwapChain::createFramebuffers();
 
@@ -86,7 +84,7 @@ void Scene::cleanup() {
 
     delete renderSystem;
 
-    vkDestroyRenderPass(LogicalDeviceWrapper::getVkDevice(), RenderPass::getRenderPass(), nullptr);
+    SwapChain::cleanupRenderPass();
 
     vkDestroyDescriptorPool(LogicalDeviceWrapper::getVkDevice(), DescriptorPool::getDescriptorPool(), nullptr);
 
@@ -125,7 +123,7 @@ void Scene::recordCommandBuffers(int imageIndex) {
 
     VkRenderPassBeginInfo renderPassInfo{};
     renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-    renderPassInfo.renderPass = RenderPass::getRenderPass();
+    renderPassInfo.renderPass = SwapChain::getRenderPass().getRenderPass();
     renderPassInfo.framebuffer = SwapChain::getSwapChainFramebuffers()[imageIndex];
     renderPassInfo.renderArea.offset = {0, 0};
     renderPassInfo.renderArea.extent = SwapChain::getSwapChainExtent();

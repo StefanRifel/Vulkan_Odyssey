@@ -1,7 +1,7 @@
 #include "GraphicPipeline.h"
 
-GraphicPipeline::GraphicPipeline(const std::string& vertShaderPath, const std::string& fragShaderPath, const GraphicPipelineInfo& graphicPipelineInfo) {
-    createGraphicsPipeline(vertShaderPath, fragShaderPath, graphicPipelineInfo);
+GraphicPipeline::GraphicPipeline(const std::string& vertShaderPath, const std::string& fragShaderPath, const GraphicPipelineInfo& graphicPipelineInfo, RenderPass& renderPass) {
+    createGraphicsPipeline(vertShaderPath, fragShaderPath, graphicPipelineInfo, renderPass);
 }
 
 GraphicPipeline::~GraphicPipeline() {
@@ -36,7 +36,7 @@ GraphicPipelineInfo GraphicPipeline::getDefaultGraphicPipelineInfo() {
     };
 }
 
-void GraphicPipeline::createGraphicsPipeline(const std::string& vertShaderPath, const std::string& fragShaderPath, const GraphicPipelineInfo& graphicPipelineInfo) {
+void GraphicPipeline::createGraphicsPipeline(const std::string& vertShaderPath, const std::string& fragShaderPath, const GraphicPipelineInfo& graphicPipelineInfo, RenderPass& renderPass) {
     // Lade die Shader-Module
     VkShaderModule vertShaderModule = createShaderModule(readFile(vertShaderPath));
     VkShaderModule fragShaderModule = createShaderModule(readFile(fragShaderPath));
@@ -168,7 +168,7 @@ void GraphicPipeline::createGraphicsPipeline(const std::string& vertShaderPath, 
     pipelineInfo.pColorBlendState = &colorBlending;
     pipelineInfo.pDynamicState = &dynamicState;
     pipelineInfo.layout = layout;
-    pipelineInfo.renderPass = RenderPass::getRenderPass();
+    pipelineInfo.renderPass = renderPass.getRenderPass();
     pipelineInfo.subpass = 0;
     pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
 

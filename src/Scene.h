@@ -23,6 +23,8 @@ private:
     Window* window;
     Camera camera;
 
+    SwapChain swapChain;
+
     Renderer* renderer;
     RenderSystem* renderSystem;
 

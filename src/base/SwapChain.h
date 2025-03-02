@@ -14,7 +14,7 @@
 class SwapChain {
 
 private:
-
+    static RenderPass renderPass;
 
     static std::vector<VkFramebuffer> swapChainFramebuffers;
 
@@ -69,6 +69,15 @@ public:
     static VkExtent2D& getSwapChainExtent() {
         return swapChainExtent;
     }
+    static RenderPass& getRenderPass() {
+        return renderPass;
+    }
+
+    static void init(Window* window) {
+        SwapChain::createSwapChain(window);
+        SwapChain::createImageViews();
+        renderPass.createRenderPass();
+    }
 
     static void createSyncObjects();
     static void createFramebuffers();
@@ -80,6 +89,7 @@ public:
 
     static void cleanupSwapChain();
     static void cleanupSyncObjects();
+    static void cleanupRenderPass();
 
     static VkFormat findDepthFormat();
     static VkFormat findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);

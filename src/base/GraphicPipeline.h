@@ -29,7 +29,8 @@ private:
     void createGraphicsPipeline(
         const std::string& vertShaderPath, 
         const std::string& fragShaderPath, 
-        const GraphicPipelineInfo& graphicPipelineInfo);
+        const GraphicPipelineInfo& graphicPipelineInfo,
+        RenderPass& renderPass);
 
     VkShaderModule createShaderModule(const std::vector<char>& code);
 
@@ -37,7 +38,8 @@ public:
     GraphicPipeline(
         const std::string& vertShaderPath, 
         const std::string& fragShaderPath, 
-        const GraphicPipelineInfo& graphicPipelineInfo);
+        const GraphicPipelineInfo& graphicPipelineInfo,
+        RenderPass& renderPass);
 
     ~GraphicPipeline();
     
