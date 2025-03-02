@@ -4,11 +4,12 @@
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
-#include "RenderPass.h"
 #include "../types/Vertex.h"
 #include "../loader/FileLoader.h"
 #include "../wrapper/LogicalDeviceWrapper.h"
 #include "../types/TransformPushConstantData.h"
+#include "SwapChain.h"
+#include "DescriptorPool.h"
 
 #include <string>
 #include <vector>
@@ -43,7 +44,7 @@ public:
 
     ~GraphicPipeline();
     
-    void bind(VkCommandBuffer commandBuffer);
+    void bind(VkCommandBuffer commandBuffer, SwapChain& swapChain);
 
     static GraphicPipelineInfo getDefaultGraphicPipelineInfo();
 

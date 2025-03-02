@@ -15,13 +15,13 @@ Camera::Camera()
 /**
  * @brief Berechnet die View- und Projection-Matrix der Kamera und speichert sie in den entsprechenden Variablen.
  */
-void Camera::look() {
+void Camera::look(uint32_t width, uint32_t height) {
     // Setzt die View-Matrix im Shader
     glm::vec3 pf = position + front;
     this->view = glm::lookAt(position, pf, up);
 
     // Setzt die Projection-Matrix im Shader
-    this->perspective = glm::perspective(glm::radians(fieldOfView), SwapChain::getSwapChainExtent().width / (float) SwapChain::getSwapChainExtent().height, NEAR_PLANE, FAR_PLANE);
+    this->perspective = glm::perspective(glm::radians(fieldOfView), width / (float) height, NEAR_PLANE, FAR_PLANE);
     // Ändert die Culling-Richtung
     this->perspective[1][1] *= -1;
 }

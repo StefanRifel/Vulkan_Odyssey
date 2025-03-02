@@ -1,24 +1,5 @@
 #include "SwapChain.h"
 
-VkImage SwapChain::depthImage;
-VkDeviceMemory SwapChain::depthImageMemory;
-VkImageView SwapChain::depthImageView;
-
-VkSwapchainKHR SwapChain::swapChain;
-// Swapbild höhe und breite
-VkExtent2D SwapChain::swapChainExtent;
-VkFormat SwapChain::swapChainImageFormat;
-std::vector<VkImage> SwapChain::swapChainImages;
-std::vector<VkImageView> SwapChain::swapChainImageViews;
-std::vector<VkFramebuffer> SwapChain::swapChainFramebuffers;
-
-std::vector<VkSemaphore> SwapChain::imageAvailableSemaphores;
-std::vector<VkSemaphore> SwapChain::renderFinishedSemaphores;
-std::vector<VkFence> SwapChain::inFlightFences;
-
-uint32_t SwapChain::mipLevels = 1;
-uint32_t SwapChain::currentFrame = 0;
-
 void SwapChain::createSwapChain(Window* window) {
     SwapChainSupportDetails swapChainSupport = PhysicalDeviceWrapper::querySwapChainSupport(PhysicalDeviceWrapper::getPhysicalDevice());
 

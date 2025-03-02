@@ -99,7 +99,7 @@ public:
     float lastFrame = 0.0f;             ///< Zeitpunkt des letzten Frames
 
     Camera();
-    void look();
+    void look(uint32_t width, uint32_t height);
 
     glm::mat4 &getView();
     const glm::mat4& getPerspective() const;

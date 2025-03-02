@@ -7,33 +7,33 @@
 #include "../Window.h"
 
 #include "../wrapper/LogicalDeviceWrapper.h"
-#include "RenderPass.h"
 
 #include "../loader/TextureLoader.h"
+
+#include "RenderPass.h"
 
 class SwapChain {
 
 private:
-    static RenderPass renderPass;
+    RenderPass renderPass {};
 
-    static std::vector<VkFramebuffer> swapChainFramebuffers;
+    std::vector<VkFramebuffer> swapChainFramebuffers;
 
-    static VkFormat swapChainImageFormat;
+    VkFormat swapChainImageFormat;
     
+    VkImage depthImage;
+    VkDeviceMemory depthImageMemory;
+    VkImageView depthImageView;
+    std::vector<VkImage> swapChainImages;
+    std::vector<VkImageView> swapChainImageViews;
 
-    static VkImage depthImage;
-    static VkDeviceMemory depthImageMemory;
-    static VkImageView depthImageView;
-    static std::vector<VkImage> swapChainImages;
-    static std::vector<VkImageView> swapChainImageViews;
+    VkExtent2D swapChainExtent;
+    VkSwapchainKHR swapChain;
 
-    static VkExtent2D swapChainExtent;
+    uint32_t mipLevels;
 
-    static VkSwapchainKHR swapChain;
 
-    static uint32_t mipLevels;
-
-    
+    // Create functions
 
     // Helper functions
     static VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
@@ -44,10 +44,15 @@ public:
     static constexpr int MAX_FRAMES_IN_FLIGHT = 2;
 
     // Synchronisationsobjekte
-    static std::vector<VkSemaphore> imageAvailableSemaphores;
-    static std::vector<VkSemaphore> renderFinishedSemaphores;
-    static std::vector<VkFence> inFlightFences;
-    static uint32_t currentFrame;
+    std::vector<VkSemaphore> imageAvailableSemaphores;
+    std::vector<VkSemaphore> renderFinishedSemaphores;
+    std::vector<VkFence> inFlightFences;
+    uint32_t currentFrame;
+
+    SwapChain() {
+        currentFrame = 0;
+        mipLevels = 1;
+    }
 
     ~SwapChain() {
         for (ssize_t i = 0; i < SwapChain::MAX_FRAMES_IN_FLIGHT; i++) {
@@ -57,42 +62,47 @@ public:
         }
     }
 
-    static std::vector<VkFramebuffer>& getSwapChainFramebuffers() {
+    std::vector<VkFramebuffer>& getSwapChainFramebuffers() {
         return swapChainFramebuffers;
     };
-    static VkSwapchainKHR& getSwapChain() {
+    VkSwapchainKHR& getSwapChain() {
         return swapChain;
     }
-    static VkFormat& getSwapChainImageFormat() {
+    VkFormat& getSwapChainImageFormat() {
         return swapChainImageFormat;
     }
-    static VkExtent2D& getSwapChainExtent() {
+    VkExtent2D& getSwapChainExtent() {
         return swapChainExtent;
     }
-    static RenderPass& getRenderPass() {
+    RenderPass& getRenderPass() {
         return renderPass;
     }
 
-    static void init(Window* window) {
-        SwapChain::createSwapChain(window);
-        SwapChain::createImageViews();
-        renderPass.createRenderPass();
+    void init(Window* window) {
+        createSwapChain(window);
+        createImageViews();
+        renderPass.createRenderPass(swapChainImageFormat, findDepthFormat());
+        // createDescriptorSetLayout();
+        createDepthResources();
+        createFramebuffers();
+        // createDescriptorPool();
+        createSyncObjects();
     }
 
-    static void createSyncObjects();
-    static void createFramebuffers();
-    static void createSwapChain(Window* window);
-    static void createDepthResources();
-    static void createImageViews();
+    void createSyncObjects();
+    void createFramebuffers();
+    void createSwapChain(Window* window);
+    void createDepthResources();
+    void createImageViews();
 
-    static void recreateSwapChain(Window* window);
+    void recreateSwapChain(Window* window);
 
-    static void cleanupSwapChain();
-    static void cleanupSyncObjects();
-    static void cleanupRenderPass();
+    void cleanupSwapChain();
+    void cleanupSyncObjects();
+    void cleanupRenderPass();
 
-    static VkFormat findDepthFormat();
-    static VkFormat findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
+    VkFormat findDepthFormat();
+    VkFormat findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
 };
 
 #endif

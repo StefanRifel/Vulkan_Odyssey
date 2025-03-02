@@ -4,16 +4,10 @@
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
-#include "../wrapper/LogicalDeviceWrapper.h"
-
-#include "../types/Vertex.h"
-
-#include "../loader/FileLoader.h"
-
-#include "../base/DescriptorPool.h"
-#include "../base/SwapChain.h"
-
 #include <array>
+#include <stdexcept>
+
+#include "../wrapper/LogicalDeviceWrapper.h"
 
 class RenderPass {
 
@@ -22,14 +16,14 @@ private:
 
 public:
     RenderPass() {
-        createRenderPass();
-    }
-    
+        renderPass = VK_NULL_HANDLE;
+    };
+
     VkRenderPass& getRenderPass() {
         return renderPass;
     };
 
-    void createRenderPass();
+    void createRenderPass(VkFormat& swapChainImageFormat, VkFormat depthFormat);
 };
 
 #endif

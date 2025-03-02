@@ -42,8 +42,8 @@ public:
     void createTextures();
     void createCubeMapTextures();
     void createPlane(float width, float depth);
-    void draw(VkCommandBuffer& commandBuffer, GraphicPipeline* graphicsPipeline, uint32_t currentFrame);
-    void updateUniformBuffer(Camera& camera, uint32_t currentImage, glm::mat4& worldTransform);
+    void draw(VkCommandBuffer& commandBuffer, SwapChain& SwapChain, GraphicPipeline* graphicsPipeline, uint32_t currentFrame);
+    void updateUniformBuffer(Camera& camera, SwapChain& swapChain, uint32_t currentImage, glm::mat4& worldTransform);
     void updatePushConstants(VkCommandBuffer& commandBuffer, GraphicPipeline* graphicsPipeline);
     void cleanupTextures();
 };

@@ -10,21 +10,21 @@ GraphicPipeline::~GraphicPipeline() {
     vkDestroyPipelineLayout(LogicalDeviceWrapper::getVkDevice(), layout, nullptr);
 }
 
-void GraphicPipeline::bind(VkCommandBuffer commandBuffer) {
+void GraphicPipeline::bind(VkCommandBuffer commandBuffer, SwapChain& swapChain) {
     vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
 
     VkViewport viewport{};
     viewport.x = 0.0f;
     viewport.y = 0.0f;
-    viewport.width = (float) SwapChain::getSwapChainExtent().width;
-    viewport.height = (float) SwapChain::getSwapChainExtent().height;
+    viewport.width = (float) swapChain.getSwapChainExtent().width;
+    viewport.height = (float) swapChain.getSwapChainExtent().height;
     viewport.minDepth = 0.0f;
     viewport.maxDepth = 1.0f;
     vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
 
     VkRect2D scissor{};
     scissor.offset = {0, 0};
-    scissor.extent = SwapChain::getSwapChainExtent();
+    scissor.extent = swapChain.getSwapChainExtent();
     vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 }
 

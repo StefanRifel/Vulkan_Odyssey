@@ -63,8 +63,8 @@ void Mesh::createPlane(float width, float depth) {
     indexBuffer.indices = indices;
 }
 
-void Mesh::draw(VkCommandBuffer& commandBuffer, GraphicPipeline* graphicsPipeline, uint32_t currentFrame) {
-    graphicsPipeline->bind(commandBuffer);
+void Mesh::draw(VkCommandBuffer& commandBuffer, SwapChain& swapChain, GraphicPipeline* graphicsPipeline, uint32_t currentFrame) {
+    graphicsPipeline->bind(commandBuffer, swapChain);
 
     VkDeviceSize offsets[] = {0};
     vkCmdBindVertexBuffers(commandBuffer, 0, 1, &vertexBuffer.bufferData.buffer, offsets);
@@ -83,8 +83,8 @@ void Mesh::updatePushConstants(VkCommandBuffer& commandBuffer, GraphicPipeline* 
     vkCmdPushConstants(commandBuffer, graphicsPipeline->getLayout(), VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(TransformPushConstantData), &pushConstants);
 }
 
-void Mesh::updateUniformBuffer(Camera& camera, uint32_t currentImage, glm::mat4& worldTransform) {
-    camera.look();
+void Mesh::updateUniformBuffer(Camera& camera, SwapChain& swapChain, uint32_t currentImage, glm::mat4& worldTransform) {
+    camera.look(swapChain.getSwapChainExtent().width, swapChain.getSwapChainExtent().height);
 
     UniformBufferObject ubo{};
     ubo.model = worldTransform;
