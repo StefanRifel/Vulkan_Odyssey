@@ -18,7 +18,7 @@ void Scene::initVulkan() {
     meshes.insert({"cube", new Mesh{"assets/models/cube.obj", "assets/textures/viking_room.png"}});
     meshes.insert({"moon", new Mesh{"assets/moon/model/moon.obj", "assets/moon/textures/brown_mud_diff_1k.jpg"}});
     meshes.insert({"skybox", new Mesh{"assets/skybox/model/skybox.obj", texturePaths}});
-    meshes.insert({"plane", new Mesh{10.0f, 10.0f, "assets/terrain/leafy_grass_diff_1k.jpg"}});
+    meshes.insert({"plane", new Mesh{100.0f, 100.0f, "assets/terrain/leafy_grass_diff_1k.jpg"}});
 
     // TEXTURE
     for (auto& mesh : meshes) {
@@ -42,25 +42,48 @@ void Scene::initVulkan() {
 
 void Scene::initSceneGraph() {
     rootNode = new SceneNode(nullptr, "default");
-
-    auto meshNode1 = new SceneNode(meshes["viking_room"], "default");
-    auto meshNode2 = new SceneNode(meshes["cube"], "red");
-    auto meshNode3 = new SceneNode(meshes["moon"], "default");
+    auto car = new SceneNode(meshes["car"], "default");
+    auto tree = new SceneNode(meshes["tree"], "default");
+    auto moon = new SceneNode(meshes["moon"], "default");
+    auto fern= new SceneNode(meshes["fern"], "default");
+    auto nettlePlant = new SceneNode(meshes["nettle_plant"], "default");
+    auto picnicTable = new SceneNode(meshes["picnic_table"], "default");
+    auto treeStump = new SceneNode(meshes["tree_stump"], "default");
+    auto rat = new SceneNode(meshes["rat"], "default");
     auto skybox = new SceneNode(meshes["skybox"], "skybox");
     auto plane = new SceneNode(meshes["plane"], "plane");
 
     rootNode->addChild(skybox);
     rootNode->addChild(plane);
-    rootNode->addChild(meshNode1);
-    rootNode->addChild(meshNode2);
-    meshNode2->addChild(meshNode3);
+    rootNode->addChild(car);
+    rootNode->addChild(tree);
+    rootNode->addChild(moon);
+    rootNode->addChild(fern);
+    rootNode->addChild(nettlePlant);
+    rootNode->addChild(picnicTable);
+    rootNode->addChild(treeStump);
+    rootNode->addChild(rat);
 
     glm::mat4 transform1 = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
     glm::mat4 transform2 = glm::translate(glm::mat4(1.0f), glm::vec3(2.0f, 0.0f, 0.0f));
+    glm::mat4 transform3 = glm::translate(glm::mat4(1.0f), glm::vec3(3.0f, 0.0f, 0.0f));
+    glm::mat4 transform4 = glm::translate(glm::mat4(1.0f), glm::vec3(4.0f, 0.0f, 0.0f));
     
-    meshNode1->setLocalTransform(transform1);
-    meshNode2->setLocalTransform(transform2);
-    meshNode3->setLocalTransform(transform1);
+    glm::mat4 transformCar = glm::translate(glm::mat4(1.0f), glm::vec3(-7.0, 0.2, 2.0));
+    glm::mat4 transformRat = glm::translate(glm::mat4(1.0f), glm::vec3(-7.0, 1.6, 2.0));
+    glm::mat4 transformTable = glm::translate(glm::mat4(1.0f), glm::vec3(4.0, 0.3, 0.0));
+    glm::mat4 transformChessBoard = glm::translate(glm::mat4(1.0f), glm::vec3(4.0, 1.04, 0.0));
+    glm::mat4 transformTree = glm::translate(glm::mat4(1.0f), glm::vec3(4.0, 0.3, 10.0));
+  
+    
+    car->setLocalTransform(transformCar);
+    tree->setLocalTransform(transformTree);
+    moon->setLocalTransform(transform1);
+    fern->setLocalTransform(transform3);
+    nettlePlant->setLocalTransform(transform4);
+    picnicTable->setLocalTransform(transformTable);
+    treeStump->setLocalTransform(transform2);
+    rat->setLocalTransform(transformRat);
     skybox->setLocalTransform(glm::mat4(1.0f));
     plane->setLocalTransform(glm::mat4(1.0f));
 }
