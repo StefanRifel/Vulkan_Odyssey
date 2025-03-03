@@ -18,7 +18,7 @@ public:
         // Hier werden die verschiedenen GraphicPipelines erstellt
         graphicPipelines.insert({"default", new GraphicPipeline("shaders/shader.vert.spv", "shaders/shader.frag.spv", 
             GraphicPipeline::getDefaultGraphicPipelineInfo(), renderer->getSwapChain()->getRenderPass().get(), descriptorPool.getDescriptorSetLayout())});
-        graphicPipelines.insert({"red", new GraphicPipeline("shaders/shader_red.vert.spv", "shaders/shader_red.frag.spv", 
+        graphicPipelines.insert({"moon", new GraphicPipeline("shaders/shader_moon.vert.spv", "shaders/shader_moon.frag.spv", 
             GraphicPipeline::getDefaultGraphicPipelineInfo(), renderer->getSwapChain()->getRenderPass().get(), descriptorPool.getDescriptorSetLayout())});
 
         GraphicPipelineInfo graphicPipelineInfoPlane;

@@ -23,7 +23,7 @@ void Scene::initVulkan() {
     meshes.insert({"rat", new Mesh{"assets/street_rat/model/street_rat_1k.obj", "assets/street_rat/textures/street_rat_diff_1k.png"}});
     meshes.insert({"moon", new Mesh{"assets/moon/model/moon.obj", "assets/moon/textures/brown_mud_diff_1k.jpg"}});
     meshes.insert({"skybox", new Mesh{"assets/skybox/model/skybox.obj", texturePaths}});
-    meshes.insert({"plane", new Mesh{100.0f, 100.0f, "assets/terrain/leafy_grass_diff_1k.jpg"}});
+    meshes.insert({"plane", new Mesh{"assets/terrain/leafy_grass_diff_1k.jpg"}});
 
     // TEXTURE
     for (auto& mesh : meshes) {
@@ -49,7 +49,7 @@ void Scene::initSceneGraph() {
     rootNode = new SceneNode(nullptr, "default");
     auto car = new SceneNode(meshes["car"], "default");
     auto tree = new SceneNode(meshes["tree"], "default");
-    auto moon = new SceneNode(meshes["moon"], "default");
+    auto moon = new SceneNode(meshes["moon"], "moon");
     auto fern= new SceneNode(meshes["fern"], "default");
     auto nettlePlant = new SceneNode(meshes["nettle_plant"], "default");
     auto picnicTable = new SceneNode(meshes["picnic_table"], "default");

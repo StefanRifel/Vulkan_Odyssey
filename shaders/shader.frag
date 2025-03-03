@@ -9,9 +9,9 @@ layout(location = 3) in vec3 fragPosition;
 
 layout(location = 0) out vec4 outColor;
 
-const vec3 lightPos = vec3(-4.0f, 14.0f, 12.0f);  // Position des Lichts
-const vec3 lightColor = vec3(1.0, 1.0, 1.0); // Weißes Licht
-const vec3 viewPos = vec3(0.0, 0.0, 5.0);    // Kamera weiter hinten
+const vec3 lightPos = vec3(-4.0f, 12.0f, 10.0f);  // Position des Lichts
+const vec3 lightColor = vec3(1.0, 0.97, 0.82); // Weißes Licht
+const vec3 viewPos = vec3(0.0, 1.0, 2.0);    // Kamera weiter hinten
 
 void main() {
     vec3 norm = normalize(fragNormal);
