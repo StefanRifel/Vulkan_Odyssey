@@ -21,10 +21,27 @@ private:
     std::string texturePath;
     std::vector<std::string> texturePaths;
 
+    TransformPushConstantData pushConstants{};
+
 public:
     bool isCubeMap = false;
+    bool isPlant = false;
 
-    Mesh(std::string modelPath, std::string texturePath);
+    Mesh(std::string modelPath, std::string texturePath, bool isPlant = false) : modelPath(modelPath), texturePath(texturePath), isPlant{isPlant} {
+        ModelLoader::loadModel(vertexBuffer, indexBuffer, modelPath);
+        Logger::log("Model loaded: " + modelPath + " with " + std::to_string(vertexBuffer.vertices.size()) + " vertices and " + std::to_string(indexBuffer.indices.size()) + " indices.");
+
+        if(isPlant) {
+            static std::random_device rd;
+            static std::mt19937 gen(rd());
+            static std::uniform_real_distribution<float> dis(-1.0f, 1.0f); // Bereich für Offsets
+    
+            pushConstants.offset = glm::vec2(dis(gen), 0.1);
+        } else {
+            pushConstants.offset = glm::vec2(0.0f, 0.0f);
+        }
+    }
+
     Mesh(std::string modelPath, std::vector<std::string>& texturePaths);
     Mesh(std::string texturePath);
     ~Mesh();

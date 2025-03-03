@@ -1,11 +1,6 @@
 #include "Mesh.h"
 #include <iostream>
 
-Mesh::Mesh(std::string modelPath, std::string texturePath) : modelPath(modelPath), texturePath(texturePath) {
-    ModelLoader::loadModel(vertexBuffer, indexBuffer, modelPath);
-    Logger::log("Model loaded: " + modelPath + " with " + std::to_string(vertexBuffer.vertices.size()) + " vertices and " + std::to_string(indexBuffer.indices.size()) + " indices.");
-}
-
 Mesh::Mesh(std::string modelPath, std::vector<std::string>& texturePaths) : texturePaths(texturePaths), isCubeMap(true) {
     ModelLoader::loadModel(vertexBuffer, indexBuffer, modelPath); 
 }
@@ -98,7 +93,8 @@ void Mesh::createPlane() {
 void Mesh::draw(VkCommandBuffer& commandBuffer, SwapChain* swapChain, GraphicPipeline* graphicsPipeline, uint32_t currentFrame) {
     graphicsPipeline->bind(commandBuffer, swapChain);
 
-    VkDeviceSize offsets[] = {0};
+    VkDeviceSize offsets[] = {0};   
+
     vkCmdBindVertexBuffers(commandBuffer, 0, 1, &vertexBuffer.bufferData.buffer, offsets);
 
     vkCmdBindIndexBuffer(commandBuffer, indexBuffer.bufferData.buffer, 0, VK_INDEX_TYPE_UINT32);
@@ -109,9 +105,6 @@ void Mesh::draw(VkCommandBuffer& commandBuffer, SwapChain* swapChain, GraphicPip
 }
 
 void Mesh::updatePushConstants(VkCommandBuffer& commandBuffer, GraphicPipeline* graphicsPipeline) {
-    TransformPushConstantData pushConstants{};
-    pushConstants.offset = glm::vec2(0.0f, 0.0f);
-
     vkCmdPushConstants(commandBuffer, graphicsPipeline->getLayout(), VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(TransformPushConstantData), &pushConstants);
 }
 
