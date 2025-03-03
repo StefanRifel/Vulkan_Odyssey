@@ -27,6 +27,7 @@ private:
     std::vector<VkImage> swapChainImages;
     std::vector<VkImageView> swapChainImageViews;
 
+    // width and height of the swap chain
     VkExtent2D swapChainExtent;
     VkSwapchainKHR swapChain;
 

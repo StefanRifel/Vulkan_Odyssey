@@ -4,6 +4,7 @@
 #include <map>
 #include <string>
 #include "../base/GraphicPipeline.h"
+#include "../SceneNode.h"
 
 class RenderSystem {
 
@@ -38,7 +39,7 @@ public:
     std::map<std::string, GraphicPipeline*>& getGraphicPipelines() {
         return graphicPipelines;
     }
-    void renderObject();
+    void renderObject(SceneNode* rootNode);
 };
 
 #endif
