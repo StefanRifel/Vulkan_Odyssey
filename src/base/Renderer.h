@@ -25,10 +25,6 @@ private:
     void createCommandBuffers();
     void createCommandPool();
 
-    void cleanupCommandPool() {
-        vkDestroyCommandPool(LogicalDeviceWrapper::getVkDevice(), commandPool, nullptr);
-    }
-
 public:
     Renderer(Window* window) : window {window}, swapChain(std::make_unique<SwapChain>(window)) {
         createCommandPool();
@@ -36,7 +32,10 @@ public:
     }
 
     ~Renderer() {
-        cleanupCommandPool();
+    }
+
+    void cleanupCommandPool() {
+        vkDestroyCommandPool(LogicalDeviceWrapper::getVkDevice(), commandPool, nullptr);
     }
 
     std::vector<VkCommandBuffer>& getCommandBuffers() {

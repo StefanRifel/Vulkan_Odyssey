@@ -15,29 +15,16 @@ private:
     VkDescriptorPool descriptorPool;
     VkDescriptorSetLayout descriptorSetLayout;
 
-    void cleanup() {
-        if (descriptorSetLayout != VK_NULL_HANDLE) {
-            vkDestroyDescriptorSetLayout(device, descriptorSetLayout, nullptr);
-            descriptorSetLayout = VK_NULL_HANDLE;
-        }
-
-        if (descriptorPool != VK_NULL_HANDLE) {
-            vkDestroyDescriptorPool(device, descriptorPool, nullptr);
-            descriptorPool = VK_NULL_HANDLE;
-        }
-    }
-
 public:
-    DescriptorPool() noexcept
+    DescriptorPool()
     : device(VK_NULL_HANDLE), descriptorPool(VK_NULL_HANDLE), descriptorSetLayout(VK_NULL_HANDLE) {}
 
-    explicit DescriptorPool(VkDevice logicalDevice) 
-        : device(logicalDevice), descriptorPool(VK_NULL_HANDLE), descriptorSetLayout(VK_NULL_HANDLE) {}
-
-
-    ~DescriptorPool() {
-        std::cout << "Destroying DescriptorPool" << std::endl;
-        cleanup();
+    void cleanupDescriptorSetLayout() {
+        vkDestroyDescriptorSetLayout(LogicalDeviceWrapper::getVkDevice(), descriptorSetLayout, nullptr);
+    }
+    
+    void cleanupDescriptorPool() {
+        vkDestroyDescriptorPool(LogicalDeviceWrapper::getVkDevice(), descriptorPool, nullptr);
     }
 
     VkDescriptorSetLayout& getDescriptorSetLayout() {

@@ -14,8 +14,13 @@ void Scene::initVulkan() {
     renderer = new Renderer(window);
     renderSystem = new RenderSystem(renderer);
 
-    meshes.insert({"viking_room", new Mesh{"assets/models/viking_room.obj", "assets/textures/viking_room.png"}});
-    meshes.insert({"cube", new Mesh{"assets/models/cube.obj", "assets/textures/viking_room.png"}});
+    meshes.insert({"tree", new Mesh{"assets/dead_tree/model/dead_tree_trunk_02_1k.obj", "assets/dead_tree/textures/dead_tree_trunk_02_diff_1k.jpg"}});
+    meshes.insert({"car", new Mesh{"assets/car/model/covered_car_1k.obj", "assets/car/textures/covered_car_diff_1k.jpg"}});
+    meshes.insert({"fern", new Mesh{"assets/plants/fern/model/fern_02_1k.obj", "assets/plants/fern/textures/fern_02_diff_1k.jpg"}});
+    meshes.insert({"nettle_plant", new Mesh{"assets/plants/nettle_plant/model/nettle_plant_1k.obj", "assets/plants/nettle_plant/textures/nettle_plant_diff_1k.jpg"}});
+    meshes.insert({"picnic_table", new Mesh{"assets/wooden_picnic_table/model/wooden_picnic_table_1k.obj", "assets/wooden_picnic_table/textures/top/wooden_picnic_table_top_diff_1k.jpg"}});
+    meshes.insert({"tree_stump", new Mesh{"assets/tree_stump/model/tree_stump_01_1k.obj", "assets/tree_stump/textures/tree_stump_01_diff_1k.jpg"}});
+    meshes.insert({"rat", new Mesh{"assets/street_rat/model/street_rat_1k.obj", "assets/street_rat/textures/street_rat_diff_1k.png"}});
     meshes.insert({"moon", new Mesh{"assets/moon/model/moon.obj", "assets/moon/textures/brown_mud_diff_1k.jpg"}});
     meshes.insert({"skybox", new Mesh{"assets/skybox/model/skybox.obj", texturePaths}});
     meshes.insert({"plane", new Mesh{100.0f, 100.0f, "assets/terrain/leafy_grass_diff_1k.jpg"}});
@@ -94,18 +99,28 @@ void Scene::waitOutstandingQueues() {
 }
 
 void Scene::cleanup() {
-    delete renderer;
-
-    delete renderSystem;
-
+    renderer->getSwapChain()->cleanupSwapChain();
+    std::cout << "1" << std::endl;
+    renderSystem->cleanupGraphicPipelines();
+    std::cout << "2" << std::endl;
+    renderer->getSwapChain()->getRenderPass().reset();
+    std::cout << "3" << std::endl;
+    renderSystem->getDescriptorPool().cleanupDescriptorPool();
+    std::cout << "4" << std::endl;
     for (auto& mesh : meshes) {
         mesh.second->cleanupTextures();
     }    
-    
+    std::cout << "5" << std::endl;
+    renderSystem->getDescriptorPool().cleanupDescriptorSetLayout();
+    std::cout << "6" << std::endl;
     for (auto& mesh : meshes) {
         delete mesh.second;
-    }  
-
+    }
+    std::cout << "7" << std::endl;
+    renderer->getSwapChain()->cleanupSyncObjects();
+    std::cout << "8" << std::endl;
+    renderer->cleanupCommandPool();
+    std::cout << "9" << std::endl;
     LogicalDeviceWrapper::cleanup();
     InstanceWrapper::cleanup();
 }

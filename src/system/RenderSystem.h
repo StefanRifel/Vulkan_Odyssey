@@ -36,7 +36,7 @@ public:
             graphicPipelineInfoSkybox, renderer->getSwapChain()->getRenderPass().get(), descriptorPool.getDescriptorSetLayout())});
     };
 
-    ~RenderSystem() {
+    void cleanupGraphicPipelines() {
         for (auto& graphicPipeline : graphicPipelines) {
             delete graphicPipeline.second;
         }

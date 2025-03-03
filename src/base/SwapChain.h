@@ -39,31 +39,6 @@ private:
     static VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
     static VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities, Window* window);
 
-    // Cleanup-Funktionen
-    void cleanupSwapChain() {
-        vkDestroyImageView(LogicalDeviceWrapper::getVkDevice(), depthImageView, nullptr);
-        vkDestroyImage(LogicalDeviceWrapper::getVkDevice(), depthImage, nullptr);
-        vkFreeMemory(LogicalDeviceWrapper::getVkDevice(), depthImageMemory, nullptr);
-
-        for (auto framebuffer : swapChainFramebuffers) {
-            vkDestroyFramebuffer(LogicalDeviceWrapper::getVkDevice(), framebuffer, nullptr);
-        }
-
-        for (auto imageView : swapChainImageViews) {
-            vkDestroyImageView(LogicalDeviceWrapper::getVkDevice(), imageView, nullptr);
-        }
-
-        vkDestroySwapchainKHR(LogicalDeviceWrapper::getVkDevice(), swapChain, nullptr);
-    };
-
-    void cleanupSyncObjects() {
-        for (ssize_t i = 0; i < SwapChain::MAX_FRAMES_IN_FLIGHT; i++) {
-            vkDestroySemaphore(LogicalDeviceWrapper::getVkDevice(), renderFinishedSemaphores[i], nullptr);
-            vkDestroySemaphore(LogicalDeviceWrapper::getVkDevice(), imageAvailableSemaphores[i], nullptr);
-            vkDestroyFence(LogicalDeviceWrapper::getVkDevice(), inFlightFences[i], nullptr);
-        }
-    };
-
     // Create-Funktionen
     void createSyncObjects();
     void createFramebuffers();
@@ -91,12 +66,30 @@ public:
         createSyncObjects();
     }
 
+    // Cleanup-Funktionen
+    void cleanupSwapChain() {
+        vkDestroyImageView(LogicalDeviceWrapper::getVkDevice(), depthImageView, nullptr);
+        vkDestroyImage(LogicalDeviceWrapper::getVkDevice(), depthImage, nullptr);
+        vkFreeMemory(LogicalDeviceWrapper::getVkDevice(), depthImageMemory, nullptr);
 
-    ~SwapChain() {
-        std::cout << "Destroying SwapChain" << std::endl;
-        cleanupSyncObjects();
-        cleanupSwapChain();
-    }
+        for (auto framebuffer : swapChainFramebuffers) {
+            vkDestroyFramebuffer(LogicalDeviceWrapper::getVkDevice(), framebuffer, nullptr);
+        }
+
+        for (auto imageView : swapChainImageViews) {
+            vkDestroyImageView(LogicalDeviceWrapper::getVkDevice(), imageView, nullptr);
+        }
+
+        vkDestroySwapchainKHR(LogicalDeviceWrapper::getVkDevice(), swapChain, nullptr);
+    };
+
+    void cleanupSyncObjects() {
+        for (ssize_t i = 0; i < SwapChain::MAX_FRAMES_IN_FLIGHT; i++) {
+            vkDestroySemaphore(LogicalDeviceWrapper::getVkDevice(), renderFinishedSemaphores[i], nullptr);
+            vkDestroySemaphore(LogicalDeviceWrapper::getVkDevice(), imageAvailableSemaphores[i], nullptr);
+            vkDestroyFence(LogicalDeviceWrapper::getVkDevice(), inFlightFences[i], nullptr);
+        }
+    };
 
     std::vector<VkFramebuffer>& getSwapChainFramebuffers() {
         return swapChainFramebuffers;

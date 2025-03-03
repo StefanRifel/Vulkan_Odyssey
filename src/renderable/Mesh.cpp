@@ -95,6 +95,7 @@ void Mesh::updateUniformBuffer(Camera& camera, SwapChain* swapChain, uint32_t cu
 }
 
 void Mesh::cleanupTextures() {
+    std::cout << "Cleaning up textures" << std::endl;
     vkDestroySampler(LogicalDeviceWrapper::getVkDevice(), uniformBuffer.texture.sampler, nullptr);
     vkDestroyImageView(LogicalDeviceWrapper::getVkDevice(), uniformBuffer.texture.view, nullptr);
 

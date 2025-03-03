@@ -15,7 +15,6 @@ private:
     VkRenderPass renderPass;
 
 public:
-    RenderPass() noexcept : device(VK_NULL_HANDLE), renderPass(VK_NULL_HANDLE) {}
 
     RenderPass(VkFormat swapChainImageFormat, VkFormat depthFormat)
         : device(VK_NULL_HANDLE), renderPass(VK_NULL_HANDLE) {
@@ -23,15 +22,11 @@ public:
     }
 
     ~RenderPass() {
-        std::cout << "Destroying RenderPass" << std::endl;
         cleanup();
     }
 
     void cleanup() {
-        if (renderPass != VK_NULL_HANDLE) {
-            vkDestroyRenderPass(device, renderPass, nullptr);
-            renderPass = VK_NULL_HANDLE;
-        }
+        vkDestroyRenderPass(LogicalDeviceWrapper::getVkDevice(), renderPass, nullptr);
     }
 
     VkRenderPass& getRenderPass() {
