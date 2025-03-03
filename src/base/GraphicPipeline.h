@@ -44,7 +44,6 @@ public:
     };
 
     ~GraphicPipeline() {
-        std::cout << "Destroying GraphicPipeline" << std::endl;
         vkDestroyPipeline(LogicalDeviceWrapper::getVkDevice(), pipeline, nullptr);
         vkDestroyPipelineLayout(LogicalDeviceWrapper::getVkDevice(), layout, nullptr);
     };

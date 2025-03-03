@@ -10,8 +10,8 @@ Mesh::Mesh(std::string modelPath, std::vector<std::string>& texturePaths) : text
     ModelLoader::loadModel(vertexBuffer, indexBuffer, modelPath); 
 }
 
-Mesh::Mesh(float width, float depth, std::string texturePath) : texturePath(texturePath) {
-    createPlane(width, depth);
+Mesh::Mesh(std::string texturePath) : texturePath(texturePath) {
+    createPlane();
 }
 
 Mesh::~Mesh() {
@@ -43,22 +43,54 @@ void Mesh::createCubeMapTextures(VkCommandPool& commandPool) {
     TextureLoader::createTextureSampler(uniformBuffer.texture.sampler, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE, uniformBuffer.texture.mipLevels);
 }
 
-void Mesh::createPlane(float width, float depth) {
+void Mesh::createPlane() {
     std::vector<Vertex> vertices;
     std::vector<uint32_t> indices;
+    const int SIZE = 512;
+    const int VERTEX_COUNT = 512;
 
-    float hw = width * 0.5f;
-    float hd = depth * 0.5f;
-    
-    vertices = {
-        {{-hw, 0.0f, -hd}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
-        {{ hw, 0.0f, -hd}, {0.0f, 1.0f, 0.0f}, {8.0f, 0.0f}},  
-        {{ hw, 0.0f,  hd}, {0.0f, 1.0f, 0.0f}, {8.0f, 8.0f}},
-        {{-hw, 0.0f,  hd}, {0.0f, 1.0f, 0.0f}, {0.0f, 8.0f}}
-    };
+    // Define the range for random heights
+    const float MIN_HEIGHT = 0.0f;
+    const float MAX_HEIGHT = 0.4f;
 
-    indices = {0, 1, 2, 2, 3, 0};
-    
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<> dis(MIN_HEIGHT, MAX_HEIGHT);
+
+    int vertexPointer = 0;
+    for(int i=0;i<VERTEX_COUNT;i++){
+        for(int j=0;j<VERTEX_COUNT;j++){
+            Vertex v;
+            glm::vec3 vertex;
+            vertex.x = -SIZE/2.0f + SIZE*i/(float)SIZE;
+            vertex.y = dis(gen);
+            vertex.z = -SIZE/2.0f + SIZE*j/(float)SIZE;
+            v.pos = vertex;
+
+            glm::vec2 texture;
+            texture.x = ((float)j/((float)VERTEX_COUNT - 1)) * SIZE/8;
+            texture.y = ((float)i/((float)VERTEX_COUNT - 1)) * SIZE/8;
+            v.texCoord = texture;
+
+            vertices.push_back(v);
+            vertexPointer++;
+        }
+    }
+
+    for(int gz=0;gz<VERTEX_COUNT-1;gz++){
+        for(int gx=0;gx<VERTEX_COUNT-1;gx++){
+            int topLeft = (gz*VERTEX_COUNT)+gx;
+            int topRight = topLeft + 1;
+            int bottomLeft = ((gz+1)*VERTEX_COUNT)+gx;
+            int bottomRight = bottomLeft + 1;
+            indices.push_back(topLeft);
+            indices.push_back(bottomLeft);
+            indices.push_back(topRight);
+            indices.push_back(topRight);
+            indices.push_back(bottomLeft);
+            indices.push_back(bottomRight);
+        }
+    }
     vertexBuffer.vertices = vertices;
     indexBuffer.indices = indices;
 }
@@ -95,7 +127,6 @@ void Mesh::updateUniformBuffer(Camera& camera, SwapChain* swapChain, uint32_t cu
 }
 
 void Mesh::cleanupTextures() {
-    std::cout << "Cleaning up textures" << std::endl;
     vkDestroySampler(LogicalDeviceWrapper::getVkDevice(), uniformBuffer.texture.sampler, nullptr);
     vkDestroyImageView(LogicalDeviceWrapper::getVkDevice(), uniformBuffer.texture.view, nullptr);
 

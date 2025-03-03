@@ -53,6 +53,4 @@ public:
     void createDescriptorPool(int sceneNodeCount) {
         descriptorPool.createDescriptorPool(sceneNodeCount);
     }
-
-    void renderObject(SceneNode* rootNode);
 };

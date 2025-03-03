@@ -69,7 +69,6 @@ void Scene::initSceneGraph() {
     rootNode->addChild(treeStump);
     rootNode->addChild(rat);
 
-    glm::mat4 transform1 = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
     glm::mat4 transform2 = glm::translate(glm::mat4(1.0f), glm::vec3(2.0f, 0.0f, 0.0f));
     glm::mat4 transform3 = glm::translate(glm::mat4(1.0f), glm::vec3(3.0f, 0.0f, 0.0f));
     glm::mat4 transform4 = glm::translate(glm::mat4(1.0f), glm::vec3(4.0f, 0.0f, 0.0f));
@@ -78,7 +77,6 @@ void Scene::initSceneGraph() {
     glm::mat4 transformCar = glm::translate(glm::mat4(1.0f), glm::vec3(-7.0, 0.2, 2.0));
     glm::mat4 transformRat = glm::translate(glm::mat4(1.0f), glm::vec3(-7.0, 1.6, 2.0));
     glm::mat4 transformTable = glm::translate(glm::mat4(1.0f), glm::vec3(4.0, 0.3, 0.0));
-    glm::mat4 transformChessBoard = glm::translate(glm::mat4(1.0f), glm::vec3(4.0, 1.04, 0.0));
     glm::mat4 transformTree = glm::translate(glm::mat4(1.0f), glm::vec3(4.0, 0.3, 10.0));
   
     
@@ -101,27 +99,24 @@ void Scene::waitOutstandingQueues() {
 
 void Scene::cleanup() {
     renderer->getSwapChain()->cleanupSwapChain();
-    std::cout << "1" << std::endl;
     renderSystem->cleanupGraphicPipelines();
-    std::cout << "2" << std::endl;
     renderer->getSwapChain()->getRenderPass().reset();
-    std::cout << "3" << std::endl;
     renderSystem->getDescriptorPool().cleanupDescriptorPool();
-    std::cout << "4" << std::endl;
+
     for (auto& mesh : meshes) {
         mesh.second->cleanupTextures();
     }    
-    std::cout << "5" << std::endl;
+
     renderSystem->getDescriptorPool().cleanupDescriptorSetLayout();
-    std::cout << "6" << std::endl;
+
     for (auto& mesh : meshes) {
         delete mesh.second;
     }
-    std::cout << "7" << std::endl;
+
     renderer->getSwapChain()->cleanupSyncObjects();
-    std::cout << "8" << std::endl;
+
     renderer->cleanupCommandPool();
-    std::cout << "9" << std::endl;
+
     LogicalDeviceWrapper::cleanup();
     InstanceWrapper::cleanup();
 }
