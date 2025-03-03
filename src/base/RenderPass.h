@@ -1,11 +1,10 @@
-#ifndef RENDERPASS_H
-#define RENDERPASS_H
+#pragma once
 
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
-#include <array>
 #include <stdexcept>
+#include <array>
 
 #include "../wrapper/LogicalDeviceWrapper.h"
 
@@ -13,11 +12,26 @@ class RenderPass {
 
 private:
     VkRenderPass renderPass;
+    VkDevice device;
 
 public:
-    RenderPass() {
-        renderPass = VK_NULL_HANDLE;
-    };
+    RenderPass() noexcept : renderPass(VK_NULL_HANDLE), device(VK_NULL_HANDLE) {}
+
+    explicit RenderPass(VkDevice logicalDevice, VkFormat swapChainImageFormat, VkFormat depthFormat)
+        : device(logicalDevice), renderPass(VK_NULL_HANDLE) {
+        createRenderPass(swapChainImageFormat, depthFormat);
+    }
+
+    ~RenderPass() {
+        cleanup();
+    }
+
+    void cleanup() {
+        if (renderPass != VK_NULL_HANDLE) {
+            vkDestroyRenderPass(device, renderPass, nullptr);
+            renderPass = VK_NULL_HANDLE;
+        }
+    }
 
     VkRenderPass& getRenderPass() {
         return renderPass;
@@ -25,5 +39,3 @@ public:
 
     void createRenderPass(VkFormat& swapChainImageFormat, VkFormat depthFormat);
 };
-
-#endif

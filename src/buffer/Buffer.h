@@ -5,12 +5,11 @@
 #include <GLFW/glfw3.h>
 
 #include "../wrapper/LogicalDeviceWrapper.h"
-#include "../base/Renderer.h"
 #include "../base/SwapChain.h"
-
+#include "../base/Renderer.h"
+#include "../types/Texture.h"
 #include "../types/Vertex.h"
 
-#include "../types/Texture.h"
 
 struct Buffer {
     VkBuffer buffer;

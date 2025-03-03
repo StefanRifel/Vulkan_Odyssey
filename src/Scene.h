@@ -5,25 +5,15 @@
 #include <GLFW/glfw3.h>
 
 #include "Window.h"
-#include "loader/ModelLoader.h"
-#include "wrapper/InstanceWrapper.h"
-#include "base/SwapChain.h"
 #include "Camera.h"
-#include "base/GraphicPipeline.h"
-#include "system/RenderSystem.h"
 #include "base/Renderer.h"
-
-#include "renderable/Mesh.h"
-#include <memory>
-#include "SceneNode.h"
+#include "system/RenderSystem.h"
 
 class Scene {
 
 private:
     Window* window;
     Camera camera;
-
-    SwapChain swapChain;
 
     Renderer* renderer;
     RenderSystem* renderSystem;

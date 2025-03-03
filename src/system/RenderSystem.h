@@ -41,6 +41,8 @@ public:
         for (auto& graphicPipeline : graphicPipelines) {
             delete graphicPipeline.second;
         }
+        descriptorPool.cleanupDescriptorPool();
+        descriptorPool.cleanupDescriptorSetLayout();
     }
 
     std::map<std::string, GraphicPipeline*>& getGraphicPipelines() {
@@ -49,6 +51,10 @@ public:
 
     DescriptorPool& getDescriptorPool() {
         return descriptorPool;
+    }
+
+    void createDescriptorPool(int sceneNodeCount) {
+        descriptorPool.createDescriptorPool(sceneNodeCount);
     }
 
     void renderObject(SceneNode* rootNode);

@@ -12,6 +12,8 @@
 
 #include "RenderPass.h"
 
+#include "../wrapper/LogicalDeviceWrapper.h"
+
 class SwapChain {
 
 private:

@@ -5,18 +5,8 @@
 #include <string>
 
 #include "../loader/ModelLoader.h"
-#include "../types/Vertex.h"
-#include "../base/DescriptorPool.h"
-#include "../base/RenderPass.h"
-#include "../Camera.h"
-
-#include "../buffer/Buffer.h"
-#include "../types/TransformPushConstantData.h"
-
-#include "../base/RenderPass.h"
 #include "../base/GraphicPipeline.h"
-#include "../types/UniformBufferObject.h"
-#include "../base/SwapChain.h"
+#include "../Camera.h"
 
 class Mesh {
 private:
