@@ -1,16 +1,5 @@
 #include "DescriptorPool.h"
 
-VkDescriptorSetLayout DescriptorPool::descriptorSetLayout;
-VkDescriptorPool DescriptorPool::descriptorPool;
-
-VkDescriptorSetLayout& DescriptorPool::getDescriptorSetLayout() {
-    return descriptorSetLayout;
-}
-
-VkDescriptorPool& DescriptorPool::getDescriptorPool() {
-    return descriptorPool;
-}
-
 void DescriptorPool::createDescriptorPool(int sceneNodeCount) {
     std::array<VkDescriptorPoolSize, 2> poolSizes{};
     poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;

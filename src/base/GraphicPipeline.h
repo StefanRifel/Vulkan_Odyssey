@@ -31,7 +31,8 @@ private:
         const std::string& vertShaderPath, 
         const std::string& fragShaderPath, 
         const GraphicPipelineInfo& graphicPipelineInfo,
-        RenderPass& renderPass);
+        RenderPass& renderPass,
+        VkDescriptorSetLayout& descriptorSetLayout);
 
     VkShaderModule createShaderModule(const std::vector<char>& code);
 
@@ -40,7 +41,8 @@ public:
         const std::string& vertShaderPath, 
         const std::string& fragShaderPath, 
         const GraphicPipelineInfo& graphicPipelineInfo,
-        RenderPass& renderPass);
+        RenderPass& renderPass,
+        VkDescriptorSetLayout& descriptorSetLayout);
 
     ~GraphicPipeline();
     

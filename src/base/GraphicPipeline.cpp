@@ -1,7 +1,9 @@
 #include "GraphicPipeline.h"
 
-GraphicPipeline::GraphicPipeline(const std::string& vertShaderPath, const std::string& fragShaderPath, const GraphicPipelineInfo& graphicPipelineInfo, RenderPass& renderPass) {
-    createGraphicsPipeline(vertShaderPath, fragShaderPath, graphicPipelineInfo, renderPass);
+GraphicPipeline::GraphicPipeline(const std::string& vertShaderPath, const std::string& fragShaderPath, 
+    const GraphicPipelineInfo& graphicPipelineInfo, RenderPass& renderPass, VkDescriptorSetLayout& descriptorSetLayout) {
+
+    createGraphicsPipeline(vertShaderPath, fragShaderPath, graphicPipelineInfo, renderPass, descriptorSetLayout);
 }
 
 GraphicPipeline::~GraphicPipeline() {
@@ -36,7 +38,8 @@ GraphicPipelineInfo GraphicPipeline::getDefaultGraphicPipelineInfo() {
     };
 }
 
-void GraphicPipeline::createGraphicsPipeline(const std::string& vertShaderPath, const std::string& fragShaderPath, const GraphicPipelineInfo& graphicPipelineInfo, RenderPass& renderPass) {
+void GraphicPipeline::createGraphicsPipeline(const std::string& vertShaderPath, const std::string& fragShaderPath, 
+    const GraphicPipelineInfo& graphicPipelineInfo, RenderPass& renderPass, VkDescriptorSetLayout& descriptorSetLayout) {
     // Lade die Shader-Module
     VkShaderModule vertShaderModule = createShaderModule(readFile(vertShaderPath));
     VkShaderModule fragShaderModule = createShaderModule(readFile(fragShaderPath));
@@ -147,7 +150,7 @@ void GraphicPipeline::createGraphicsPipeline(const std::string& vertShaderPath, 
     VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
     pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
     pipelineLayoutInfo.setLayoutCount = 1;
-    pipelineLayoutInfo.pSetLayouts = &DescriptorPool::getDescriptorSetLayout();
+    pipelineLayoutInfo.pSetLayouts = &descriptorSetLayout;
     pipelineLayoutInfo.pushConstantRangeCount = 1;
     pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange;
 

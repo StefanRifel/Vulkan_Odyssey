@@ -19,8 +19,10 @@ private:
 
 public:
     Renderer() {
+        //createDescriptorSetLayout();
         createCommandPool();
         createCommandBuffers();
+        //DescriptorPool::createDescriptorPool(meshes.size());
     }
 
     std::vector<VkCommandBuffer>& getCommandBuffers() {

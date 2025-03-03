@@ -4,32 +4,34 @@
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
-#include "../wrapper/LogicalDeviceWrapper.h"
-#include "../loader/TextureLoader.h"
-#include "../types/Texture.h"
-#include "SwapChain.h"
-
-#include <vector>
-
 #include "../buffer/Buffer.h"
-
-#include "../types/UniformBufferObject.h"   
-
-struct UniformBuffer;
+#include "../types/UniformBufferObject.h"
 
 class DescriptorPool {
     
 private:
-    static VkDescriptorPool descriptorPool;
-    static VkDescriptorSetLayout descriptorSetLayout;
+    VkDescriptorPool descriptorPool;
+    VkDescriptorSetLayout descriptorSetLayout;
 
 public:
-    static VkDescriptorSetLayout& getDescriptorSetLayout();
-    static VkDescriptorPool& getDescriptorPool();
 
-    static void createDescriptorPool(int sceneNodeCount);
-    static void createDescriptorSetLayout();
-    static void createDescriptorSets(UniformBuffer& uniformBuffer);
+    VkDescriptorSetLayout& getDescriptorSetLayout() {
+        return descriptorSetLayout;
+    };
+    VkDescriptorPool& getDescriptorPool() {
+        return descriptorPool;
+    };
+
+    void createDescriptorPool(int sceneNodeCount);
+    void createDescriptorSetLayout();
+    void createDescriptorSets(UniformBuffer& uniformBuffer);
+
+    void cleanupDescriptorPool() {
+        vkDestroyDescriptorPool(LogicalDeviceWrapper::getVkDevice(), descriptorPool, nullptr);
+    };
+    void cleanupDescriptorSetLayout() {
+        vkDestroyDescriptorSetLayout(LogicalDeviceWrapper::getVkDevice(), descriptorSetLayout, nullptr);
+    };
 };
 
 #endif

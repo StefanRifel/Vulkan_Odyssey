@@ -23,12 +23,12 @@ Mesh::~Mesh() {
     cleanupBuffer(vertexBuffer.bufferData);
 }
 
-void Mesh::initBuffers() {
+void Mesh::initBuffers(DescriptorPool& descriptorPool) {
     createVertexBuffer(vertexBuffer);
     createIndexBuffer(indexBuffer);
 
     createUniformBuffers(sizeof(UniformBufferObject), uniformBuffer);
-    DescriptorPool::createDescriptorSets(uniformBuffer);
+    descriptorPool.createDescriptorSets(uniformBuffer);
 }
 
 void Mesh::createTextures() {

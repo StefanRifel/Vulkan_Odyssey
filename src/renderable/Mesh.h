@@ -38,7 +38,7 @@ public:
     Mesh(float width, float depth, std::string texturePath);
     ~Mesh();
 
-    void initBuffers();
+    void initBuffers(DescriptorPool& descriptorPool);
     void createTextures();
     void createCubeMapTextures();
     void createPlane(float width, float depth);

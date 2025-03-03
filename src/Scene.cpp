@@ -13,8 +13,6 @@ void Scene::initVulkan() {
 
     swapChain.init(window);
 
-    DescriptorPool::createDescriptorSetLayout();
-
     renderer = new Renderer();
     renderSystem = new RenderSystem(swapChain.getRenderPass());
 
@@ -33,12 +31,12 @@ void Scene::initVulkan() {
         }
     }
 
-    DescriptorPool::createDescriptorPool(meshes.size());
+    renderSystem->getDescriptorPool().createDescriptorPool(meshes.size());
     // Hier werden alle unsere Objekte geladen die wir in der Szene brauchen
     // Pfade zu der obj sind gerade noch hard coded
     
     for (auto& mesh : meshes) {
-        mesh.second->initBuffers();
+        mesh.second->initBuffers(renderSystem->getDescriptorPool());
     }
 
     initSceneGraph();
@@ -81,13 +79,13 @@ void Scene::cleanup() {
 
     swapChain.cleanupRenderPass();
 
-    vkDestroyDescriptorPool(LogicalDeviceWrapper::getVkDevice(), DescriptorPool::getDescriptorPool(), nullptr);
+    renderSystem->getDescriptorPool().cleanupDescriptorPool();
 
     for (auto& mesh : meshes) {
         mesh.second->cleanupTextures();
     }    
 
-    vkDestroyDescriptorSetLayout(LogicalDeviceWrapper::getVkDevice(), DescriptorPool::getDescriptorSetLayout(), nullptr);
+    renderSystem->getDescriptorPool().cleanupDescriptorSetLayout();
     
     for (auto& mesh : meshes) {
         delete mesh.second;
