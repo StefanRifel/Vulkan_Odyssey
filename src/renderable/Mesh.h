@@ -28,12 +28,12 @@ public:
     Mesh(float width, float depth, std::string texturePath);
     ~Mesh();
 
-    void initBuffers(DescriptorPool& descriptorPool);
-    void createTextures();
-    void createCubeMapTextures();
+    void initBuffers(DescriptorPool& descriptorPool, VkCommandPool& commandPool);
+    void createTextures(VkCommandPool& commandPool);
+    void createCubeMapTextures(VkCommandPool& commandPool);
     void createPlane(float width, float depth);
-    void draw(VkCommandBuffer& commandBuffer, SwapChain& SwapChain, GraphicPipeline* graphicsPipeline, uint32_t currentFrame);
-    void updateUniformBuffer(Camera& camera, SwapChain& swapChain, uint32_t currentImage, glm::mat4& worldTransform);
+    void draw(VkCommandBuffer& commandBuffer, SwapChain* SwapChain, GraphicPipeline* graphicsPipeline, uint32_t currentFrame);
+    void updateUniformBuffer(Camera& camera, SwapChain* swapChain, uint32_t currentImage, glm::mat4& worldTransform);
     void updatePushConstants(VkCommandBuffer& commandBuffer, GraphicPipeline* graphicsPipeline);
     void cleanupTextures();
 };

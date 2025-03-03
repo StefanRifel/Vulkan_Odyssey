@@ -1,7 +1,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "TextureLoader.h"
 
-void TextureLoader::createTextureImage(std::string texturePath, UniformBuffer& uniformBuffer) {
+void TextureLoader::createTextureImage(std::string texturePath, UniformBuffer& uniformBuffer, VkCommandPool& commandPool) {
     int texWidth, texHeight, texChannels;
     stbi_uc* pixels = stbi_load(texturePath.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
     if(texWidth == 0 || texHeight == 0) {
@@ -28,15 +28,15 @@ void TextureLoader::createTextureImage(std::string texturePath, UniformBuffer& u
     VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
     VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, uniformBuffer.texture.image, uniformBuffer.texture.memory);
 
-    transitionImageLayout(uniformBuffer.texture.image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, uniformBuffer.texture.mipLevels);
-    copyBufferToImage(stagingBuffer.buffer, uniformBuffer.texture.image, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
+    transitionImageLayout(uniformBuffer.texture.image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, uniformBuffer.texture.mipLevels, commandPool);
+    copyBufferToImage(stagingBuffer.buffer, uniformBuffer.texture.image, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight), commandPool);
 
     cleanupBuffer(stagingBuffer);
 
-    generateMipmaps(uniformBuffer.texture.image, VK_FORMAT_R8G8B8A8_SRGB, texWidth, texHeight, uniformBuffer.texture.mipLevels);
+    generateMipmaps(uniformBuffer.texture.image, VK_FORMAT_R8G8B8A8_SRGB, texWidth, texHeight, uniformBuffer.texture.mipLevels, commandPool);
 }
 
-void TextureLoader::createCubeMapImage(std::vector<std::string>& texturePaths, UniformBuffer& uniformBuffer) {
+void TextureLoader::createCubeMapImage(std::vector<std::string>& texturePaths, UniformBuffer& uniformBuffer, VkCommandPool& commandPool) {
     int texWidth, texHeight, texChannels;
     stbi_uc* pixels = stbi_load(texturePaths[0].c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
     if (!pixels) {
@@ -113,7 +113,7 @@ void TextureLoader::createCubeMapImage(std::vector<std::string>& texturePaths, U
     // Transition image layout and copy data
     transitionImageLayout(uniformBuffer.texture.image, VK_FORMAT_R8G8B8A8_SRGB,
                          VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 6,
-                         uniformBuffer.texture.mipLevels);
+                         uniformBuffer.texture.mipLevels, commandPool);
 
     // Copy all 6 faces
     VkBufferImageCopy regions[6];
@@ -133,20 +133,20 @@ void TextureLoader::createCubeMapImage(std::vector<std::string>& texturePaths, U
         };
     }
 
-    VkCommandBuffer commandBuffer = Renderer::beginSingleTimeCommands();
+    VkCommandBuffer commandBuffer = beginSingleTimeCommands(commandPool);
     vkCmdCopyBufferToImage(commandBuffer, stagingBuffer.buffer, uniformBuffer.texture.image,
                           VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 6, regions);
-    Renderer::endSingleTimeCommands(commandBuffer);
+    endSingleTimeCommands(commandBuffer, commandPool);
 
     // Transition to shader read optimal
     transitionImageLayout(uniformBuffer.texture.image, VK_FORMAT_R8G8B8A8_SRGB,
                          VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, 6,
-                         uniformBuffer.texture.mipLevels);
+                         uniformBuffer.texture.mipLevels, commandPool);
 
     cleanupBuffer(stagingBuffer);
 }
 
-void TextureLoader::generateMipmaps(VkImage image, VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels) {
+void TextureLoader::generateMipmaps(VkImage image, VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels, VkCommandPool& commandPool) {
     // Check if image format supports linear blitting
     VkFormatProperties formatProperties;
     vkGetPhysicalDeviceFormatProperties(PhysicalDeviceWrapper::getPhysicalDevice(), imageFormat, &formatProperties);
@@ -155,7 +155,7 @@ void TextureLoader::generateMipmaps(VkImage image, VkFormat imageFormat, int32_t
         throw std::runtime_error("texture image format does not support linear blitting!");
     }
 
-    VkCommandBuffer commandBuffer = Renderer::beginSingleTimeCommands();
+    VkCommandBuffer commandBuffer = beginSingleTimeCommands(commandPool);
 
     VkImageMemoryBarrier barrier{};
     barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
@@ -230,7 +230,7 @@ void TextureLoader::generateMipmaps(VkImage image, VkFormat imageFormat, int32_t
         0, nullptr,
         1, &barrier);
 
-    Renderer::endSingleTimeCommands(commandBuffer);
+    endSingleTimeCommands(commandBuffer, commandPool);
 }
 
 void TextureLoader::createImage(uint32_t width, uint32_t height, uint32_t& mipLevels, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory) {
@@ -276,8 +276,8 @@ VkImageView TextureLoader::createCubeMapImageView(VkImage& textureImage, uint32_
     return createImageView(textureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_VIEW_TYPE_CUBE, 6, mipLevels);
 }
 
-void TextureLoader::transitionImageLayout(VkImage image, [[maybe_unused]] VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, int layerCount, uint32_t& mipLevels) {
-    VkCommandBuffer commandBuffer = Renderer::beginSingleTimeCommands();
+void TextureLoader::transitionImageLayout(VkImage image, [[maybe_unused]] VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, int layerCount, uint32_t& mipLevels, VkCommandPool& commandPool) {
+    VkCommandBuffer commandBuffer = beginSingleTimeCommands(commandPool);
 
     VkImageMemoryBarrier barrier{};
     barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
@@ -320,11 +320,11 @@ void TextureLoader::transitionImageLayout(VkImage image, [[maybe_unused]] VkForm
         1, &barrier
     );
 
-    Renderer::endSingleTimeCommands(commandBuffer);
+    endSingleTimeCommands(commandBuffer, commandPool);
 }
 
-void TextureLoader::copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height) {
-    VkCommandBuffer commandBuffer = Renderer::beginSingleTimeCommands();
+void TextureLoader::copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height, VkCommandPool& commandPool) {
+    VkCommandBuffer commandBuffer = beginSingleTimeCommands(commandPool);
 
     VkBufferImageCopy region{};
     region.bufferOffset = 0;
@@ -343,7 +343,7 @@ void TextureLoader::copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t w
 
     vkCmdCopyBufferToImage(commandBuffer, buffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
 
-    Renderer::endSingleTimeCommands(commandBuffer);
+    endSingleTimeCommands(commandBuffer, commandPool);
 }
 
 VkImageView TextureLoader::createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, VkImageViewType viewType, int layerCount, uint32_t& mipLevels) {

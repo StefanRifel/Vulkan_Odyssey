@@ -1,32 +1,20 @@
 #include "GraphicPipeline.h"
 
-GraphicPipeline::GraphicPipeline(const std::string& vertShaderPath, const std::string& fragShaderPath, 
-    const GraphicPipelineInfo& graphicPipelineInfo, RenderPass& renderPass, VkDescriptorSetLayout& descriptorSetLayout) {
-
-    createGraphicsPipeline(vertShaderPath, fragShaderPath, graphicPipelineInfo, renderPass, descriptorSetLayout);
-}
-
-GraphicPipeline::~GraphicPipeline() {
-    Logger::log("GRAPHICSPIPELINE::DESTRUCTOR::Destroying graphics pipeline and layout");
-    vkDestroyPipeline(LogicalDeviceWrapper::getVkDevice(), pipeline, nullptr);
-    vkDestroyPipelineLayout(LogicalDeviceWrapper::getVkDevice(), layout, nullptr);
-}
-
-void GraphicPipeline::bind(VkCommandBuffer commandBuffer, SwapChain& swapChain) {
+void GraphicPipeline::bind(VkCommandBuffer commandBuffer, SwapChain* swapChain) {
     vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
 
     VkViewport viewport{};
     viewport.x = 0.0f;
     viewport.y = 0.0f;
-    viewport.width = (float) swapChain.getSwapChainExtent().width;
-    viewport.height = (float) swapChain.getSwapChainExtent().height;
+    viewport.width = (float) swapChain->getSwapChainExtent().width;
+    viewport.height = (float) swapChain->getSwapChainExtent().height;
     viewport.minDepth = 0.0f;
     viewport.maxDepth = 1.0f;
     vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
 
     VkRect2D scissor{};
     scissor.offset = {0, 0};
-    scissor.extent = swapChain.getSwapChainExtent();
+    scissor.extent = swapChain->getSwapChainExtent();
     vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 }
 
@@ -39,7 +27,7 @@ GraphicPipelineInfo GraphicPipeline::getDefaultGraphicPipelineInfo() {
 }
 
 void GraphicPipeline::createGraphicsPipeline(const std::string& vertShaderPath, const std::string& fragShaderPath, 
-    const GraphicPipelineInfo& graphicPipelineInfo, RenderPass& renderPass, VkDescriptorSetLayout& descriptorSetLayout) {
+    const GraphicPipelineInfo& graphicPipelineInfo, RenderPass* renderPass, VkDescriptorSetLayout& descriptorSetLayout) {
     // Lade die Shader-Module
     VkShaderModule vertShaderModule = createShaderModule(readFile(vertShaderPath));
     VkShaderModule fragShaderModule = createShaderModule(readFile(fragShaderPath));
@@ -171,7 +159,7 @@ void GraphicPipeline::createGraphicsPipeline(const std::string& vertShaderPath, 
     pipelineInfo.pColorBlendState = &colorBlending;
     pipelineInfo.pDynamicState = &dynamicState;
     pipelineInfo.layout = layout;
-    pipelineInfo.renderPass = renderPass.getRenderPass();
+    pipelineInfo.renderPass = renderPass->getRenderPass();
     pipelineInfo.subpass = 0;
     pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
 

@@ -1,28 +1,38 @@
-#ifndef RENDERER_H
-#define RENDERER_H
+#pragma once
 
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
-
 #include <vector>
+#include <memory>
 
+#include "../wrapper/LogicalDeviceWrapper.h"
 #include "SwapChain.h"
+
+class SwapChain;
 
 class Renderer {
 
 private:
     std::vector<VkCommandBuffer> commandBuffers;
-    static VkCommandPool commandPool;
+    VkCommandPool commandPool;
+
+    std::unique_ptr<SwapChain> swapChain;
 
     void createCommandBuffers();
     void createCommandPool();
 
+    void cleanupCommandPool() {
+        vkDestroyCommandPool(LogicalDeviceWrapper::getVkDevice(), commandPool, nullptr);
+    }
+
 public:
-    Renderer() {
-        //createDescriptorSetLayout();
+    Renderer(Window* window) : swapChain(std::make_unique<SwapChain>(window)) {
         createCommandPool();
         createCommandBuffers();
-        //DescriptorPool::createDescriptorPool(meshes.size());
+    }
+
+    ~Renderer() {
+        cleanupCommandPool();
     }
 
     std::vector<VkCommandBuffer>& getCommandBuffers() {
@@ -33,8 +43,7 @@ public:
         return commandPool;
     }
 
-    static VkCommandBuffer beginSingleTimeCommands();
-    static void endSingleTimeCommands(VkCommandBuffer commandBuffer);
+    std::unique_ptr<SwapChain>& getSwapChain() {
+        return swapChain;
+    }
 }; 
-
-#endif

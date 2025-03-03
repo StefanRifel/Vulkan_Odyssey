@@ -11,10 +11,8 @@ void Scene::initVulkan() {
     PhysicalDeviceWrapper::pickPhysicalDevice();
     LogicalDeviceWrapper::createLogicalDevice();
 
-    swapChain.init(window);
-
-    renderer = new Renderer();
-    renderSystem = new RenderSystem(swapChain.getRenderPass());
+    renderer = new Renderer(window);
+    renderSystem = new RenderSystem(renderer);
 
     meshes.insert({"viking_room", new Mesh{"assets/models/viking_room.obj", "assets/textures/viking_room.png"}});
     meshes.insert({"cube", new Mesh{"assets/models/cube.obj", "assets/textures/viking_room.png"}});
@@ -25,18 +23,18 @@ void Scene::initVulkan() {
     // TEXTURE
     for (auto& mesh : meshes) {
         if(mesh.second->isCubeMap) {
-            mesh.second->createCubeMapTextures();
+            mesh.second->createCubeMapTextures(renderer->getCommandPool());
         } else {
-            mesh.second->createTextures();
+            mesh.second->createTextures(renderer->getCommandPool());
         }
     }
 
-    renderSystem->getDescriptorPool().createDescriptorPool(meshes.size());
+    renderSystem->createDescriptorPool(meshes.size());
     // Hier werden alle unsere Objekte geladen die wir in der Szene brauchen
     // Pfade zu der obj sind gerade noch hard coded
     
     for (auto& mesh : meshes) {
-        mesh.second->initBuffers(renderSystem->getDescriptorPool());
+        mesh.second->initBuffers(renderSystem->getDescriptorPool(), renderer->getCommandPool());
     }
 
     initSceneGraph();
@@ -73,30 +71,19 @@ void Scene::waitOutstandingQueues() {
 }
 
 void Scene::cleanup() {
-    swapChain.cleanupSwapChain();
+    delete renderer;
 
     delete renderSystem;
-
-    swapChain.cleanupRenderPass();
-
-    renderSystem->getDescriptorPool().cleanupDescriptorPool();
 
     for (auto& mesh : meshes) {
         mesh.second->cleanupTextures();
     }    
-
-    renderSystem->getDescriptorPool().cleanupDescriptorSetLayout();
     
     for (auto& mesh : meshes) {
         delete mesh.second;
     }  
 
-    swapChain.cleanupSyncObjects();
-
-    vkDestroyCommandPool(LogicalDeviceWrapper::getVkDevice(), renderer->getCommandPool(), nullptr);
-
     LogicalDeviceWrapper::cleanup();
-
     InstanceWrapper::cleanup();
 }
 
@@ -110,16 +97,16 @@ void Scene::recordCommandBuffers(int imageIndex) {
     VkCommandBufferBeginInfo beginInfo{};
     beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
-    if (vkBeginCommandBuffer(renderer->getCommandBuffers()[swapChain.currentFrame], &beginInfo) != VK_SUCCESS) {
+    if (vkBeginCommandBuffer(renderer->getCommandBuffers()[renderer->getSwapChain()->currentFrame], &beginInfo) != VK_SUCCESS) {
         throw std::runtime_error("failed to begin recording command buffer!");
     }
 
     VkRenderPassBeginInfo renderPassInfo{};
     renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-    renderPassInfo.renderPass = swapChain.getRenderPass().getRenderPass();
-    renderPassInfo.framebuffer = swapChain.getSwapChainFramebuffers()[imageIndex];
+    renderPassInfo.renderPass = renderer->getSwapChain()->getRenderPass()->getRenderPass();
+    renderPassInfo.framebuffer = renderer->getSwapChain()->getSwapChainFramebuffers()[imageIndex];
     renderPassInfo.renderArea.offset = {0, 0};
-    renderPassInfo.renderArea.extent = swapChain.getSwapChainExtent();
+    renderPassInfo.renderArea.extent = renderer->getSwapChain()->getSwapChainExtent();
 
     std::array<VkClearValue, 2> clearValues{};
     clearValues[0].color = {{0.0f, 0.0f, 0.0f, 1.0f}}; 
@@ -128,75 +115,75 @@ void Scene::recordCommandBuffers(int imageIndex) {
     renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
     renderPassInfo.pClearValues = clearValues.data();
 
-    vkCmdBeginRenderPass(renderer->getCommandBuffers()[swapChain.currentFrame], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+    vkCmdBeginRenderPass(renderer->getCommandBuffers()[renderer->getSwapChain()->currentFrame], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
     rootNode->updateWorldTransform();
 
     // First render skybox separately
     for (auto child : rootNode->getChildren()) {
         if (child->getShaderType() == "skybox") {
-            child->draw(renderer->getCommandBuffers()[swapChain.currentFrame], swapChain,
-                       renderSystem->getGraphicPipelines(), swapChain.currentFrame, camera);
+            child->draw(renderer->getCommandBuffers()[renderer->getSwapChain()->currentFrame], renderer->getSwapChain().get(),
+                       renderSystem->getGraphicPipelines(), renderer->getSwapChain()->currentFrame, camera);
         }
     }
 
     // Then render other objects
     for (auto child : rootNode->getChildren()) {
         if (child->getShaderType() != "skybox") {
-            child->draw(renderer->getCommandBuffers()[swapChain.currentFrame], swapChain,
-            renderSystem->getGraphicPipelines(), swapChain.currentFrame, camera);
+            child->draw(renderer->getCommandBuffers()[renderer->getSwapChain()->currentFrame], renderer->getSwapChain().get(),
+            renderSystem->getGraphicPipelines(), renderer->getSwapChain()->currentFrame, camera);
         }
     }
     
-    rootNode->draw(renderer->getCommandBuffers()[swapChain.currentFrame], swapChain, renderSystem->getGraphicPipelines(), swapChain.currentFrame, camera);
+    rootNode->draw(renderer->getCommandBuffers()[renderer->getSwapChain()->currentFrame], renderer->getSwapChain().get(), renderSystem->getGraphicPipelines(), renderer->getSwapChain()->currentFrame, camera);
 
-    vkCmdEndRenderPass(renderer->getCommandBuffers()[swapChain.currentFrame]);
+    vkCmdEndRenderPass(renderer->getCommandBuffers()[renderer->getSwapChain()->currentFrame]);
 
-    if (vkEndCommandBuffer(renderer->getCommandBuffers()[swapChain.currentFrame]) != VK_SUCCESS) {
+    if (vkEndCommandBuffer(renderer->getCommandBuffers()[renderer->getSwapChain()->currentFrame]) != VK_SUCCESS) {
         throw std::runtime_error("failed to record command buffer!");
     }
 }
 
 void Scene::drawFrame() {
-    vkWaitForFences(LogicalDeviceWrapper::getVkDevice(), 1, &swapChain.inFlightFences[swapChain.currentFrame], VK_TRUE, UINT64_MAX);
+    vkWaitForFences(LogicalDeviceWrapper::getVkDevice(), 1, &renderer->getSwapChain()->inFlightFences[renderer->getSwapChain()->currentFrame], VK_TRUE, UINT64_MAX);
 
     // Hole das nächste Bild aus der SwapChain
     uint32_t imageIndex;
-    VkResult result = vkAcquireNextImageKHR(LogicalDeviceWrapper::getVkDevice(), swapChain.getSwapChain(), UINT64_MAX, swapChain.imageAvailableSemaphores[swapChain.currentFrame], VK_NULL_HANDLE, &imageIndex);
+    VkResult result = vkAcquireNextImageKHR(LogicalDeviceWrapper::getVkDevice(), renderer->getSwapChain()->getSwapChain(), UINT64_MAX, renderer->getSwapChain()->imageAvailableSemaphores[renderer->getSwapChain()->currentFrame], VK_NULL_HANDLE, &imageIndex);
 
     // Wenn die SwapChain veraltet ist, dann erstelle eine neue
     // Die SwapChain ist veraltet, wenn das Fenster vergrößert oder verkleinert wird
     if (result == VK_ERROR_OUT_OF_DATE_KHR) {
-        swapChain.recreateSwapChain(window);
+        renderer->getSwapChain()->recreateSwapChain();
         return;
     } else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
         throw std::runtime_error("failed to acquire swap chain image!");
     }
 
     // Überprüfe ob ein Bild in der Queue ist, das noch nicht fertig ist
-    vkResetFences(LogicalDeviceWrapper::getVkDevice(), 1, &swapChain.inFlightFences[swapChain.currentFrame]);
+    vkResetFences(LogicalDeviceWrapper::getVkDevice(), 1, &renderer->getSwapChain()->inFlightFences[renderer->getSwapChain()->currentFrame]);
 
-    vkResetCommandBuffer(renderer->getCommandBuffers()[swapChain.currentFrame], /*VkCommandBufferResetFlagBits*/ 0);
+    vkResetCommandBuffer(renderer->getCommandBuffers()[renderer->getSwapChain()->currentFrame], /*VkCommandBufferResetFlagBits*/ 0);
 
     recordCommandBuffers(imageIndex);
 
     VkSubmitInfo submitInfo{};
     submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
-    VkSemaphore waitSemaphores[] = {swapChain.imageAvailableSemaphores[swapChain.currentFrame]};
+    VkSemaphore waitSemaphores[] = {renderer->getSwapChain()->imageAvailableSemaphores[renderer->getSwapChain()->currentFrame]};
     VkPipelineStageFlags waitStages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
     submitInfo.waitSemaphoreCount = 1;
     submitInfo.pWaitSemaphores = waitSemaphores;
     submitInfo.pWaitDstStageMask = waitStages;
 
     submitInfo.commandBufferCount = 1;
-    submitInfo.pCommandBuffers = &renderer->getCommandBuffers()[swapChain.currentFrame];
+    submitInfo.pCommandBuffers = &renderer->getCommandBuffers()[renderer->getSwapChain()->currentFrame];
 
-    VkSemaphore signalSemaphores[] = {swapChain.renderFinishedSemaphores[swapChain.currentFrame]};
+    VkSemaphore signalSemaphores[] = {renderer->getSwapChain()->renderFinishedSemaphores[renderer->getSwapChain()->currentFrame]};
     submitInfo.signalSemaphoreCount = 1;
     submitInfo.pSignalSemaphores = signalSemaphores;
 
-    if (vkQueueSubmit(LogicalDeviceWrapper::getGraphicsQueue(), 1, &submitInfo, swapChain.inFlightFences[swapChain.currentFrame]) != VK_SUCCESS) {
+    if (vkQueueSubmit(LogicalDeviceWrapper::getGraphicsQueue(), 1, &submitInfo, renderer->getSwapChain()->inFlightFences[renderer->getSwapChain()->currentFrame]) != VK_SUCCESS) {
         throw std::runtime_error("failed to submit draw command buffer!");
     }
 
@@ -206,7 +193,7 @@ void Scene::drawFrame() {
     presentInfo.waitSemaphoreCount = 1;
     presentInfo.pWaitSemaphores = signalSemaphores;
 
-    VkSwapchainKHR swapChains[] = {swapChain.getSwapChain()};
+    VkSwapchainKHR swapChains[] = {renderer->getSwapChain()->getSwapChain()};
     presentInfo.swapchainCount = 1;
     presentInfo.pSwapchains = swapChains;
 
@@ -216,10 +203,10 @@ void Scene::drawFrame() {
 
     if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || window->getFramebufferResized()) {
         window->resetWindowResizedFlag();
-        swapChain.recreateSwapChain(window);
+        renderer->getSwapChain()->recreateSwapChain();
     } else if (result != VK_SUCCESS) {
         throw std::runtime_error("failed to present swap chain image!");
     }
 
-    swapChain.currentFrame = (swapChain.currentFrame + 1) % swapChain.MAX_FRAMES_IN_FLIGHT;
+    renderer->getSwapChain()->currentFrame = (renderer->getSwapChain()->currentFrame + 1) % renderer->getSwapChain()->MAX_FRAMES_IN_FLIGHT;
 }

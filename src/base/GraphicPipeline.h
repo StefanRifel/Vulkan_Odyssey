@@ -1,5 +1,4 @@
-#ifndef GRAPHICPIPELINE_H
-#define GRAPHICPIPELINE_H
+#pragma once
 
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
@@ -27,31 +26,33 @@ private:
     VkPipeline pipeline;
     VkPipelineLayout layout;
 
+    GraphicPipelineInfo graphicPipelineInfo;
+
     void createGraphicsPipeline(
         const std::string& vertShaderPath, 
         const std::string& fragShaderPath, 
         const GraphicPipelineInfo& graphicPipelineInfo,
-        RenderPass& renderPass,
+        RenderPass* renderPass,
         VkDescriptorSetLayout& descriptorSetLayout);
 
     VkShaderModule createShaderModule(const std::vector<char>& code);
 
 public:
-    GraphicPipeline(
-        const std::string& vertShaderPath, 
-        const std::string& fragShaderPath, 
-        const GraphicPipelineInfo& graphicPipelineInfo,
-        RenderPass& renderPass,
-        VkDescriptorSetLayout& descriptorSetLayout);
+    explicit GraphicPipeline(const std::string& vertShaderPath, const std::string& fragShaderPath, const GraphicPipelineInfo& graphicPipelineInfo,
+        RenderPass* renderPass, VkDescriptorSetLayout descriptorSetLayout) : graphicPipelineInfo {graphicPipelineInfo} {
+        createGraphicsPipeline(vertShaderPath, fragShaderPath, graphicPipelineInfo, renderPass, descriptorSetLayout);
+    };
 
-    ~GraphicPipeline();
+    ~GraphicPipeline() {
+        std::cout << "Destroying GraphicPipeline" << std::endl;
+        vkDestroyPipeline(LogicalDeviceWrapper::getVkDevice(), pipeline, nullptr);
+        vkDestroyPipelineLayout(LogicalDeviceWrapper::getVkDevice(), layout, nullptr);
+    };
     
-    void bind(VkCommandBuffer commandBuffer, SwapChain& swapChain);
+    void bind(VkCommandBuffer commandBuffer, SwapChain* swapChain);
 
     static GraphicPipelineInfo getDefaultGraphicPipelineInfo();
 
     VkPipeline& getPipeline() { return pipeline; }
     VkPipelineLayout& getLayout() { return layout; }
 };
-
-#endif

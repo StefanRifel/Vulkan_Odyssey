@@ -26,17 +26,17 @@ void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyF
     vkBindBufferMemory(LogicalDeviceWrapper::getVkDevice(), buffer.buffer, buffer.bufferMemory, 0);
 }
 
-void copyBuffer(Buffer srcBuffer, Buffer dstBuffer, VkDeviceSize size) {
-    VkCommandBuffer commandBuffer = Renderer::beginSingleTimeCommands();
+void copyBuffer(Buffer srcBuffer, Buffer dstBuffer, VkDeviceSize size, VkCommandPool commandPool) {
+    VkCommandBuffer commandBuffer = beginSingleTimeCommands(commandPool);
 
     VkBufferCopy copyRegion{};
     copyRegion.size = size;
     vkCmdCopyBuffer(commandBuffer, srcBuffer.buffer, dstBuffer.buffer, 1, &copyRegion);
 
-    Renderer::endSingleTimeCommands(commandBuffer);
+    endSingleTimeCommands(commandBuffer, commandPool);
 }
 
-void createVertexBuffer(VertexBuffer& vertexBuffer) {
+void createVertexBuffer(VertexBuffer& vertexBuffer, VkCommandPool& commandPool) {
     vertexBuffer.bufferData.bufferSize = sizeof(vertexBuffer.vertices[0]) * vertexBuffer.vertices.size();
 
     /*
@@ -55,12 +55,12 @@ void createVertexBuffer(VertexBuffer& vertexBuffer) {
 
     createBuffer(vertexBuffer.bufferData.bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, vertexBuffer.bufferData);
 
-    copyBuffer(stagingBuffer, vertexBuffer.bufferData, vertexBuffer.bufferData.bufferSize);
+    copyBuffer(stagingBuffer, vertexBuffer.bufferData, vertexBuffer.bufferData.bufferSize, commandPool);
 
     cleanupBuffer(stagingBuffer);
 }
 
-void createIndexBuffer(IndexBuffer& indexBuffer) {
+void createIndexBuffer(IndexBuffer& indexBuffer, VkCommandPool& commandPool) {
     indexBuffer.bufferData.bufferSize = sizeof(indexBuffer.indices[0]) * indexBuffer.indices.size();
 
     Buffer stagingBuffer;
@@ -73,7 +73,7 @@ void createIndexBuffer(IndexBuffer& indexBuffer) {
 
     createBuffer(indexBuffer.bufferData.bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, indexBuffer.bufferData);
 
-    copyBuffer(stagingBuffer, indexBuffer.bufferData, indexBuffer.bufferData.bufferSize);
+    copyBuffer(stagingBuffer, indexBuffer.bufferData, indexBuffer.bufferData.bufferSize, commandPool);
 
     cleanupBuffer(stagingBuffer);
 }
@@ -93,4 +93,37 @@ void createUniformBuffers(VkDeviceSize bufferSize, UniformBuffer& uniformBuffer)
 void cleanupBuffer(Buffer& buffer) {
     vkDestroyBuffer(LogicalDeviceWrapper::getVkDevice(), buffer.buffer, nullptr);
     vkFreeMemory(LogicalDeviceWrapper::getVkDevice(), buffer.bufferMemory, nullptr);
+}
+
+VkCommandBuffer beginSingleTimeCommands(VkCommandPool commandPool) {
+    VkCommandBufferAllocateInfo allocInfo{};
+    allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+    allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+    allocInfo.commandPool = commandPool;
+    allocInfo.commandBufferCount = 1;
+
+    VkCommandBuffer commandBuffer;
+    vkAllocateCommandBuffers(LogicalDeviceWrapper::getVkDevice(), &allocInfo, &commandBuffer);
+
+    VkCommandBufferBeginInfo beginInfo{};
+    beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+    beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+
+    vkBeginCommandBuffer(commandBuffer, &beginInfo);
+
+    return commandBuffer;
+}
+
+void endSingleTimeCommands(VkCommandBuffer commandBuffer, VkCommandPool commandPool) {
+    vkEndCommandBuffer(commandBuffer);
+
+    VkSubmitInfo submitInfo{};
+    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+    submitInfo.commandBufferCount = 1;
+    submitInfo.pCommandBuffers = &commandBuffer;
+
+    vkQueueSubmit(LogicalDeviceWrapper::getGraphicsQueue(), 1, &submitInfo, VK_NULL_HANDLE);
+    vkQueueWaitIdle(LogicalDeviceWrapper::getGraphicsQueue());
+
+    vkFreeCommandBuffers(LogicalDeviceWrapper::getVkDevice(), commandPool, 1, &commandBuffer);
 }

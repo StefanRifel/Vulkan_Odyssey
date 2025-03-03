@@ -23,22 +23,22 @@ Mesh::~Mesh() {
     cleanupBuffer(vertexBuffer.bufferData);
 }
 
-void Mesh::initBuffers(DescriptorPool& descriptorPool) {
-    createVertexBuffer(vertexBuffer);
-    createIndexBuffer(indexBuffer);
+void Mesh::initBuffers(DescriptorPool& descriptorPool, VkCommandPool& commandPool) {
+    createVertexBuffer(vertexBuffer, commandPool);
+    createIndexBuffer(indexBuffer, commandPool);
 
     createUniformBuffers(sizeof(UniformBufferObject), uniformBuffer);
     descriptorPool.createDescriptorSets(uniformBuffer);
 }
 
-void Mesh::createTextures() {
-    TextureLoader::createTextureImage(texturePath, uniformBuffer);
+void Mesh::createTextures(VkCommandPool& commandPool) {
+    TextureLoader::createTextureImage(texturePath, uniformBuffer, commandPool);
     uniformBuffer.texture.view = TextureLoader::createTextureImageView(uniformBuffer.texture.image, uniformBuffer.texture.mipLevels);
     TextureLoader::createTextureSampler(uniformBuffer.texture.sampler, VK_SAMPLER_ADDRESS_MODE_REPEAT, uniformBuffer.texture.mipLevels);
 }
 
-void Mesh::createCubeMapTextures() {
-    TextureLoader::createCubeMapImage(texturePaths, uniformBuffer);
+void Mesh::createCubeMapTextures(VkCommandPool& commandPool) {
+    TextureLoader::createCubeMapImage(texturePaths, uniformBuffer, commandPool);
     uniformBuffer.texture.view = TextureLoader::createCubeMapImageView(uniformBuffer.texture.image, uniformBuffer.texture.mipLevels);
     TextureLoader::createTextureSampler(uniformBuffer.texture.sampler, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE, uniformBuffer.texture.mipLevels);
 }
@@ -63,7 +63,7 @@ void Mesh::createPlane(float width, float depth) {
     indexBuffer.indices = indices;
 }
 
-void Mesh::draw(VkCommandBuffer& commandBuffer, SwapChain& swapChain, GraphicPipeline* graphicsPipeline, uint32_t currentFrame) {
+void Mesh::draw(VkCommandBuffer& commandBuffer, SwapChain* swapChain, GraphicPipeline* graphicsPipeline, uint32_t currentFrame) {
     graphicsPipeline->bind(commandBuffer, swapChain);
 
     VkDeviceSize offsets[] = {0};
@@ -83,8 +83,8 @@ void Mesh::updatePushConstants(VkCommandBuffer& commandBuffer, GraphicPipeline* 
     vkCmdPushConstants(commandBuffer, graphicsPipeline->getLayout(), VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(TransformPushConstantData), &pushConstants);
 }
 
-void Mesh::updateUniformBuffer(Camera& camera, SwapChain& swapChain, uint32_t currentImage, glm::mat4& worldTransform) {
-    camera.look(swapChain.getSwapChainExtent().width, swapChain.getSwapChainExtent().height);
+void Mesh::updateUniformBuffer(Camera& camera, SwapChain* swapChain, uint32_t currentImage, glm::mat4& worldTransform) {
+    camera.look(swapChain->getSwapChainExtent().width, swapChain->getSwapChainExtent().height);
 
     UniformBufferObject ubo{};
     ubo.model = worldTransform;

@@ -1,10 +1,6 @@
 #include "RenderPass.h"
 
 void RenderPass::createRenderPass(VkFormat& swapChainImageFormat, VkFormat depthFormat) {
-    if (device == VK_NULL_HANDLE) {
-        throw std::runtime_error("RenderPass cannot be created: device is null");
-    }
-    
     VkAttachmentDescription colorAttachment{};
     colorAttachment.format = swapChainImageFormat;
     colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;

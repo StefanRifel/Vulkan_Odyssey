@@ -11,18 +11,19 @@
 class RenderPass {
 
 private:
-    VkRenderPass renderPass;
     VkDevice device;
+    VkRenderPass renderPass;
 
 public:
-    RenderPass() noexcept : renderPass(VK_NULL_HANDLE), device(VK_NULL_HANDLE) {}
+    RenderPass() noexcept : device(VK_NULL_HANDLE), renderPass(VK_NULL_HANDLE) {}
 
-    explicit RenderPass(VkDevice logicalDevice, VkFormat swapChainImageFormat, VkFormat depthFormat)
-        : device(logicalDevice), renderPass(VK_NULL_HANDLE) {
+    RenderPass(VkFormat swapChainImageFormat, VkFormat depthFormat)
+        : device(VK_NULL_HANDLE), renderPass(VK_NULL_HANDLE) {
         createRenderPass(swapChainImageFormat, depthFormat);
     }
 
     ~RenderPass() {
+        std::cout << "Destroying RenderPass" << std::endl;
         cleanup();
     }
 

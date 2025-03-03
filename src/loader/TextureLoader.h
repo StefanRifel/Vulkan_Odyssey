@@ -20,16 +20,16 @@ private:
     }
 
 public:
-    static void createTextureImage(std::string texturePath, UniformBuffer& uniformBuffer);
-    static void createCubeMapImage(std::vector<std::string>& texturePaths, UniformBuffer& uniformBuffer);
+    static void createTextureImage(std::string texturePath, UniformBuffer& uniformBuffer, VkCommandPool& commandPool);
+    static void createCubeMapImage(std::vector<std::string>& texturePaths, UniformBuffer& uniformBuffer, VkCommandPool& commandPool);
 
 
     static void createImage(uint32_t width, uint32_t height, uint32_t& mipLevels, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory);
     
-    static void generateMipmaps(VkImage image, VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels);
+    static void generateMipmaps(VkImage image, VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels, VkCommandPool& commandPool);
 
-    static void transitionImageLayout(VkImage image, [[maybe_unused]] VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, int layerCount, uint32_t& mipLevels);
-    static void copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
+    static void transitionImageLayout(VkImage image, [[maybe_unused]] VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, int layerCount, uint32_t& mipLevels, VkCommandPool& commandPool);
+    static void copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height, VkCommandPool& commandPool);
 
     static VkImageView createTextureImageView(VkImage& textureImage, uint32_t& mipLevels);
     static VkImageView createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, VkImageViewType viewType, int layerCount, uint32_t& mipLevels);

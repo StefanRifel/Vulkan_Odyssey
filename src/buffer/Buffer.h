@@ -1,5 +1,4 @@
-#ifndef BUFFER_H
-#define BUFFER_H
+#pragma once
 
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
@@ -10,6 +9,7 @@
 #include "../types/Texture.h"
 #include "../types/Vertex.h"
 
+#include "../base/DescriptorPool.h"
 
 struct Buffer {
     VkBuffer buffer;
@@ -35,12 +35,13 @@ struct UniformBuffer {
 };
 
 void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, Buffer& buffer);
-void copyBuffer(Buffer srcBuffer, Buffer dstBuffer, VkDeviceSize size);
+void copyBuffer(Buffer srcBuffer, Buffer dstBuffer, VkDeviceSize size, VkCommandPool commandPool);
 
-void createVertexBuffer(VertexBuffer& vertexBuffer);
-void createIndexBuffer(IndexBuffer& indexBuffer);
+void createVertexBuffer(VertexBuffer& vertexBuffer, VkCommandPool& commandPool);
+void createIndexBuffer(IndexBuffer& indexBuffer, VkCommandPool& commandPool);
 void createUniformBuffers(VkDeviceSize bufferSize, UniformBuffer& uniformBuffer);
 
 void cleanupBuffer(Buffer& buffer);
 
-#endif
+VkCommandBuffer beginSingleTimeCommands(VkCommandPool commandPool);
+void endSingleTimeCommands(VkCommandBuffer commandBuffer, VkCommandPool commandPool);
