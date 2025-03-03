@@ -73,6 +73,7 @@ void Scene::initSceneGraph() {
     glm::mat4 transform2 = glm::translate(glm::mat4(1.0f), glm::vec3(2.0f, 0.0f, 0.0f));
     glm::mat4 transform3 = glm::translate(glm::mat4(1.0f), glm::vec3(3.0f, 0.0f, 0.0f));
     glm::mat4 transform4 = glm::translate(glm::mat4(1.0f), glm::vec3(4.0f, 0.0f, 0.0f));
+    glm::mat4 transformMoon = glm::translate(glm::mat4(1.0f), glm::vec3(-4.0f, 14.0f, 12.0f));
     
     glm::mat4 transformCar = glm::translate(glm::mat4(1.0f), glm::vec3(-7.0, 0.2, 2.0));
     glm::mat4 transformRat = glm::translate(glm::mat4(1.0f), glm::vec3(-7.0, 1.6, 2.0));
@@ -83,7 +84,7 @@ void Scene::initSceneGraph() {
     
     car->setLocalTransform(transformCar);
     tree->setLocalTransform(transformTree);
-    moon->setLocalTransform(transform1);
+    moon->setLocalTransform(transformMoon);
     fern->setLocalTransform(transform3);
     nettlePlant->setLocalTransform(transform4);
     picnicTable->setLocalTransform(transformTable);

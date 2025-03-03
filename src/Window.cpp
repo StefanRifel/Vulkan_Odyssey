@@ -23,7 +23,7 @@ void Window::initWindow() {
         throw std::runtime_error("WINDOW::INITWINDOW::22 - glfwWindow konnte nicht erstellt werden");
     }
     
-    //glfwSetInputMode(glfwWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    glfwSetInputMode(glfwWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     glfwSetFramebufferSizeCallback(glfwWindow, framebufferResizeCallback);      //Callback für Fenstergrößenänderung
 }
