@@ -43,7 +43,6 @@ public:
     Camera& getCamera();
 
     void drawFrame();
-    void recordCommandBuffers(int imageIndex);
 };
 
 #endif

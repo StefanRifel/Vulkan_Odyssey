@@ -13,10 +13,14 @@ class SwapChain;
 class Renderer {
 
 private:
+    Window* window;
+
     std::vector<VkCommandBuffer> commandBuffers;
     VkCommandPool commandPool;
 
     std::unique_ptr<SwapChain> swapChain;
+
+    uint32_t imageIndex;
 
     void createCommandBuffers();
     void createCommandPool();
@@ -26,7 +30,7 @@ private:
     }
 
 public:
-    Renderer(Window* window) : swapChain(std::make_unique<SwapChain>(window)) {
+    Renderer(Window* window) : window {window}, swapChain(std::make_unique<SwapChain>(window)) {
         createCommandPool();
         createCommandBuffers();
     }
@@ -46,4 +50,9 @@ public:
     std::unique_ptr<SwapChain>& getSwapChain() {
         return swapChain;
     }
+
+    void beginFrame();
+    void endFrame();
+    void beginSwapChainRenderPass();
+    void endSwapChainRenderPass();
 }; 
